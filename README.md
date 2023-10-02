@@ -1,1 +1,1 @@
-# diploma_project
+This is my diploma project.
