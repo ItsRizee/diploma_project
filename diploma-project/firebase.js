@@ -11,7 +11,7 @@ const firebaseConfig = {
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-const app = initializeApp(firebaseConfig);
+const app = await initializeApp(firebaseConfig);
 
-export const auth = getAuth(app);
+export const auth = await getAuth(app);
 export default app;

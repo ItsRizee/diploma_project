@@ -1,7 +1,27 @@
-import React from "react";
+import React, {useState} from "react";
 import {app_name} from "../constants";
+import {useRouter} from "next/router";
+import {auth} from "../firebase";
+import Link from "next/link";
 
 const Navbar = () => {
+    const [error, setError] = useState(null);
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        setError(null);
+
+        const errorMessage = await logOut();
+
+        if (errorMessage === null) {
+            // Logout was successful, navigate to the signIn page
+            await router.push("/signin");
+        } else {
+            // Logout failed, set the error message
+            setError(errorMessage);
+        }
+    };
+
     return (
         <div className="navbar bg-base-100">
             <div className="navbar-start">
@@ -43,9 +63,14 @@ const Navbar = () => {
                         {/*        <span className="badge">New</span>*/}
                         {/*    </a>*/}
                         {/*</li>*/}
-                        <li><a>Profile</a></li>
+                        <li><a>Profile {auth.currentUser ? auth.currentUser.displayName : 'Guest'}</a></li>
                         <li><a>Settings</a></li>
-                        <li><a>Logout</a></li>
+                        {
+                            auth.currentUser ?
+                                <li><a onClick={handleLogout}>Logout</a></li> :
+                                <li><Link className="" href="/signin">Login</Link></li>
+                        }
+
                     </ul>
                 </div>
             </div>

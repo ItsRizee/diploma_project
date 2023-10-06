@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import {auth} from "../firebase";
 import Head from "next/head";
+import Link from "next/link";
+import loginWithEmailAndPassword from "../services/logInWithEmailAndPassword";
 
 const SignIn = () => {
     const [email, setEmail] = useState("");
@@ -10,20 +10,20 @@ const SignIn = () => {
     const router = useRouter();
     const [error, setError] = useState(null);
 
-    const onSubmit = event => {
-        setError(null)
-        //check if passwords match. If they do, create user in Firebase
-        // and redirect to your logged in page.
-        createUserWithEmailAndPassword(auth, email, password)
-            .then(authUser => {
-                router.push("/");
-            })
-            .catch(error => {
-                // An error occurred. Set error message to be displayed to user
-                setError(error.message)
-            });
-
+    const onSubmit = async (event) => {
         event.preventDefault();
+
+        setError(null);
+
+        const errorMessage = await loginWithEmailAndPassword(email, password);
+
+        if (errorMessage === null) {
+            // Login was successful, navigate to the index page
+            await router.push("/");
+        } else {
+            // Login failed, set the error message
+            setError(errorMessage);
+        }
     };
 
     return (
@@ -40,7 +40,7 @@ const SignIn = () => {
                         <h1 className="text-5xl font-bold">New here?</h1>
                         <p className="py-10">Sign up and discover a great amount of new crafts and opportunities</p>
                         <div className="form-control">
-                            <a className="btn btn-neutral normal-case text-xl" href="/signup">Sign Up</a>
+                            <Link className="btn btn-neutral normal-case text-xl" href="/signup">Sign Up</Link>
                         </div>
                     </div>
                     <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
@@ -50,13 +50,33 @@ const SignIn = () => {
                                 <label className="label">
                                     <span className="label-text">Email</span>
                                 </label>
-                                <input type="email" placeholder="email" className="input input-bordered" required />
+                                <input
+                                    type="email"
+                                    placeholder="email"
+                                    value={email}
+                                    className="input input-bordered"
+                                    required
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        setError(false); // Reset the error state on input change
+                                    }}
+                                />
                             </div>
                             <div className="form-control">
                                 <label className="label">
                                     <span className="label-text">Password</span>
                                 </label>
-                                <input type="password" placeholder="password" className="input input-bordered" required />
+                                <input
+                                    type="password"
+                                    placeholder="password"
+                                    value={password}
+                                    className="input input-bordered"
+                                    required
+                                    onChange={(e) => {
+                                        setPassword(e.target.value);
+                                        setError(false); // Reset the error state on input change
+                                    }}
+                                />
                                 <label className="label">
                                     <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
                                 </label>

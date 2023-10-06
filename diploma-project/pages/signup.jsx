@@ -1,33 +1,35 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import {auth} from "../firebase";
 import Head from "next/head";
+import Link from 'next/link'
+import registerWithEmailAndPassword from "../services/registerWithEmailAndPassword";
 
 const SignUp = () => {
+    const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [passwordOne, setPasswordOne] = useState("");
     const [passwordTwo, setPasswordTwo] = useState("");
     const router = useRouter();
     const [error, setError] = useState(null);
 
-    const onSubmit = event => {
-        setError(null)
-        //check if passwords match. If they do, create user in Firebase
-        // and redirect to your logged in page.
-        if(passwordOne === passwordTwo)
-            createUserWithEmailAndPassword(auth, email, passwordOne)
-                .then(authUser => {
-                    console.log("Success. The user is created in Firebase")
-                    router.push("/logged_in");
-                })
-                .catch(error => {
-                    // An error occurred. Set error message to be displayed to user
-                    setError(error.message)
-                });
-        else
-            setError("Password do not match")
+    const onSubmit = async (event) => {
         event.preventDefault();
+
+        setError(null)
+
+        if(passwordOne === passwordTwo) {
+            const errorMessage = await registerWithEmailAndPassword(fullName, email, passwordOne);
+
+            if (errorMessage === null) {
+                // Register was successful, navigate to the signIn page
+                await router.push("/signin");
+            } else {
+                // Register failed, set the error message
+                setError(errorMessage);
+            }
+        } else {
+            setError("Password do not match")
+        }
     };
 
     return (
@@ -45,18 +47,67 @@ const SignUp = () => {
                             <h1 className="text-3xl font-bold">Create Free Account</h1>
                             <div className="form-control">
                                 <label className="label">
+                                    <span className="label-text">Full name</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="full name"
+                                    value={fullName}
+                                    className="input input-bordered"
+                                    required
+                                    onChange={(e) => {
+                                        setFullName(e.target.value);
+                                        setError(false); // Reset the error state on input change
+                                    }}
+                                />
+                            </div>
+                            <div className="form-control">
+                                <label className="label">
                                     <span className="label-text">Email</span>
                                 </label>
-                                <input type="email" placeholder="email" className="input input-bordered" required />
+                                <input
+                                    type="email"
+                                    placeholder="email"
+                                    value={email}
+                                    className="input input-bordered"
+                                    required
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        setError(false); // Reset the error state on input change
+                                    }}
+                                />
                             </div>
                             <div className="form-control">
                                 <label className="label">
                                     <span className="label-text">Password</span>
                                 </label>
-                                <input type="password" placeholder="password" className="input input-bordered" required />
+                                <input
+                                    type="password"
+                                    placeholder="password"
+                                    value={passwordOne}
+                                    className="input input-bordered"
+                                    required
+                                    onChange={(e) => {
+                                        setPasswordOne(e.target.value);
+                                        setError(false); // Reset the error state on input change
+                                    }}
+                                />
+                            </div>
+                            <div className="form-control">
                                 <label className="label">
-                                    <a href="#" className="label-text-alt link link-hover">Forgot password?</a>
+                                    <span className="label-text">Confirm password</span>
                                 </label>
+                                <input
+                                    type="password"
+                                    placeholder="confirm password"
+                                    value={passwordTwo}
+                                    className="input input-bordered"
+                                    required
+                                    onChange={(e) => {
+                                        setPasswordTwo(e.target.value);
+                                        setError(false); // Reset the error state on input change
+                                    }}
+                                />
                             </div>
                             <div className="form-control mt-6">
                                 <button className="btn btn-primary" type="submit">Sign Up</button>
@@ -67,7 +118,7 @@ const SignUp = () => {
                         <h1 className="text-5xl font-bold">One of us?</h1>
                         <p className="py-10">If you already have an account just sign in and discover a great amount of new crafts</p>
                         <div className="form-control">
-                            <a className="btn btn-neutral normal-case text-xl" href="/signin">Sign In</a>
+                            <Link className="btn btn-neutral normal-case text-xl" href="/signin">Sign In</Link>
                         </div>
                     </div>
                 </div>
