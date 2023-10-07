@@ -1,6 +1,8 @@
 import React from "react";
 import Head from 'next/head';
-import Navbar from "../components/navbar";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import Carousel from "../components/Carousel";
 
 const Home = () => {
     return (
@@ -12,8 +14,13 @@ const Home = () => {
                 {/*<link rel="icon" href="/favicon.ico" />*/}
             </Head>
             <header>
-                <Navbar></Navbar>
+                <Navbar/>
             </header>
+            <main className="pb-20">
+                <Carousel categoryName="Suggested"/>
+                <Carousel categoryName="Other crafts"/>
+            </main>
+            <Footer/>
         </div>
     )
 }

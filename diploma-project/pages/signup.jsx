@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from "next/head";
 import Link from 'next/link'
 import registerWithEmailAndPassword from "../services/registerWithEmailAndPassword";
+import InputField from "../components/InputField";
 
 const SignUp = () => {
     const [fullName, setFullName] = useState("");
@@ -28,7 +29,7 @@ const SignUp = () => {
                 setError(errorMessage);
             }
         } else {
-            setError("Password do not match")
+            setError("Passwords do not match")
         }
     };
 
@@ -46,70 +47,59 @@ const SignUp = () => {
                         <form className="card-body" onSubmit={onSubmit}>
                             <h1 className="text-3xl font-bold">Create Free Account</h1>
                             <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Full name</span>
-                                </label>
-                                <input
+                                <InputField
+                                    labelText="Full name"
                                     type="text"
-                                    placeholder="full name"
+                                    placeholder="Melvin Simonds"
                                     value={fullName}
-                                    className="input input-bordered"
-                                    required
                                     onChange={(e) => {
                                         setFullName(e.target.value);
-                                        setError(false); // Reset the error state on input change
+                                        setError(null); // Reset the error state on input change
                                     }}
+                                    error={error}
                                 />
                             </div>
                             <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Email</span>
-                                </label>
-                                <input
+                                <InputField
+                                    labelText="Email"
                                     type="email"
-                                    placeholder="email"
+                                    placeholder="email@gmail.com"
                                     value={email}
-                                    className="input input-bordered"
-                                    required
                                     onChange={(e) => {
                                         setEmail(e.target.value);
-                                        setError(false); // Reset the error state on input change
+                                        setError(null); // Reset the error state on input change
                                     }}
+                                    error={error}
                                 />
                             </div>
                             <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Password</span>
-                                </label>
-                                <input
+                                <InputField
+                                    labelText="Password"
                                     type="password"
-                                    placeholder="password"
+                                    placeholder="password123"
                                     value={passwordOne}
-                                    className="input input-bordered"
-                                    required
                                     onChange={(e) => {
                                         setPasswordOne(e.target.value);
-                                        setError(false); // Reset the error state on input change
+                                        setError(null); // Reset the error state on input change
                                     }}
+                                    error={error}
                                 />
                             </div>
                             <div className="form-control">
-                                <label className="label">
-                                    <span className="label-text">Confirm password</span>
-                                </label>
-                                <input
+                                <InputField
+                                    labelText="Confirm Password"
                                     type="password"
-                                    placeholder="confirm password"
+                                    placeholder="password123"
                                     value={passwordTwo}
-                                    className="input input-bordered"
-                                    required
                                     onChange={(e) => {
                                         setPasswordTwo(e.target.value);
-                                        setError(false); // Reset the error state on input change
+                                        setError(null); // Reset the error state on input change
                                     }}
+                                    error={error}
                                 />
                             </div>
-                            <div className="form-control mt-6">
+                            {error && <span className="error-text py-2 text-red-500">{error}</span>}
+                            <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
                                 <button className="btn btn-primary" type="submit">Sign Up</button>
                             </div>
                         </form>

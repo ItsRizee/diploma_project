@@ -3,6 +3,7 @@ import {app_name} from "../constants";
 import {useRouter} from "next/router";
 import {auth} from "../firebase";
 import Link from "next/link";
+import logOut from "../services/logOut";
 
 const Navbar = () => {
     const [error, setError] = useState(null);
@@ -38,7 +39,7 @@ const Navbar = () => {
                 </div>
             </div>
             <div className="navbar-center">
-                <a className="btn btn-ghost normal-case text-2xl">{app_name}</a>
+                <h1 className="font-bold text-3xl mb-5">{app_name}</h1>
             </div>
             <div className="navbar-end space-x-4">
                 <div className="form-control w-1/3">
