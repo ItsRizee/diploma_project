@@ -2,7 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=nextjs,react,webstorm,firebase
 
 ### Firebase ###
-.idea
+../.idea/
 **/node_modules/*
 **/.firebaserc
 
@@ -99,8 +99,8 @@ sketch
 # .idea/artifacts
 # .idea/compiler.xml
 # .idea/jarRepositories.xml
-# .idea/modules.xml
-# .idea/*.iml
+.idea/modules.xml
+.idea/*.iml
 # .idea/modules
 # *.iml
 # *.ipr
@@ -145,7 +145,7 @@ fabric.properties
 # Comment Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-215987721
 
 # *.iml
-# modules.xml
+modules.xml
 # .idea/misc.xml
 # *.ipr
 
