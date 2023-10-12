@@ -28,7 +28,7 @@ const SignIn = () => {
     };
 
     return (
-        <div>
+        <div className="overflow-x-hidden">
             <Head>
                 <meta charSet="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -36,18 +36,18 @@ const SignIn = () => {
             </Head>
             <div className="hero min-h-screen bg-base-200">
                 <div className="hero-content flex-col lg:flex-row-reverse">
-                    <div className="text-center lg:text-left px-10">
-                        <h1 className="text-5xl font-bold">New here?</h1>
-                        <p className="py-10">Sign up and discover a great amount of new crafts and opportunities</p>
+                    <div className="flex-shrink-0 w-full max-w-sm text-center lg:text-left px-5 lg:px-10">
+                        <h1 className="text-3xl lg:text-5xl font-bold">New here?</h1>
+                        <p className="py-5 lg:py-10">Sign up and discover a great amount of new crafts and opportunities</p>
                         <div className="form-control">
-                            <Link className="btn btn-neutral normal-case text-xl" href="/signup">
+                            <Link className="btn btn-neutral normal-case text-lg lg:text-xl" href="/signup">
                                 Sign Up
                             </Link>
                         </div>
                     </div>
                     <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
                         <form className="card-body" onSubmit={onSubmit}>
-                            <h1 className="text-3xl font-bold">Login to Your Account</h1>
+                            <h1 className="text-xl lg:text-3xl text-center font-bold">Login to Your Account</h1>
                             {/* Use the InputField component */}
                             <InputField
                                 labelText="Email"

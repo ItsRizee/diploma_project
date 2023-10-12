@@ -10,7 +10,7 @@ const InputField = ({ labelText, type, placeholder, value, onChange, error }) =>
                 type={type}
                 placeholder={placeholder}
                 value={value}
-                className="input input-bordered"
+                className="input input-bordered w-full"
                 required
                 onChange={onChange}
             />
