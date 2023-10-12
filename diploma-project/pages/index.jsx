@@ -19,8 +19,8 @@ const Home = () => {
                 <Navbar/>
             </header>
             <main className="pb-20">
-                <Carousel categoryName="New crafts" listOfItems={[<AvatarIcon/>, <AvatarIcon/>, <AvatarIcon/>, <AvatarIcon/>, <AvatarIcon/>, <AvatarIcon/>, <AvatarIcon/>, <AvatarIcon/>]}/>
-                <Carousel categoryName="Other crafts" listOfItems={[<ProductCard/>, <ProductCard/>, <ProductCard/>, <ProductCard/>, <ProductCard/>, <ProductCard/>, <ProductCard/>]}/>
+                <Carousel categoryName="New crafts" listOfItems={[<AvatarIcon key="1"/>, <AvatarIcon key="2"/>, <AvatarIcon key="3"/>, <AvatarIcon key="4"/>, <AvatarIcon key="5"/>, <AvatarIcon key="6"/>, <AvatarIcon key="7"/>, <AvatarIcon key="8"/>]}/>
+                <Carousel categoryName="Other crafts" listOfItems={[<ProductCard key="1"/>, <ProductCard key="2"/>, <ProductCard key="3"/>, <ProductCard key="4"/>, <ProductCard key="5"/>, <ProductCard key="6"/>, <ProductCard key="7"/>]}/>
             </main>
             <Footer/>
         </div>
