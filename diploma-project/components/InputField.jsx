@@ -1,6 +1,6 @@
 import React from 'react';
 
-const InputField = ({ labelText, type, placeholder, value, onChange, error }) => {
+const InputField = ({ labelText, type, placeholder, value, onChange }) => {
     return (
         <div className="form-control">
             <label className="label">
@@ -10,7 +10,7 @@ const InputField = ({ labelText, type, placeholder, value, onChange, error }) =>
                 type={type}
                 placeholder={placeholder}
                 value={value}
-                className="input input-bordered"
+                className="input input-bordered w-full"
                 required
                 onChange={onChange}
             />

@@ -34,7 +34,7 @@ const SignUp = () => {
     };
 
     return (
-        <div>
+        <div className="overflow-x-hidden">
             <Head>
                 <meta charSet="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -42,10 +42,10 @@ const SignUp = () => {
                 {/*<link rel="icon" href="/favicon.ico" />*/}
             </Head>
             <div className="hero min-h-screen bg-base-200">
-                <div className="hero-content flex-col lg:flex-row-reverse">
+                <div className="hero-content flex-col-reverse lg:flex-row-reverse">
                     <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
                         <form className="card-body" onSubmit={onSubmit}>
-                            <h1 className="text-3xl font-bold">Create Free Account</h1>
+                            <h1 className="text-xl lg:text-3xl text-center font-bold">Create Free Account</h1>
                             <div className="form-control">
                                 <InputField
                                     labelText="Full name"
@@ -56,7 +56,6 @@ const SignUp = () => {
                                         setFullName(e.target.value);
                                         setError(null); // Reset the error state on input change
                                     }}
-                                    error={error}
                                 />
                             </div>
                             <div className="form-control">
@@ -69,7 +68,6 @@ const SignUp = () => {
                                         setEmail(e.target.value);
                                         setError(null); // Reset the error state on input change
                                     }}
-                                    error={error}
                                 />
                             </div>
                             <div className="form-control">
@@ -82,7 +80,6 @@ const SignUp = () => {
                                         setPasswordOne(e.target.value);
                                         setError(null); // Reset the error state on input change
                                     }}
-                                    error={error}
                                 />
                             </div>
                             <div className="form-control">
@@ -95,7 +92,6 @@ const SignUp = () => {
                                         setPasswordTwo(e.target.value);
                                         setError(null); // Reset the error state on input change
                                     }}
-                                    error={error}
                                 />
                             </div>
                             {error && <span className="error-text py-2 text-red-500">{error}</span>}
@@ -104,11 +100,11 @@ const SignUp = () => {
                             </div>
                         </form>
                     </div>
-                    <div className="text-center lg:text-left px-10">
-                        <h1 className="text-5xl font-bold">One of us?</h1>
-                        <p className="py-10">If you already have an account just sign in and discover a great amount of new crafts</p>
+                    <div className="flex-shrink-0 w-full max-w-sm text-center lg:text-left px-5 lg:px-10">
+                        <h1 className="text-3xl lg:text-5xl font-bold">One of us?</h1>
+                        <p className="py-5 lg:py-10">If you already have an account just sign in and discover a great amount of new crafts</p>
                         <div className="form-control">
-                            <Link className="btn btn-neutral normal-case text-xl" href="/signin">Sign In</Link>
+                            <Link className="btn btn-neutral normal-case text-lg lg:text-xl" href="/signin">Sign In</Link>
                         </div>
                     </div>
                 </div>
