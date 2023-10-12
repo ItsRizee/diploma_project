@@ -58,7 +58,6 @@ const SignIn = () => {
                                     setEmail(e.target.value);
                                     setError(null); // Reset the error state on input change
                                 }}
-                                error={error}
                             />
                             <InputField
                                 labelText="Password"
@@ -69,7 +68,6 @@ const SignIn = () => {
                                     setPassword(e.target.value);
                                     setError(null); // Reset the error state on input change
                                 }}
-                                error={error}
                             />
                             {error && <span className="error-text py-2 text-red-500">{error}</span>}
                             <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>

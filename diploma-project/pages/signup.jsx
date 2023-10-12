@@ -56,7 +56,6 @@ const SignUp = () => {
                                         setFullName(e.target.value);
                                         setError(null); // Reset the error state on input change
                                     }}
-                                    error={error}
                                 />
                             </div>
                             <div className="form-control">
@@ -69,7 +68,6 @@ const SignUp = () => {
                                         setEmail(e.target.value);
                                         setError(null); // Reset the error state on input change
                                     }}
-                                    error={error}
                                 />
                             </div>
                             <div className="form-control">
@@ -82,7 +80,6 @@ const SignUp = () => {
                                         setPasswordOne(e.target.value);
                                         setError(null); // Reset the error state on input change
                                     }}
-                                    error={error}
                                 />
                             </div>
                             <div className="form-control">
@@ -95,7 +92,6 @@ const SignUp = () => {
                                         setPasswordTwo(e.target.value);
                                         setError(null); // Reset the error state on input change
                                     }}
-                                    error={error}
                                 />
                             </div>
                             {error && <span className="error-text py-2 text-red-500">{error}</span>}

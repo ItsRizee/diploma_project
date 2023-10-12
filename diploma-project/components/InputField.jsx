@@ -1,6 +1,6 @@
 import React from 'react';
 
-const InputField = ({ labelText, type, placeholder, value, onChange, error }) => {
+const InputField = ({ labelText, type, placeholder, value, onChange }) => {
     return (
         <div className="form-control">
             <label className="label">
