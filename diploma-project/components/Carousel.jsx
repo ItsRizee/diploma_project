@@ -32,7 +32,7 @@ const Carousel = ({ categoryName, listOfItems }) => {
                 const touchEndX = e.touches[0].clientX;
                 const deltaX = touchEndX - touchStartX;
 
-                if (Math.abs(deltaX) > 100) { // Adjust this threshold as needed
+                if (Math.abs(deltaX) > 75) { // Adjust this threshold as needed
                     hideLottie();
                 }
             };
