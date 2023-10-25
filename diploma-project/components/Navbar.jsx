@@ -28,9 +28,9 @@ const Navbar = () => {
         <div className="navbar bg-none space-x-4">
             <div className="navbar-start">
                 <div className="dropdown">
-                    <label tabIndex={0} className="btn btn-ghost btn-circle">
+                    <div tabIndex={0} className="btn btn-ghost btn-circle">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
-                    </label>
+                    </div>
                     <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-xl bg-base-200 dark:bg-gray-800 rounded-box w-52">
                         <li><a className="text-base">New stage</a></li>
                         <li><a className="text-base">New work</a></li>
@@ -56,11 +56,11 @@ const Navbar = () => {
                     </div>
                 </button>
                 <div className="dropdown dropdown-end">
-                    <label tabIndex={0} className="btn btn-ghost btn-circle avatar w-8 sm:w-10">
+                    <div tabIndex={0} className="btn btn-ghost btn-circle avatar w-8 sm:w-10">
                         <figure className="relative rounded-full" style={{ width: "40px", height: "40px" }}>
                             <Image src="/profile_picture.png" alt="avatar icon" layout="fill" objectFit="contain"/>
                         </figure>
-                    </label>
+                    </div>
                     <div className="mt-3 z-[1] p-2 shadow-xl menu menu-sm dropdown-content bg-base-200 rounded-box w-52 dark:bg-gray-800">
                         <div className="divide-y w-full divide-gray-300 dark:divide-gray-700">
                             <div className="px-4 py-3 text-sm text-gray-900 dark:text-gray-300">

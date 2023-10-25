@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {ChevronLeft, ChevronRight} from "react-feather";
 
 const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, autoSlideInterval = 3000 }) => {
@@ -6,8 +6,8 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
     const containerRef = useRef(null);
     const cardWidthRef = useRef(0);
 
-    const prev = () => setCurr((curr) => (curr === 0 ? listOfItems.length - 1 : curr - 1));
-    const next = () => setCurr((curr) => (curr === listOfItems.length - 1 ? 0 : curr + 1));
+    const prev = useCallback(() => setCurr((curr) => (curr === 0 ? listOfItems.length - 1 : curr - 1)), [listOfItems.length]);
+    const next = useCallback(() => setCurr((curr) => (curr === listOfItems.length - 1 ? 0 : curr + 1)), [listOfItems.length]);
 
     const resetToFirst = () => setCurr(0);
 
@@ -15,7 +15,7 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
         if (!autoSlide) return;
         const slideInterval = setInterval(next, autoSlideInterval);
         return () => clearInterval(slideInterval);
-    }, []);
+    }, [autoSlide, autoSlideInterval, next]);
 
     useEffect(() => {
         const updateCardWidth = () => {
@@ -35,7 +35,7 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
         return () => {
             window.removeEventListener("resize", updateCardWidth);
         };
-    }, [listOfItems]);
+    }, []);
 
     const calculateTranslation = () => {
         const spacingInPixels = 8; // Assuming a constant spacing of 8 pixels

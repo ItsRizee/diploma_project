@@ -4,17 +4,11 @@ import CarouselWithArrows from "./CarouselWithArrows";
 
 export default function TrendingCarousel({categoryName, listOfItems}) {
 
-    // const isTouchDevice = () => {
-    //     return (('ontouchstart' in window) || (navigator.maxTouchPoints > 0));
-    // }
-
-    const isTouchDevice = () => {
-        return true;
-    }
+    const isTouchEnabled = window.matchMedia("(pointer: coarse)").matches;
 
     return (
         <div className="h-full w-full">
-            {isTouchDevice() ?
+            {isTouchEnabled ?
                 <Carousel categoryName={categoryName} listOfItems={listOfItems}/> :
                 <CarouselWithArrows categoryName={categoryName} listOfItems={listOfItems}/>
             }
