@@ -21,4 +21,4 @@ const MyApp = ({ Component, pageProps }) => {
   return <Component {...pageProps} user={user} />
 }
 
-export default MyApp
+export default MyApp;

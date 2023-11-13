@@ -1,13 +1,11 @@
-import React from "react";
 import Head from 'next/head';
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import ItemsScroll from "../components/ItemsScroll";
 import dynamic from 'next/dynamic';
+import { Navbar, Footer, ItemsScroll } from '../components'
 import { newProducts, trending, discoverProducts } from "../public/constants";
 
 const DynamicCarousel = dynamic(() => import('../components/TrendingCarousel'), {
     ssr: false, // This disables server-side rendering
+    // need server-side rendering to be disabled to find if screen is touch or not in TrendingCarousel.jsx
 });
 
 const Home = () => {
@@ -22,7 +20,7 @@ const Home = () => {
             <header>
                 <Navbar/>
             </header>
-            <main className="pb-20 pt-5 space-y-10 xl:mx-72">
+            <main className="pb-20 pt-5 space-y-10 lg:mx-36 xl:mx-72">
                 <ItemsScroll categoryName="New products" listOfItems={newProducts}/>
                 <DynamicCarousel categoryName="Trending" listOfItems={trending}/>
                 <ItemsScroll categoryName="Discover products" listOfItems={discoverProducts}/>

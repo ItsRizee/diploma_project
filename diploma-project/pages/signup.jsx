@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from "next/head";
 import Link from 'next/link'
 import registerWithEmailAndPassword from "../services/registerWithEmailAndPassword";
-import InputField from "../components/InputField";
+import { InputField } from "../components";
+import { addUser } from "../services/user";
 
 const SignUp = () => {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
+    const [address, setAddress] = useState("");
     const [passwordOne, setPasswordOne] = useState("");
     const [passwordTwo, setPasswordTwo] = useState("");
     const router = useRouter();
@@ -19,11 +21,16 @@ const SignUp = () => {
         setError(null)
 
         if(passwordOne === passwordTwo) {
-            const errorMessage = await registerWithEmailAndPassword(fullName, email, passwordOne);
-
+            let errorMessage = await registerWithEmailAndPassword(fullName, email, passwordOne);
             if (errorMessage === null) {
-                // Register was successful, navigate to the signIn page
-                await router.push("/signin");
+                errorMessage = await addUser(fullName, email, address);
+                if(errorMessage === null){
+                    // Register was successful, navigate to the signIn page
+                    await router.push("/signin");
+                } else {
+                    // Failed to add user, set the error message
+                    setError(errorMessage);
+                }
             } else {
                 // Register failed, set the error message
                 setError(errorMessage);
@@ -72,6 +79,18 @@ const SignUp = () => {
                             </div>
                             <div className="form-control">
                                 <InputField
+                                    labelText="Address"
+                                    type="text"
+                                    placeholder="country, city, postal code, street..."
+                                    value={address}
+                                    onChange={(e) => {
+                                        setAddress(e.target.value);
+                                        setError(null); // Reset the error state on input change
+                                    }}
+                                />
+                            </div>
+                            <div className="form-control">
+                                <InputField
                                     labelText="Password"
                                     type="password"
                                     placeholder="password123"
@@ -104,7 +123,9 @@ const SignUp = () => {
                         <h1 className="text-3xl lg:text-5xl font-bold">One of us?</h1>
                         <p className="py-5 lg:py-10">If you already have an account just sign in and discover a great amount of new crafts</p>
                         <div className="form-control">
-                            <Link className="btn btn-neutral normal-case text-lg lg:text-xl" href="/signin">Sign In</Link>
+                            <Link href="/signin" className="btn btn-neutral normal-case text-lg lg:text-xl">
+                                <a className="btn btn-neutral normal-case text-lg lg:text-xl">Sign In</a>
+                            </Link>
                         </div>
                     </div>
                 </div>

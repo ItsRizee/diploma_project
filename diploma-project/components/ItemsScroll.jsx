@@ -1,5 +1,3 @@
-import React from "react";
-
 const ItemsScroll = ({categoryName, listOfItems}) => {
     return (
         <div className="ml-5 space-y-5 w-auto">
