@@ -1,13 +1,18 @@
-import React from "react";
+import Image from "next/future/image";
 
-const AvatarIcon = () => {
+const AvatarIcon = ({ img, username }) => {
     return (
-        <div className="avatar">
-            <div className="w-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                <img src="/profile_picture.png" alt="profile picture" />
+        <div className="flex flex-col items-center space-y-2">
+            <div className="bg-gradient-to-tr from-secondary to-primary p-1 rounded-full">
+                <a className="block bg-base-100 p-1.5 rounded-full" href="#">
+                    <figure className="relative rounded-full w-20 h-20">
+                        <Image src={img} alt="avatar icon" fill="true"/>
+                    </figure>
+                </a>
             </div>
+            <a href="#">{username}</a>
         </div>
-    )
+    );
 }
 
 export default AvatarIcon;
