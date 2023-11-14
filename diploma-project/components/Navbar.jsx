@@ -77,11 +77,11 @@ const Navbar = () => {
                             <ul tabIndex={0} className="py-2">
                                 {auth.currentUser ? (
                                     <>
-                                        <li><Link href="/profile"><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">Profile</button></Link></li>
-                                        <li><Link href="#"><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start" onClick={handleLogout}>Logout</button></Link></li>
+                                        <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"><Link href="/profile">Profile</Link></button></li>
+                                        <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start" onClick={handleLogout}><Link href="#">Logout</Link></button></li>
                                     </>
                                 ) : (
-                                    <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base"><Link href="/signin">Login</Link></button></li>
+                                    <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"><Link href="/signin">Login</Link></button></li>
                                 )}
                             </ul>
                         </div>
