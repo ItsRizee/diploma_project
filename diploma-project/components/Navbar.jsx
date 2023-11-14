@@ -1,4 +1,4 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import {app_name} from "../constants";
 import {useRouter} from "next/router";
 import {auth} from "../firebase";
@@ -26,16 +26,16 @@ const Navbar = () => {
 
     return (
         <div className="navbar bg-none space-x-4">
-            <div className="navbar-start xl:block xl:items-center">
+            <div className="navbar-start">
                 <div className="dropdown lg:hidden">
                     <div tabIndex={0} className="btn btn-ghost btn-circle scale-75 p-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
                     </div>
                     <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-xl bg-base-200 dark:bg-gray-800 rounded-box w-36">
-                        <li><div className="text-base"><Link href="/">Home</Link></div></li>
-                        <li><div className="text-base"><Link href="#">New stage</Link></div></li>
-                        <li><div className="text-base"><Link href="#">New product</Link></div></li>
-                        <li><div className="text-base"><Link href="#">About us</Link></div></li>
+                        <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"><Link href="/">Home</Link></button></li>
+                        <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"><Link href="#">New stage</Link></button></li>
+                        <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"><Link href="#">New product</Link></button></li>
+                        <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"><Link href="#">About us</Link></button></li>
                     </ul>
                 </div>
                 <h1 className="hidden lg:flex font-bold text-xl sm:text-3xl lg:ml-5">{app_name}</h1>
@@ -43,10 +43,10 @@ const Navbar = () => {
             <div className="navbar-center items-start">
                 <h1 className="lg:hidden font-bold text-xl sm:text-3xl">{app_name}</h1>
                 <ul className="hidden lg:flex menu menu-horizontal px-1 space-x-5">
-                    <li><div className="text-base"><Link href="/">Home</Link></div></li>
-                    <li><div className="text-base"><Link href="#">New stage</Link></div></li>
-                    <li><div className="text-base"><Link href="#">New product</Link></div></li>
-                    <li><div className="text-base"><Link href="#">About us</Link></div></li>
+                    <li><button className="btn btn-ghost normal-case text-base"><Link href="/">Home</Link></button></li>
+                    <li><button className="btn btn-ghost normal-case text-base"><Link href="#">New stage</Link></button></li>
+                    <li><button className="btn btn-ghost normal-case text-base"><Link href="#">New product</Link></button></li>
+                    <li><button className="btn btn-ghost normal-case text-base"><Link href="#">About us</Link></button></li>
                 </ul>
             </div>
             <div className="navbar-end flex">
@@ -77,11 +77,11 @@ const Navbar = () => {
                             <ul tabIndex={0} className="py-2">
                                 {auth.currentUser ? (
                                     <>
-                                        <li><div className="text-base"><Link href="/profile">Profile</Link></div></li>
-                                        <li><div className="text-base" onClick={handleLogout}><Link href="#">Logout</Link></div></li>
+                                        <li><Link href="/profile"><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">Profile</button></Link></li>
+                                        <li><Link href="#"><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start" onClick={handleLogout}>Logout</button></Link></li>
                                     </>
                                 ) : (
-                                    <li><div className="text-base"><Link href="/signin">Login</Link></div></li>
+                                    <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base"><Link href="/signin">Login</Link></button></li>
                                 )}
                             </ul>
                         </div>
