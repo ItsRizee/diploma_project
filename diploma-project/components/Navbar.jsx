@@ -52,13 +52,13 @@ const Navbar = () => {
                     <Image src="/wavary-favicon-color.png" alt="hammer icon" width={35} height={35}/>
                 </figure>
                 <ul className="hidden lg:flex menu menu-horizontal px-1 space-x-5">
-                    <li><Link href="/"><button className="btn btn-ghost normal-case text-base">Home</button></Link></li>
-                    <li><Link href="#"><button className="btn btn-ghost normal-case text-base">New stage</button></Link></li>
-                    <li><Link href="#"><button className="btn btn-ghost normal-case text-base">New product</button></Link></li>
-                    <li><Link href="#"><button className="btn btn-ghost normal-case text-base">About us</button></Link></li>
+                    <li><Link href="/"><button className="btn btn-ghost normal-case text-lg">Home</button></Link></li>
+                    <li><Link href="#"><button className="btn btn-ghost normal-case text-lg">New stage</button></Link></li>
+                    <li><Link href="#"><button className="btn btn-ghost normal-case text-lg">New product</button></Link></li>
+                    <li><Link href="#"><button className="btn btn-ghost normal-case text-lg">About us</button></Link></li>
                 </ul>
             </div>
-            <div className="navbar-end flex">
+            <div className="navbar-end flex -space-x-1">
                 <div className="hidden xl:block form-control xl:mr-3">
                     <input type="text" placeholder="Search" className="input input-bordered w-full" />
                 </div>
