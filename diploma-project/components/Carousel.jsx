@@ -60,7 +60,7 @@ const Carousel = ({ categoryName, listOfItems }) => {
         <div className="ml-5 mr-5 space-y-5 w-auto relative">
             <h2 className="font-bold text-xl sm:text-2xl my-5">{categoryName}</h2>
             <div className="w-full h-full" ref={carouselRef}>
-                <div className="w-full carousel space-x-2 z-0 rounded-box">
+                <div className="w-full carousel space-x-2 z-0 shadow-2xl rounded-box">
                     {listOfItems.map((item, index) => (
                         <div key={index} className="carousel-item w-full relative">
                             {item}
@@ -72,7 +72,7 @@ const Carousel = ({ categoryName, listOfItems }) => {
                     <div className="absolute -top-12 bottom-0 left-0 right-0 flex flex-col justify-center items-center z-10 pointer-events-none">
                         <div className="absolute top-12 sm:top-1 sm:bottom-1.5 inset-0 bg-black opacity-70 rounded-box mt-12 sm:mt-24 z-0"></div>
                         <Lottie animationData={horizontalScrollHint} />
-                        <p className="mt-12 absolute top-1/2 transform -translate-y-1/2 font-bold text-2xl text-gray-600 dark:text-gray-100">Swipe left</p>
+                        <p className="mt-12 absolute top-1/2 transform -translate-y-1/2 font-bold text-2xl text-gray-100">Swipe left</p>
                     </div>
                 )}
             </div>

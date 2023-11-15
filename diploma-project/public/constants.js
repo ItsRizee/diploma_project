@@ -2,6 +2,8 @@ import AvatarIcon from "../components/AvatarIcon";
 import TrendingCard from "../components/TrendingCard";
 import ProductCard from "../components/ProductCard";
 
+export const app_name = "Wavary";
+
 export const newProducts = [<AvatarIcon key="1" img="/profile_picture.png" username="Ivan"/>,
     <AvatarIcon key="2" img="/profile_picture.png" username="Tihomir"/>, <AvatarIcon key="3" img="/profile_picture.png" username="Martin"/>,
     <AvatarIcon key="4" img="/profile_picture.png" username="Galena"/>, <AvatarIcon key="5" img="/profile_picture.png" username="Raya"/>,

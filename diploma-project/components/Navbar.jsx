@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {app_name} from "../constants";
+import {app_name} from "../public/constants";
 import {useRouter} from "next/router";
 import {auth} from "../firebase";
 import Link from "next/link";
@@ -32,21 +32,30 @@ const Navbar = () => {
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
                     </div>
                     <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-xl bg-base-200 dark:bg-gray-800 rounded-box w-36">
-                        <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"><Link href="/">Home</Link></button></li>
-                        <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"><Link href="#">New stage</Link></button></li>
-                        <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"><Link href="#">New product</Link></button></li>
-                        <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"><Link href="#">About us</Link></button></li>
+                        <li><Link href="/"><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">Home</button></Link></li>
+                        <li><Link href="#"><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">New stage</button></Link></li>
+                        <li><Link href="#"><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">New product</button></Link></li>
+                        <li><Link href="#"><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">About us</button></Link></li>
                     </ul>
                 </div>
                 <h1 className="hidden lg:flex font-bold text-xl sm:text-3xl lg:ml-5">{app_name}</h1>
+                <figure className="hidden lg:flex">
+                    <Image src="/wavary-favicon-color.png" alt="hammer icon" width={35} height={35}/>
+                </figure>
             </div>
             <div className="navbar-center items-start">
                 <h1 className="lg:hidden font-bold text-xl sm:text-3xl">{app_name}</h1>
+                <figure className="sm:hidden">
+                    <Image src="/wavary-favicon-color.png" alt="hammer icon" width={25} height={25}/>
+                </figure>
+                <figure className="hidden sm:flex lg:hidden">
+                    <Image src="/wavary-favicon-color.png" alt="hammer icon" width={35} height={35}/>
+                </figure>
                 <ul className="hidden lg:flex menu menu-horizontal px-1 space-x-5">
-                    <li><button className="btn btn-ghost normal-case text-base"><Link href="/">Home</Link></button></li>
-                    <li><button className="btn btn-ghost normal-case text-base"><Link href="#">New stage</Link></button></li>
-                    <li><button className="btn btn-ghost normal-case text-base"><Link href="#">New product</Link></button></li>
-                    <li><button className="btn btn-ghost normal-case text-base"><Link href="#">About us</Link></button></li>
+                    <li><Link href="/"><button className="btn btn-ghost normal-case text-base">Home</button></Link></li>
+                    <li><Link href="#"><button className="btn btn-ghost normal-case text-base">New stage</button></Link></li>
+                    <li><Link href="#"><button className="btn btn-ghost normal-case text-base">New product</button></Link></li>
+                    <li><Link href="#"><button className="btn btn-ghost normal-case text-base">About us</button></Link></li>
                 </ul>
             </div>
             <div className="navbar-end flex">
@@ -77,11 +86,11 @@ const Navbar = () => {
                             <ul tabIndex={0} className="py-2">
                                 {auth.currentUser ? (
                                     <>
-                                        <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"><Link href="/profile">Profile</Link></button></li>
-                                        <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start" onClick={handleLogout}><Link href="#">Logout</Link></button></li>
+                                        <li><Link href="/profile"><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">Profile</button></Link></li>
+                                        <li><Link href="#"><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start" onClick={handleLogout}>Logout</button></Link></li>
                                     </>
                                 ) : (
-                                    <li><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"><Link href="/signin">Login</Link></button></li>
+                                    <li><Link href="/signin"><button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">Login</button></Link></li>
                                 )}
                             </ul>
                         </div>

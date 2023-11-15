@@ -45,7 +45,7 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
     return (
         <div className="ml-5 mr-5 space-y-5 w-auto">
             <h2 className="font-bold text-xl sm:text-2xl my-5">{categoryName}</h2>
-            <div className="overflow-hidden relative" ref={containerRef}>
+            <div className="overflow-hidden relative shadow-2xl rounded-box" ref={containerRef}>
                 <div
                     className="flex w-full h-full transition-transform ease-out duration-500 space-x-2"
                     style={{ transform: `translateX(-${calculateTranslation()}px)` }}
@@ -60,17 +60,17 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
                     ))}
                 </div>
                 <div className="absolute inset-0 flex items-center justify-between p-4">
-                    <button onClick={prev} className="p-1 rounded-full shadow bg-white/80 text-gray-800 hover-bg-white">
+                    <button onClick={prev} className="p-1 rounded-full shadow-xl bg-white/80 text-gray-800 hover-bg-white">
                         <ChevronLeft size={40} />
                     </button>
-                    <button onClick={next} className="p-1 rounded-full shadow bg-white/80 text-gray-800 hover-bg-white">
+                    <button onClick={next} className="p-1 rounded-full shadow-xl bg-white/80 text-gray-800 hover-bg-white">
                         <ChevronRight size={40} />
                     </button>
                 </div>
                 <div className="absolute bottom-4 right-0 left-0">
                     <div className="flex items-center justify-center gap-2">
                         {listOfItems.map((_, i) => (
-                            <div key={i} className={`transition-all w-3 h-3 bg-white rounded-full ${curr === i ? "p-2" : "bg-opacity-50"}`} />
+                            <div key={i} className={`transition-all w-3 h-3 bg-slate-500 dark:bg-white rounded-full ${curr === i ? "p-2" : "bg-opacity-50"}`} />
                         ))}
                     </div>
                 </div>
