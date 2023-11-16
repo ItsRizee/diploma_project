@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 import loginWithEmailAndPassword from '../services/logInWithEmailAndPassword';
-import InputField from "../components/InputField";
+import { InputField } from "../components";
 
 const SignIn = () => {
     const [email, setEmail] = useState('');
@@ -41,7 +41,7 @@ const SignIn = () => {
                         <p className="py-5 lg:py-10">Sign up and discover a great amount of new crafts and opportunities</p>
                         <div className="form-control">
                             <Link className="btn btn-neutral normal-case text-lg lg:text-xl" href="/signup">
-                                Sign Up
+                                <a className="btn btn-neutral normal-case text-lg lg:text-xl"> Sign Up </a>
                             </Link>
                         </div>
                     </div>
