@@ -1,13 +1,18 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 
-const loginWithEmailAndPassword = async (email, password) => {
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-        return null; // Sign-in succeeded, no error message
-    } catch (error) {
-        return error.message; // Sign-in failed, return the error message
-    }
+const loginWithEmailAndPassword = (email, password) => {
+    return new Promise((resolve, reject) => {
+        signInWithEmailAndPassword(auth, email, password)
+            .then(() => {
+                // Sign-in succeeded, no error message
+                resolve();
+            })
+            .catch((error) => {
+                // Sign-in failed, reject the error message
+                reject(error);
+            });
+    });
 };
 
 export default loginWithEmailAndPassword;

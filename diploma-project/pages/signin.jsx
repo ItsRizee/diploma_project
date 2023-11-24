@@ -11,20 +11,20 @@ const SignIn = () => {
     const router = useRouter();
     const [error, setError] = useState(null);
 
-    const onSubmit = async (event) => {
+    const onSubmit = (event) => {
         event.preventDefault();
 
         setError(null);
 
-        const errorMessage = await loginWithEmailAndPassword(email, password);
-
-        if (errorMessage === null) {
-            // Login was successful, navigate to the index page
-            await router.push('/');
-        } else {
-            // Login failed, set the error message
-            setError(errorMessage);
-        }
+        loginWithEmailAndPassword(email, password)
+            .then(() => {
+                // Login is successful
+                void router.push('/');
+            })
+            .catch((error) => {
+                // Login failed, set the error message
+                setError(error.message);
+            });
     };
 
     return (
