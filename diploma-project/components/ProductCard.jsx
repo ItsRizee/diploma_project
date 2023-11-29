@@ -2,7 +2,7 @@ import Image from "next/future/image";
 
 const ProductCard = ({title, description}) => {
     return (
-        <div className="card card-bordered border-b-gray-400 w-52 sm:w-64 bg-base-100 shadow-lg">
+        <div className="card card-bordered border-b-gray-400 w-52 sm:w-64 bg-base-100 shadow-md">
             <figure className="relative w-48 sm:w-60 h-48 sm:h-60">
                 <Image src="/ring.jpg" alt="Silver ring" fill="true"/>
             </figure>

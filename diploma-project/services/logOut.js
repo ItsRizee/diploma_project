@@ -1,13 +1,18 @@
 import {signOut} from "firebase/auth";
 import { auth } from "../firebase";
 
-const logOut = async () => {
-    try {
-        await signOut(auth);
-        return null; // Sign-in succeeded, no error message
-    } catch (error) {
-        return error.message; // Sign-in failed, return the error message
-    }
+const logOut = () => {
+    return new Promise((resolve, reject) => {
+        signOut(auth)
+            .then(() => {
+                // Sign-out succeeded, no error message
+                resolve();
+            })
+            .catch((error) => {
+                // Sign-out failed, reject the error message
+                reject(error);
+            });
+    });
 };
 
 export default logOut;

@@ -5,36 +5,37 @@ import Link from 'next/link'
 import registerWithEmailAndPassword from "../services/registerWithEmailAndPassword";
 import { InputField } from "../components";
 import { addUser } from "../services/user";
+import {auth} from "../firebase";
 
 const SignUp = () => {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
-    const [address, setAddress] = useState("");
     const [passwordOne, setPasswordOne] = useState("");
     const [passwordTwo, setPasswordTwo] = useState("");
     const router = useRouter();
     const [error, setError] = useState(null);
 
-    const onSubmit = async (event) => {
+    const onSubmit = (event) => {
         event.preventDefault();
 
         setError(null)
 
         if(passwordOne === passwordTwo) {
-            let errorMessage = await registerWithEmailAndPassword(fullName, email, passwordOne);
-            if (errorMessage === null) {
-                errorMessage = await addUser(fullName, email, address);
-                if(errorMessage === null){
-                    // Register was successful, navigate to the signIn page
-                    await router.push("/signin");
-                } else {
-                    // Failed to add user, set the error message
-                    setError(errorMessage);
-                }
-            } else {
-                // Register failed, set the error message
-                setError(errorMessage);
-            }
+            registerWithEmailAndPassword(fullName, email, passwordOne)
+                .then(() => {
+                    addUser(fullName, email, auth.currentUser.uid)
+                        .then(() => {
+                            void router.push("/signin");
+                        })
+                        .catch((error) => {
+                            // Failed to add user, set the error message
+                            setError(error.message);
+                        });
+                })
+                .catch((error) => {
+                    // Register failed, set the error message
+                    setError(error.message);
+                });
         } else {
             setError("Passwords do not match")
         }
@@ -77,18 +78,6 @@ const SignUp = () => {
                                     value={email}
                                     onChange={(e) => {
                                         setEmail(e.target.value);
-                                        setError(null); // Reset the error state on input change
-                                    }}
-                                />
-                            </div>
-                            <div className="form-control">
-                                <InputField
-                                    labelText="Address"
-                                    type="text"
-                                    placeholder="country, city, postal code, street..."
-                                    value={address}
-                                    onChange={(e) => {
-                                        setAddress(e.target.value);
                                         setError(null); // Reset the error state on input change
                                     }}
                                 />

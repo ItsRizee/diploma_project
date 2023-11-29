@@ -1,5 +1,4 @@
-import Carousel from "./Carousel";
-import CarouselWithArrows from "./CarouselWithArrows";
+import { Carousel, CarouselWithArrows} from "../components"
 
 export default function TrendingCarousel({categoryName, listOfItems}) {
 

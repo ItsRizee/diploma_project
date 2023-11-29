@@ -21,9 +21,7 @@ const Home = () => {
                 <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png"/>
                 <link rel="manifest" href="/images/site.webmanifest"/>
             </Head>
-            <header>
-                <Navbar/>
-            </header>
+            <Navbar/>
             <main className="flex flex-col flex-1 pb-20 pt-5 space-y-10 lg:mx-36 xl:mx-72">
                 <ItemsScroll categoryName="New products" listOfItems={newProducts}/>
                 <DynamicCarousel categoryName="Trending" listOfItems={trending}/>

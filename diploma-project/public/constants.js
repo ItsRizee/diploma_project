@@ -4,6 +4,8 @@ import ProductCard from "../components/ProductCard";
 
 export const app_name = "Wavary";
 
+export const default_profile_picture = "https://firebasestorage.googleapis.com/v0/b/diploma-project-1ff8d.appspot.com/o/profile_pictures%2Fprofile_picture.png?alt=media&token=1a1c3b5a-4f62-4c16-a1af-93ddb49f4f3c";
+
 export const newProducts = [<AvatarIcon key="1" img="/profile_picture.png" username="Ivan"/>,
     <AvatarIcon key="2" img="/profile_picture.png" username="Tihomir"/>, <AvatarIcon key="3" img="/profile_picture.png" username="Martin"/>,
     <AvatarIcon key="4" img="/profile_picture.png" username="Galena"/>, <AvatarIcon key="5" img="/profile_picture.png" username="Raya"/>,
