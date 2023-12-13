@@ -69,7 +69,7 @@ const Carousel = ({ categoryName, listOfItems }) => {
                 </div>
 
                 {showLottie && (
-                    <div className="absolute -top-12 bottom-0 left-0 right-0 flex flex-col justify-center items-center z-10 pointer-events-none">
+                    <div className="absolute -top-12 bottom-0 left-0 right-0 flex flex-col justify-center items-center z-1 pointer-events-none">
                         <div className="absolute top-12 sm:top-1 sm:bottom-1.5 inset-0 bg-black opacity-70 rounded-box mt-12 sm:mt-24 z-0"></div>
                         <Lottie animationData={horizontalScrollHint} />
                         <p className="mt-12 absolute top-1/2 transform -translate-y-1/2 font-bold text-2xl text-gray-100">Swipe left</p>
