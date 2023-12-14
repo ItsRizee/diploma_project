@@ -7,16 +7,23 @@ import { useUserStore } from '../store/userStorage';
 import {getUser, User} from '../services/user';
 
 const MyApp = ({ Component, pageProps }) => {
-  const { user: user, setUser: setUser } = useUserStore((state) => ({setUser: state.setUser}));
+  const { setUser: setUser } = useUserStore((state) => ({setUser: state.setUser}));
 
   useEffect(() => {
-    console.log("zustand user");
-    console.log(user);
+    let unsubscribeSnapshot = null
     const unsubscribeAuth = getAuth(auth).onAuthStateChanged((currentUser) => {
       if (currentUser) {
+        // Store the user data in the global state
+        getUser(currentUser.email).then((userData) => {
+          setUser(userData);
+          currentUser.getIdToken().then((token) => {
+            sessionStorage.setItem('accessToken', token);
+          });
+        });
+
         // Fetch user data from Firestore using onSnapshot
         const q = query(collection(firestore, 'users'), where('uid', '==', currentUser.uid));
-        const unsubscribeSnapshot = onSnapshot(q, (querySnapshot) => {
+        unsubscribeSnapshot = onSnapshot(q, (querySnapshot) => {
           let userData = null;
 
           querySnapshot.forEach((doc) => {
@@ -35,23 +42,13 @@ const MyApp = ({ Component, pageProps }) => {
           });
 
           setUser(userData);
-        }, (error) => console.log(error));
-
-        // Store the user data in the global state
-        getUser(currentUser.email).then((userData) => {
-          setUser(userData);
-          currentUser.getIdToken().then((token) => {
-            sessionStorage.setItem('accessToken', token);
-          });
         });
-
-        // Return a cleanup function to unsubscribe from the onSnapshot listener
-        return () => {
-          unsubscribeSnapshot();
-        };
       } else {
         setUser(new User());
         sessionStorage.setItem('accessToken', '');
+        if (unsubscribeSnapshot) {
+          unsubscribeSnapshot();
+        }
       }
     });
 

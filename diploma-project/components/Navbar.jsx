@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {app_name, default_profile_picture} from "../public/constants";
 import {useRouter} from "next/router";
-import {auth, firestore} from "../firebase";
+import {auth} from "../firebase";
 import Link from "next/link";
 import logOut from "../services/logOut";
 import Image from "next/future/image";
@@ -32,10 +32,7 @@ const Navbar = () => {
     useEffect(() => {
         let accessToken = sessionStorage.getItem("accessToken");
         if(accessToken !== ''){
-            console.log("User state has changed:", user);
             setIsLogged(true);
-        } else {
-            console.log("User is not logged!");
         }
     }, [user]);
 
