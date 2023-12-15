@@ -1,13 +1,13 @@
 const Collapse = ({ id, categoryName, content }) => {
     return (
-        <div tabIndex={id} className="collapse collapse-arrow border border-base-300 bg-base-200 dark:bg-gray-800">
-            <div className="collapse-title text-xl font-medium">
+        <details tabIndex={id} className="collapse collapse-arrow border border-base-300 bg-base-200 dark:bg-gray-800 transition-all duration-500">
+            <summary className="collapse-title text-xl font-medium cursor-pointer">
                 { categoryName }
-            </div>
+            </summary>
             <div className="collapse-content overflow-x-auto overflow-y-hidden -ml-5">
                 { content }
             </div>
-        </div>
+        </details>
     );
 }
 

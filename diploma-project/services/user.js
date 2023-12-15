@@ -4,22 +4,26 @@ import {deleteObject, getDownloadURL, listAll, ref, uploadBytesResumable} from "
 import {updateProfile} from "firebase/auth";
 
 export class User {
-    #name = "";
-    #email = "";
-    #photoURL = null;
-    #uid = null;
-    #interests = [];
-    #requests = [];
-    #orders = [];
+    #name;
+    #email;
+    #photoURL;
+    #uid;
+    #interests;
+    #requests;
+    #craft;
+    #orders;
+    #catalog;
 
-    constructor(name, email, photoURL, uid, interests, requests, orders) {
+    constructor(name = "", email = "", photoURL = null, uid = null, interests = [], requests = [], craft = null, orders = null, catalog = null) {
         this.#name = name;
         this.#email = email;
         this.#photoURL = photoURL;
         this.#uid = uid;
         this.#interests = interests;
         this.#requests = requests;
+        this.#craft = craft;
         this.#orders = orders;
+        this.#catalog = catalog;
     }
 
     get name(){
@@ -70,12 +74,28 @@ export class User {
         this.#requests = newRequests;
     }
 
+    get craft(){
+        return this.#craft;
+    }
+
+    set craft(newCraft){
+        this.#craft = newCraft;
+    }
+
     get orders(){
         return this.#orders;
     }
 
     set orders(newOrders){
         this.#orders = newOrders;
+    }
+
+    get catalog(){
+        return this.#catalog;
+    }
+
+    set catalog(newCatalog){
+        this.#catalog = newCatalog;
     }
 }
 
@@ -90,7 +110,9 @@ export const addUser = (name, email, uid) => {
                 uid: uid,
                 interests: [],
                 requests: [],
-                orders: [],
+                craft: null,
+                orders: null,
+                catalog: null,
         }).then(() => {
             resolve(null);
         }).catch((error) => {
@@ -115,7 +137,9 @@ export const getUser = (email) => {
                 user.uid = data.uid;
                 user.interests = data.interests;
                 user.requests = data.requests;
+                user.craft = data.craft;
                 user.orders = data.orders;
+                user.catalog = data.catalog;
             });
 
             resolve(user);
@@ -176,7 +200,6 @@ export const UpdateProfilePicture = (photo) => {
             .then((res) => {
                 const deletePromises = res.items.map((itemRef) => {
                     const deleteRef = ref(storage, itemRef.fullPath);
-                    console.log(itemRef.fullPath);
                     // Delete the file
                     return deleteObject(deleteRef);
                 });
@@ -185,7 +208,7 @@ export const UpdateProfilePicture = (photo) => {
                 return Promise.all(deletePromises);
             })
             .then(() => {
-                // Create a Storage Ref w/ username
+                // Create a Storage Ref
                 const storageRef = ref(storage, 'profile_pictures/' + auth.currentUser.uid + '/' + photo.name);
 
                 // Upload the file and metadata
@@ -238,3 +261,35 @@ export const UpdateProfilePicture = (photo) => {
             });
     });
 };
+
+
+export const UpdateProfileToCraftsman = (craft) => {
+    return new Promise((resolve, reject) => {
+        getUserDoc(auth.currentUser.uid).then((docRef) => {
+            // Use updateDoc to update the document
+            updateDoc(docRef, { craft: craft, orders: [], catalog: [] })
+                .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    });
+}
+
+export const addProductToCatalog = (productId, catalog) => {
+    return new Promise((resolve, reject) => {
+        catalog.push(productId);
+        getUserDoc(auth.currentUser.uid).then((docRef) => {
+            // Use updateDoc to update the document
+            updateDoc(docRef, { catalog: catalog })
+                .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    });
+}
