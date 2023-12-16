@@ -1,7 +1,7 @@
-import {addDoc, collection} from "firebase/firestore";
+import {addDoc, collection, doc, getDoc} from "firebase/firestore";
 import {getDownloadURL, ref, uploadBytesResumable} from "firebase/storage"
 import {auth, firestore, storage} from "../firebase";
-import {addProductToCatalog} from "./user";
+import {addProductToCatalog, getUserByEmail} from "./user";
 
 export class Product {
     #title;
@@ -80,5 +80,52 @@ export const addProduct = (title, description, image, catalog) => {
                     });
             }
         );
+    });
+}
+
+// return product's data
+export const getProduct = (id) => {
+    return new Promise((resolve) => {
+        const docRef = doc(firestore, "products", id);
+        getDoc(docRef).then((documentSnapshot) => {
+            if(documentSnapshot.exists()){
+                resolve(documentSnapshot.data());
+            } else {
+                resolve(null);
+            }
+        });
+
+    });
+}
+
+// returns list of products
+export const getCatalog = (email) => {
+    return new Promise((resolve) => {
+        getUserByEmail(email).then((user) => {
+            let promises = [];
+            let products = [];
+            let i = 0;
+
+            user.catalog.forEach((productId) => {
+                const promise = getProduct(productId)
+                    .then((product) => {
+                        if (product != null) {
+                            const item = {
+                                title: product.title,
+                                description: product.description,
+                                displayImageURL: product.displayImageURL,
+                                index: i++,
+                            }
+                            products.push(item);
+                        }
+                    });
+                promises.push(promise);
+            });
+
+            // wait for all promises to finish up before resolving the main promise
+            Promise.all(promises).then(() => {
+                resolve(products);
+            });
+        });
     });
 }

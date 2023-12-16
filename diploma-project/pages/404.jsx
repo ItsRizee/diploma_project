@@ -10,7 +10,7 @@ const Custom404 = () => {
             <Head>
                 <meta charSet="UTF-8" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-                <title>Home page</title>
+                <title>Page Not Found</title>
                 {/*<link rel="icon" href="/images/favicon.ico"/>*/}
                 <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png"/>
                 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png"/>

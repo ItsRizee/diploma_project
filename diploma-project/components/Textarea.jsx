@@ -1,4 +1,4 @@
-const Textarea = ({ labelText, type, placeholder, value, onChange }) => {
+const Textarea = ({ labelText, placeholder, value, onChange }) => {
     return (
         <div className="form-control">
             <label className="label">

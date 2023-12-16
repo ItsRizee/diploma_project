@@ -10,7 +10,7 @@ import { useUserStore } from "../store/userStorage";
 const Navbar = () => {
     const [isLogged, setIsLogged] = useState(false);
     const [error, setError] = useState(null);
-    const { user: user } = useUserStore((state) => ({user: state.user}));
+    const { user } = useUserStore((state) => ({user: state.user}));
     const router = useRouter();
 
     const handleLogout = (event) => {
@@ -36,12 +36,6 @@ const Navbar = () => {
         }
     }, [user]);
 
-    // useEffect(() => {
-    //     // Logic to handle changes in the user state
-    //     // This will be triggered whenever user changes
-    //     console.log("User state has changed:", user);
-    // }, [user]);
-
     return (
         <header className="navbar bg-none space-x-4 sm:px-5">
             <div className="navbar-start">
@@ -51,27 +45,36 @@ const Navbar = () => {
                     </div>
                     <ul tabIndex={0}
                         className="menu menu-sm dropdown-content mt-3 z-[3] p-2 shadow-xl bg-base-200 dark:bg-gray-800 rounded-box w-36">
-                        <li><Link href="/">
-                            <button
-                                className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">Home
-                            </button>
-                        </Link></li>
-                        {isLogged && user.craft && <li>
-                            <label htmlFor="my-drawer-4" className="drawer-button btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
-                                New Product
-                            </label>
-                        </li>}
-                        {isLogged && <li><Link href="#">
-                            <button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
-                                New Request
-                            </button>
-                        </Link></li>}
-                        <li><Link href="#">
-                            <button
-                                className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
-                                About Us
-                            </button>
-                        </Link></li>
+                        <li>
+                            <Link href="/">
+                                <button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
+                                    Home
+                                </button>
+                            </Link>
+                        </li>
+                        {isLogged && user.craft &&
+                            <li>
+                                <label htmlFor="my-drawer-4" className="drawer-button btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
+                                    New Product
+                                </label>
+                            </li>
+                        }
+                        {isLogged &&
+                            <li>
+                                <Link href="#">
+                                    <button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
+                                        New Request
+                                    </button>
+                                </Link>
+                            </li>
+                        }
+                        <li>
+                            <Link href="/about">
+                                <button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
+                                    About Us
+                                </button>
+                            </Link>
+                        </li>
                     </ul>
                 </div>
                 <h1 className="hidden lg:flex font-bold text-xl sm:text-3xl lg:ml-5">{app_name}</h1>
@@ -88,25 +91,34 @@ const Navbar = () => {
                     <Image src="/wavary-favicon-color.png" alt="hammer icon" width={35} height={35}/>
                 </figure>
                 <ul className="hidden lg:flex menu menu-horizontal px-1 space-x-5">
-                    <li><Link href="/">
-                        <button className="btn btn-ghost normal-case text-lg">Home</button>
-                    </Link></li>
-                    {isLogged && user.craft && <li>
-                        <label htmlFor="my-drawer-4"
-                               className="drawer-button btn btn-ghost normal-case text-lg">
-                            New Product
-                        </label>
-                    </li>}
-                    {isLogged && <li><Link href="#">
-                        <button className="btn btn-ghost normal-case text-lg">
-                            New Request
-                        </button>
-                    </Link></li>}
-                    <li><Link href="#">
-                        <button className="btn btn-ghost normal-case text-lg">
-                            About Us
-                        </button>
-                    </Link></li>
+                    <li>
+                        <Link href="/">
+                            <button className="btn btn-ghost normal-case text-lg">Home</button>
+                        </Link>
+                    </li>
+                    {isLogged && user.craft &&
+                        <li>
+                            <label htmlFor="my-drawer-4" className="drawer-button btn btn-ghost normal-case text-lg">
+                                New Product
+                            </label>
+                        </li>
+                    }
+                    {isLogged &&
+                        <li>
+                            <Link href="#">
+                                <button className="btn btn-ghost normal-case text-lg">
+                                    New Request
+                                </button>
+                            </Link>
+                        </li>
+                    }
+                    <li>
+                        <Link href="/about">
+                            <button className="btn btn-ghost normal-case text-lg">
+                                About Us
+                            </button>
+                        </Link>
+                    </li>
                 </ul>
             </div>
             <div className="navbar-end flex -space-x-1 sm:space-x-3">
@@ -137,32 +149,36 @@ const Navbar = () => {
                             <ul tabIndex={0} className="py-2">
                                 {auth.currentUser ? (
                                     <>
-                                        <li><Link href="/profile">
-                                            <button
-                                                className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
-                                                Profile
-                                            </button>
-                                        </Link></li>
-                                        {user.craft && <li><Link href="/catalog">
-                                            <button
-                                                className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
-                                                Catalog
-                                            </button>
-                                        </Link></li>}
                                         <li>
-                                            <button
-                                                className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start"
-                                                onClick={handleLogout}>Logout
+                                            <Link href="/profile">
+                                                <button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
+                                                    Profile
+                                                </button>
+                                            </Link>
+                                        </li>
+                                        {user.craft &&
+                                            <li>
+                                                <Link href={`/catalog/${user.uid}`}>
+                                                    <button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
+                                                        Catalog
+                                                    </button>
+                                                </Link>
+                                            </li>}
+                                        <li>
+                                            <button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start" onClick={handleLogout}>
+                                                Logout
                                             </button>
                                         </li>
                                         {error && <span className="error-text py-2 text-red-500">{error}</span>}
                                     </>
                                 ) : (
-                                    <li><Link href="/signin">
-                                        <button
-                                            className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">Login
-                                        </button>
-                                    </Link></li>
+                                    <li>
+                                        <Link href="/signin">
+                                            <button
+                                                className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">Login
+                                            </button>
+                                        </Link>
+                                    </li>
                                 )}
                             </ul>
                         </div>

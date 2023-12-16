@@ -4,15 +4,14 @@ import {addProduct} from "../services/product";
 import { useUserStore } from "../store/userStorage";
 
 const NewProduct = () => {
-    const { user: user } = useUserStore((state) => ({user: state.user}));
+    const { user } = useUserStore((state) => ({user: state.user}));
     const [productTitle, setProductTitle] = useState("");
     const [productImage, setProductImage] = useState(null);
     const [productDescription, setProductDescription] = useState("");
     const [error, setError] = useState(null);
 
-    const onImageChange = () => {
-        const fileInput = document.getElementById('file-input');
-        setProductImage(fileInput.files[0]);
+    const onImageChange = (event) => {
+        setProductImage(event.target.files[0]);
     }
 
     const onSubmit = (event) => {

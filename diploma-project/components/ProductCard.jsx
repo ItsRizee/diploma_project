@@ -1,31 +1,35 @@
 import Image from "next/future/image";
+import {default_profile_picture} from "../public/constants";
 
-const ProductCard = ({title, description}) => {
+const ProductCard = ({title, description, tags, isNew, profile_picture = default_profile_picture, inCatalog = false}) => {
     return (
-        <div className="card card-bordered border-b-gray-400 w-52 sm:w-64 bg-base-100 shadow-md">
-            <figure className="relative w-48 sm:w-60 h-48 sm:h-60">
-                <Image src="/ring.jpg" alt="Silver ring" fill="true"/>
+        <div className="card card-bordered border-b-gray-400 w-60 h-full bg-base-100 shadow-md">
+            <figure className="relative">
+                <Image src="/ring.jpg" alt="Silver ring" width={240} height={240}/>
             </figure>
             <div className="card-body">
                 <h3 className="card-title">
                     {title}
-                    <div className="badge badge-secondary">NEW</div>
+                    {isNew && <div className="badge badge-secondary">NEW</div>}
                 </h3>
                 <p>{description}</p>
                 <div className="card-actions justify-start">
-                    <div className="badge badge-outline">Silver craft</div>
-                    <div className="badge badge-outline">Master</div>
+                    {tags.map((item, index) => (
+                        <div key={index} className="badge badge-outline">
+                            {item}
+                        </div>
+                    ))}
                 </div>
-                <div className="card-actions justify-end">
+                {!inCatalog && <div className="card-actions justify-end">
                     <div className="flex flex-col items-center mt-4 space-y-4">
                         <div tabIndex={0} className="btn btn-ghost btn-circle avatar">
                             <figure className="relative rounded-full">
-                                <Image src="/profile_picture.png" alt="avatar icon" width={40} height={40}/>
+                                <Image src={profile_picture ? profile_picture : default_profile_picture} alt="avatar icon" width={40} height={40}/>
                             </figure>
                         </div>
                         <p className="font-normal normal-case">Nikola Petrov</p>
                     </div>
-                </div>
+                </div>}
             </div>
         </div>
     )

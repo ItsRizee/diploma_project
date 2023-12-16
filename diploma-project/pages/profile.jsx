@@ -1,15 +1,14 @@
 import {useEffect, useState} from "react";
 import Image from "next/future/image";
-import {auth, firestore} from "../firebase";
-import {collection, onSnapshot, query, where} from "firebase/firestore";
-import {User, UpdateProfileToCraftsman} from "../services/user";
+import {auth} from "../firebase";
+import {UpdateProfileToCraftsman} from "../services/user";
 import {ItemsScroll, Collapse, UploadImageModal, StandardLayout} from '../components';
 import {default_profile_picture, discoverProducts} from "../public/constants";
 import {useRouter} from "next/router";
 import {useUserStore} from "../store/userStorage";
 
 const Profile = () => {
-    const { user: user } = useUserStore((state) => ({user: state.user}));
+    const { user } = useUserStore((state) => ({user: state.user}));
     const [error, setError] = useState(null);
     const router = useRouter();
 
@@ -31,7 +30,7 @@ const Profile = () => {
 
     return (
         <div className="flex flex-col min-h-screen overflow-x-hidden">
-            <StandardLayout page_content={ auth.currentUser && user.uid ?
+            <StandardLayout title="Profile page" page_content={ auth.currentUser && user.uid ?
                 <main className="flex flex-col flex-1 my-10 space-y-5 mx-5 sm:mx-10 md:mx-20 lg:mx-36 xl:mx-52 2xl:mx-72 justify-center items-center">
                     <div className="flex justify-center items-center mb-5 mt-10">
                         <div>
