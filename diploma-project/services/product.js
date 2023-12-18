@@ -1,4 +1,4 @@
-import {addDoc, collection, doc, getDoc} from "firebase/firestore";
+import {addDoc, collection, doc, getDoc, serverTimestamp} from "firebase/firestore";
 import {getDownloadURL, ref, uploadBytesResumable} from "firebase/storage"
 import {auth, firestore, storage} from "../firebase";
 import {addProductToCatalog, getUserByEmail} from "./user";
@@ -7,11 +7,17 @@ export class Product {
     #title;
     #description;
     #displayImageURL;
+    #owner;
+    #createdDate;
+    #tags;
 
-    constructor(title = "", description = "", displayImageURL = null) {
+    constructor(title = "", description = "", displayImageURL = null, owner = null, createdDate = null, tags = []) {
         this.#title = title;
         this.#description = description;
         this.#displayImageURL = displayImageURL;
+        this.#owner = owner;
+        this.#createdDate = createdDate;
+        this.#tags = tags;
     }
 
     get title(){
@@ -36,9 +42,33 @@ export class Product {
     set displayImageURL(newDisplayImageURL){
         this.#displayImageURL = newDisplayImageURL;
     }
+
+    get owner(){
+        return this.#owner;
+    }
+
+    set owner(newOwner){
+        this.#owner = newOwner;
+    }
+
+    get createdDate(){
+        return this.#createdDate;
+    }
+
+    set createdDate(newCreatedDate){
+        this.#createdDate = newCreatedDate;
+    }
+
+    get tags(){
+        return this.#tags;
+    }
+
+    set tags(newTags){
+        this.#tags = newTags;
+    }
 }
 
-export const addProduct = (title, description, image, catalog) => {
+export const addProduct = (title, description, image, catalog, tags = []) => {
     return new Promise((resolve, reject) => {
         // Create a Storage Ref
         const storageRef = ref(storage, 'products/' + auth.currentUser.uid + '/display_image/'  + image.name);
@@ -66,6 +96,9 @@ export const addProduct = (title, description, image, catalog) => {
                                 title: title,
                                 description: description,
                                 displayImageURL: downloadURL,
+                                owner: auth.currentUser.uid,
+                                tags: tags,
+                                createdDate: serverTimestamp(),
                         }).then((doc) => {
                             addProductToCatalog(doc.id, catalog).catch((errorMessage) => {
                                 resolve(errorMessage);
@@ -114,6 +147,9 @@ export const getCatalog = (email) => {
                                 title: product.title,
                                 description: product.description,
                                 displayImageURL: product.displayImageURL,
+                                owner: product.owner,
+                                tags: product.tags,
+                                createdDate: product.createdDate,
                                 index: i++,
                             }
                             products.push(item);

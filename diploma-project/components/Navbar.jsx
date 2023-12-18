@@ -37,7 +37,7 @@ const Navbar = () => {
     }, [user]);
 
     return (
-        <header className="navbar bg-none space-x-4 sm:px-5">
+        <header className="navbar flex-none bg-none space-x-4 sm:px-5">
             <div className="navbar-start">
                 <div className="dropdown lg:hidden">
                     <div tabIndex={0} className="btn btn-ghost btn-circle p-2">

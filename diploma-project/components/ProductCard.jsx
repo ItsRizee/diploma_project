@@ -1,37 +1,60 @@
 import Image from "next/future/image";
 import {default_profile_picture} from "../public/constants";
+import {useEffect, useState} from "react";
+import {getUserById, User} from "../services/user";
+import {Timestamp} from "firebase/firestore";
+import {useRouter} from "next/router";
 
-const ProductCard = ({title, description, tags, isNew, profile_picture = default_profile_picture, inCatalog = false}) => {
+const ProductCard = ({product, inCatalog = false, productId}) => {
+    const [isNew, setIsNew] = useState(false);
+    const [owner, setOwner] = useState(new User());
+    const router = useRouter();
+
+    useEffect(() => {
+        getUserById(product.owner).then((user) => {
+            setOwner(user);
+        });
+
+        const timeDifference = Timestamp.now().toMillis() - product.createdDate.toMillis();
+        if(timeDifference < 24 * 60 * 60 * 1000) {
+            setIsNew(true);
+        }
+    }, []);
+
+    const onClick = () => {
+        void router.push(`/product/${productId}`);
+    };
+
     return (
-        <div className="card card-bordered border-b-gray-400 w-60 h-full bg-base-100 shadow-md">
+        <button className="card card-bordered border-b-gray-400 w-60 h-full bg-base-100 shadow-md hover:brightness-90 dark:hover:brightness-125" onClick={onClick}>
             <figure className="relative">
                 <Image src="/ring.jpg" alt="Silver ring" width={240} height={240}/>
             </figure>
             <div className="card-body">
                 <h3 className="card-title">
-                    {title}
+                    {product.title}
                     {isNew && <div className="badge badge-secondary">NEW</div>}
                 </h3>
-                <p>{description}</p>
+                <p>{product.description}</p>
                 <div className="card-actions justify-start">
-                    {tags.map((item, index) => (
+                    {product.tags.map((item, index) => (
                         <div key={index} className="badge badge-outline">
                             {item}
                         </div>
                     ))}
                 </div>
-                {!inCatalog && <div className="card-actions justify-end">
-                    <div className="flex flex-col items-center mt-4 space-y-4">
+                {!inCatalog && <div className="card-actions justify-center">
+                    <div className="flex items-center mt-4 space-x-4">
                         <div tabIndex={0} className="btn btn-ghost btn-circle avatar">
                             <figure className="relative rounded-full">
-                                <Image src={profile_picture ? profile_picture : default_profile_picture} alt="avatar icon" width={40} height={40}/>
+                                <Image src={owner.photoURL ? owner.photoURL : default_profile_picture} alt="avatar icon" width={40} height={40}/>
                             </figure>
                         </div>
-                        <p className="font-normal normal-case">Nikola Petrov</p>
+                        <p className="font-normal normal-case">{owner.name}</p>
                     </div>
                 </div>}
             </div>
-        </div>
+        </button>
     )
 }
 

@@ -15,7 +15,7 @@ const StandardLayout = ({title, page_content}) => {
                 <link rel="manifest" href="/images/site.webmanifest"/>
             </Head>
             <Drawer sidebar_content={<NewProduct/>} page_content={
-                <div className="flex flex-col min-h-screen w-full">
+                <div className="flex flex-col flex-1 min-h-screen w-full">
                     <Navbar/>
                     {page_content}
                     <Footer/>

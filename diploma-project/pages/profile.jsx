@@ -34,10 +34,12 @@ const Profile = () => {
                 <main className="flex flex-col flex-1 my-10 space-y-5 mx-5 sm:mx-10 md:mx-20 lg:mx-36 xl:mx-52 2xl:mx-72 justify-center items-center">
                     <div className="flex justify-center items-center mb-5 mt-10">
                         <div>
-                            <figure className="relative rounded-full flex justify-center mb-5">
-                                <UploadImageModal />
-                                <div className="absolute right-11 -bottom-2 z-[1] h-10 w-10 bg-base-100 rounded-full"/>
-                                <Image src={user.photoURL ? user.photoURL : default_profile_picture} alt="avatar icon" width={96} height={96}/>
+                            <figure className="static rounded-full flex justify-center mb-5">
+                                <div className="relative w-24">
+                                    <UploadImageModal />
+                                    <div className="absolute -right-1 -bottom-2 z-[1] h-10 w-10 bg-base-100 rounded-full"/>
+                                    <Image src={user.photoURL ? user.photoURL : default_profile_picture} alt="avatar icon" width={96} height={96}/>
+                                </div>
                             </figure>
                             <div className="pb-5">
                                 <div className="text-lg text-center mt-5">{user.name}</div>
