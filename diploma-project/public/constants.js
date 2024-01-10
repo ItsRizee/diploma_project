@@ -23,8 +23,9 @@ export const trending = [<TrendingCard key="1"/>, <TrendingCard key="2"/>, <Tren
 const product = new Product(
     "Silver ring",
     "This is the best ring out here bro. This is so good I can't even explain it with words.",
-    null,
+    "https://firebasestorage.googleapis.com/v0/b/diploma-project-1ff8d.appspot.com/o/products%2F6mDtmoPkv8RZBULKiYk628UouUM2%2Fdisplay_image%2Frecommended_ring.jpg?alt=media&token=da8ad1da-966a-4118-8068-03806011a276",
     "6mDtmoPkv8RZBULKiYk628UouUM2",
+    250,
     Timestamp.now(),
     ["master", "silver craft"],
     );

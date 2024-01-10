@@ -8,6 +8,13 @@ import {getUserByEmail, User} from '../services/user';
 
 const MyApp = ({ Component, pageProps }) => {
   const { setUser } = useUserStore((state) => ({setUser: state.setUser}));
+  const { user } = useUserStore((state) => ({user: state.user}));
+
+  useEffect(() => {
+    console.log(user.theme);
+    document.querySelector('html').setAttribute('data-theme', user.theme);
+    document.querySelector('html').setAttribute('class', user.theme);
+  }, [user.theme]);
 
   useEffect(() => {
     let unsubscribeSnapshot = null
@@ -38,6 +45,7 @@ const MyApp = ({ Component, pageProps }) => {
               craft: data.craft,
               orders: data.orders,
               catalog: data.catalog,
+              theme: data.theme,
             };
           });
 

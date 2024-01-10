@@ -1,6 +1,7 @@
 import Image from "next/future/image";
 import {default_profile_picture} from "../public/constants";
 import Link from "next/link";
+import {Fragment} from "react";
 
 const AvatarIcon = ({ img, username, catalogHref }) => {
     return (
@@ -12,7 +13,16 @@ const AvatarIcon = ({ img, username, catalogHref }) => {
                     </figure>
                 </a>
             </div>
-            <Link href={catalogHref}><div className="cursor-pointer line-clamp-1">{username}</div></Link>
+            <Link href={catalogHref}>
+                <div className="cursor-pointer text-center">
+                    {username.split(' ').map((part, index, array) => (
+                        <Fragment key={index}>
+                            {part}
+                            {index !== array.length - 1 && <br />}
+                        </Fragment>
+                    ))}
+                </div>
+            </Link>
         </div>
     );
 }

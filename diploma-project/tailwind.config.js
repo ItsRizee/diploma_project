@@ -19,4 +19,5 @@ module.exports = {
       "dark"
     ], // Choose the desired theme (you can also customize the theme)
   },
+  darkMode: 'class',
 }

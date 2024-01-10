@@ -27,12 +27,15 @@ const Home = () => {
 
     return (
         <div className="overflow-x-hidden">
-            <StandardLayout title="Home page" page_content={ newProducts &&
-                    <main className="flex flex-col flex-1 pb-20 pt-5 space-y-10 lg:mx-36 xl:mx-72">
-                        <ItemsScroll categoryName="New products" listOfItems={newProducts}/>
-                        <DynamicCarousel categoryName="Trending" listOfItems={trending}/>
-                        <ItemsScroll categoryName="Discover products" listOfItems={discoverProducts}/>
-                    </main>
+            <StandardLayout title="Home page" page_content={newProducts ?
+                <main className="flex flex-col flex-1 pb-20 pt-5 space-y-10 lg:mx-36 xl:mx-72">
+                    <ItemsScroll categoryName="New products" listOfItems={newProducts}/>
+                    <DynamicCarousel categoryName="Trending" listOfItems={trending}/>
+                    <ItemsScroll categoryName="Discover products" listOfItems={discoverProducts}/>
+                </main> :
+                <div className="flex h-screen justify-center items-center">
+                    <span className="loading loading-spinner loading-lg"></span>
+                </div>
             }/>
         </div>
     )

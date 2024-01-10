@@ -8,15 +8,21 @@ export class Product {
     #description;
     #displayImageURL;
     #owner;
+    #price;
     #createdDate;
+    #likes;
+    #timeline;
     #tags;
 
-    constructor(title = "", description = "", displayImageURL = null, owner = null, createdDate = null, tags = []) {
+    constructor(title = "", description = "", displayImageURL = null, owner = null, price = null, createdDate = null, likes = 0, timeline = [], tags = []) {
         this.#title = title;
         this.#description = description;
         this.#displayImageURL = displayImageURL;
         this.#owner = owner;
+        this.#price = price;
         this.#createdDate = createdDate;
+        this.#likes = likes;
+        this.#timeline = timeline;
         this.#tags = tags;
     }
 
@@ -51,6 +57,14 @@ export class Product {
         this.#owner = newOwner;
     }
 
+    get price(){
+        return this.#price;
+    }
+
+    set price(newPrice){
+        this.#price = newPrice;
+    }
+
     get createdDate(){
         return this.#createdDate;
     }
@@ -66,9 +80,25 @@ export class Product {
     set tags(newTags){
         this.#tags = newTags;
     }
+
+    get likes(){
+        return this.#likes;
+    }
+
+    set likes(newLikes){
+        this.#likes = newLikes;
+    }
+
+    get timeline(){
+        return this.#timeline;
+    }
+
+    set timeline(newTimeline){
+        this.#timeline = newTimeline;
+    }
 }
 
-export const addProduct = (title, description, image, catalog, tags = []) => {
+export const addProduct = (title, description, image, catalog, price, timeline = [], tags = []) => {
     return new Promise((resolve, reject) => {
         // Create a Storage Ref
         const storageRef = ref(storage, 'products/' + auth.currentUser.uid + '/display_image/'  + image.name);
@@ -97,8 +127,11 @@ export const addProduct = (title, description, image, catalog, tags = []) => {
                                 description: description,
                                 displayImageURL: downloadURL,
                                 owner: auth.currentUser.uid,
+                                price: price,
                                 tags: tags,
+                                timeline: timeline,
                                 createdDate: serverTimestamp(),
+                                likes: 0,
                         }).then((doc) => {
                             addProductToCatalog(doc.id, catalog).catch((errorMessage) => {
                                 resolve(errorMessage);
@@ -148,8 +181,11 @@ export const getCatalog = (email) => {
                                 description: product.description,
                                 displayImageURL: product.displayImageURL,
                                 owner: product.owner,
+                                price: product.price,
                                 tags: product.tags,
                                 createdDate: product.createdDate,
+                                likes: product.likes,
+                                timeline: product.timeline,
                                 index: i++,
                             }
                             products.push(item);

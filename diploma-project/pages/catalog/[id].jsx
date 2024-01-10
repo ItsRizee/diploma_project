@@ -20,7 +20,9 @@ const Catalog = ({user}) => {
                         product.description,
                         product.displayImageURL,
                         product.owner,
+                        product.price,
                         product.createdDate,
+                        product.likes,
                         product.tags
                     )
                 ))
@@ -50,7 +52,7 @@ const Catalog = ({user}) => {
                             <div className="text-xl text-center">{user.name}</div>
                         </div>
                         { products.length !== 0 ?
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-x-5 gap-y-10">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 sm:gap-x-5 2xl:gap-x-16 gap-y-16">
                                 {products.map((product, index) => (
                                     <ProductCard
                                         key={index}
@@ -88,7 +90,8 @@ export async function getServerSideProps({ params }) {
                 requests: userData.requests,
                 craft: userData.craft,
                 orders: userData.orders,
-                catalog: userData.catalog
+                catalog: userData.catalog,
+                theme: userData.theme,
             }
 
             return {

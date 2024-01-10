@@ -6,7 +6,7 @@ const AboutPage = () => {
         <div className="overflow-x-hidden">
             <StandardLayout title="Home page" page_content={
                 <main className="flex flex-col flex-1 pb-20 pt-10 lg:mx-36 xl:mx-96 text-lg">
-                    <div className="card card-bordered space-y-5 p-5 bg-base-300 dark:bg-neutral">
+                    <article className="card card-bordered space-y-5 p-5 bg-base-300 dark:bg-neutral">
                         <h1 className="text-center text-2xl mb-5 font-bold">About {app_name}</h1>
                         <p className="font-bold">
                             Welcome to {app_name} – the community for craftsmen and craft enthusiasts!
@@ -34,7 +34,7 @@ const AboutPage = () => {
                         <p className="pt-5">
                             Join us in celebrating craftsmanship and supporting a community of artisans. Let&apos;s bridge generations and keep the spirit of handmade crafts alive.
                         </p>
-                    </div>
+                    </article>
                 </main>
             } />
         </div>

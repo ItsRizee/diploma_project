@@ -7,10 +7,9 @@ const UploadImageModal = () => {
     const [isTouchEnabled, setIsTouchEnabled] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
 
-    const onImageChange = () => {
-        const fileInput = document.getElementById('dropzone-file');
+    const onImageChange = (file) => {
         setIsUploading(true);
-        UpdateProfilePicture(fileInput.files[0], auth.currentUser.uid).then(() => {
+        UpdateProfilePicture(file, auth.currentUser.uid).then(() => {
             document.getElementById('my_modal_3').close();
             setIsUploading(false);
         });

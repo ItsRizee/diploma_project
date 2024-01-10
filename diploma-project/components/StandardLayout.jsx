@@ -16,7 +16,9 @@ const StandardLayout = ({title, page_content}) => {
             </Head>
             <Drawer sidebar_content={<NewProduct/>} page_content={
                 <div className="flex flex-col flex-1 min-h-screen w-full">
-                    <Navbar/>
+                    <header>
+                        <Navbar/>
+                    </header>
                     {page_content}
                     <Footer/>
                 </div>
