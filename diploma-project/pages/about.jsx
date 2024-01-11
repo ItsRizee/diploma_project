@@ -5,8 +5,8 @@ const AboutPage = () => {
     return (
         <div className="overflow-x-hidden">
             <StandardLayout title="Home page" page_content={
-                <main className="flex flex-col flex-1 pb-20 pt-10 lg:mx-36 xl:mx-96 text-lg">
-                    <article className="card card-bordered space-y-5 p-5 bg-base-300 dark:bg-neutral">
+                <main className="flex flex-col flex-1 pb-20 pt-10 px-5 lg:mx-36 xl:mx-96 text-lg">
+                    <article className="card card-bordered space-y-5 p-5 bg-base-300">
                         <h1 className="text-center text-2xl mb-5 font-bold">About {app_name}</h1>
                         <p className="font-bold">
                             Welcome to {app_name} – the community for craftsmen and craft enthusiasts!

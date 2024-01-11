@@ -74,7 +74,7 @@ const SignIn = () => {
                                     setError(null); // Reset the error state on input change
                                 }}
                             />
-                            {error && <span className="error-text py-2 text-red-500">{error}</span>}
+                            {error && <span className="error-text py-2 text-error">{error}</span>}
                             <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
                                 <button className="btn btn-primary" type="submit">
                                     Sign in

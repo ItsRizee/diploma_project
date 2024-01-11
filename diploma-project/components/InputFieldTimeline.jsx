@@ -21,8 +21,7 @@ const InputFieldTimeline = ({timeline, setTimeline}) => {
                 {
                     timeline.map((section, index) => (
                         <li key={index} className="relative">
-                            <Collapse id={1} categoryName={`Section ${index + 1}`} titleSize="text-lg"
-                                      bgColor="bg-neutral" content={(
+                            <Collapse id={1} categoryName={`Section ${index + 1}`} titleSize="text-lg" content={(
                                 <div className="pl-5">
                                     <InputField
                                         type="text"
@@ -65,12 +64,12 @@ const InputFieldTimeline = ({timeline, setTimeline}) => {
                                     />
                                 </div>
                             )}/>
-                            {index === timeline.length - 1 && <button className="absolute -top-2 -right-2 btn btn-xs btn-circle" onClick={handleRemoveSection}>✕</button>}
+                            {index === timeline.length - 1 && <button className="absolute -top-2 -right-2 btn btn-xs btn-circle bg-base-300 hover:bg-base-200 hover:border-base-200" onClick={handleRemoveSection}>✕</button>}
                         </li>
                     ))
                 }
                 <li>
-                    <button type="button" className="btn btn-neutral w-full" onClick={handleAddSection}>Add section</button>
+                    <button type="button" className="btn btn-neutral border-base-300 w-full" onClick={handleAddSection}>Add section</button>
                 </li>
             </ul>
         </div>

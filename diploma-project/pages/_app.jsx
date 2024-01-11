@@ -1,20 +1,14 @@
 import '../styles/globals.css';
-import { useEffect } from 'react';
+import {useEffect} from 'react';
 import { getAuth } from 'firebase/auth';
 import { onSnapshot, query, collection, where } from 'firebase/firestore';
 import auth, { firestore } from '../firebase';
 import { useUserStore } from '../store/userStorage';
 import {getUserByEmail, User} from '../services/user';
+import {ThemeProvider} from "next-theme";
 
 const MyApp = ({ Component, pageProps }) => {
   const { setUser } = useUserStore((state) => ({setUser: state.setUser}));
-  const { user } = useUserStore((state) => ({user: state.user}));
-
-  useEffect(() => {
-    console.log(user.theme);
-    document.querySelector('html').setAttribute('data-theme', user.theme);
-    document.querySelector('html').setAttribute('class', user.theme);
-  }, [user.theme]);
 
   useEffect(() => {
     let unsubscribeSnapshot = null
@@ -45,7 +39,6 @@ const MyApp = ({ Component, pageProps }) => {
               craft: data.craft,
               orders: data.orders,
               catalog: data.catalog,
-              theme: data.theme,
             };
           });
 
@@ -73,7 +66,11 @@ const MyApp = ({ Component, pageProps }) => {
     };
   }, []);
 
-  return <Component {...pageProps} />;
+  return (
+      <ThemeProvider defaultTheme="system" attribute="data-theme">
+        <Component {...pageProps} />
+      </ThemeProvider>
+  );
 };
 
 export default MyApp;

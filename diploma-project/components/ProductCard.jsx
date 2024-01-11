@@ -34,12 +34,12 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
 
     return (
         <article className="card card-bordered border-b-gray-400 w-60 lg:w-80 h-full bg-base-100 shadow-md">
-            <figure className="relative">
+            <figure className="relative h-60">
                 <p className="badge rounded-badge badge-lg absolute bottom-3 left-3 text-xl bg-base-100">
                     {product.price} €
                 </p>
                 {isNew && <div className="badge badge-secondary badge-lg font-bold text-white absolute right-3 bottom-3">NEW</div>}
-                <Image src={product.displayImageURL} alt="Silver ring" layout="responsive" width={350} height={233}/>
+                <Image src={product.displayImageURL} alt="Silver ring" className="h-full w-full object-cover" layout="responsive" width={350} height={233}/>
             </figure>
             <div className="card-body">
                 <h3 className="card-title justify-between">

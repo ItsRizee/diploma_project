@@ -77,7 +77,7 @@ const NewProduct = () => {
                     <InputFieldTimeline timeline={productTimeline} setTimeline={setProductTimeline} />
                     <InputFieldTags tags={productTags} setTags={setProductTags} />
                     <div>
-                        {error && <span className="error-text text-red-500 py-2">{error}</span>}
+                        {error && <span className="error-text text-error py-2">{error}</span>}
                         <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
                             <button className="btn btn-primary" type="submit">
                                 Add Product

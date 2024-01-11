@@ -13,9 +13,8 @@ export class User {
     #craft;
     #orders;
     #catalog;
-    #theme;
 
-    constructor(name = "", email = "", photoURL = null, uid = null, interests = [], requests = [], craft = null, orders = null, catalog = null, theme = "dark") {
+    constructor(name = "", email = "", photoURL = null, uid = null, interests = [], requests = [], craft = null, orders = null, catalog = null) {
         this.#name = name;
         this.#email = email;
         this.#photoURL = photoURL;
@@ -25,7 +24,6 @@ export class User {
         this.#craft = craft;
         this.#orders = orders;
         this.#catalog = catalog;
-        this.#theme = theme;
     }
 
     get name(){
@@ -99,14 +97,6 @@ export class User {
     set catalog(newCatalog){
         this.#catalog = newCatalog;
     }
-
-    get theme(){
-        return this.#theme;
-    }
-
-    set theme(newTheme){
-        this.#theme = newTheme;
-    }
 }
 
 export const addUser = (name, email, uid) => {
@@ -123,7 +113,6 @@ export const addUser = (name, email, uid) => {
                 craft: null,
                 orders: null,
                 catalog: null,
-                theme: "dark",
         }).then(() => {
             resolve(null);
         }).catch((error) => {
@@ -150,7 +139,6 @@ const getUserByQuery = (q) => {
                 user.craft = data.craft;
                 user.orders = data.orders;
                 user.catalog = data.catalog;
-                user.theme = data.theme;
             });
 
             resolve(user);
@@ -321,28 +309,12 @@ export const getAllCraftsman = () => {
                     user.craft = data.craft;
                     user.orders = data.orders;
                     user.catalog = data.catalog;
-                    user.theme = data.theme;
 
                     users.push(user);
                 }
             });
 
             resolve(users);
-        });
-    });
-}
-
-export const UpdateTheme = (theme) => {
-    return new Promise((resolve, reject) => {
-        getUserDoc(auth.currentUser.uid).then((docRef) => {
-            // Use updateDoc to update the document
-            updateDoc(docRef, { theme: theme })
-                .then(() => {
-                    resolve();
-                })
-                .catch((error) => {
-                    reject(error);
-                });
         });
     });
 }

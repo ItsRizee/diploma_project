@@ -46,7 +46,7 @@ const Profile = () => {
                                 <div className="font-medium text-center">{user.email}</div>
                             </div>
                             {!user.craft && <button className="btn btn-neutral flex justify-center normal-case text-lg" onClick={BecomeCraftsman}>Become Craftsman</button>}
-                            {error && <span className="error-text py-2 text-red-500">{error}</span>}
+                            {error && <span className="error-text py-2 text-error">{error}</span>}
                         </div>
                     </div>
                     {/*<ItemsScroll listOfItems={user.interests} categoryName="My interests"/>*/}

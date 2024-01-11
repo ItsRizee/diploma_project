@@ -60,17 +60,17 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
                     ))}
                 </div>
                 <div className="absolute inset-0 flex items-center justify-between p-4">
-                    <button onClick={prev} className="p-1 rounded-full shadow-xl bg-white/80 text-gray-800 hover-bg-white">
-                        <ChevronLeft size={40} />
+                    <button onClick={prev} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white">
+                        <ChevronLeft className="text-base-100" size={40} />
                     </button>
-                    <button onClick={next} className="p-1 rounded-full shadow-xl bg-white/80 text-gray-800 hover-bg-white">
-                        <ChevronRight size={40} />
+                    <button onClick={next} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white">
+                        <ChevronRight className="text-base-100" size={40} />
                     </button>
                 </div>
                 <div className="absolute bottom-4 right-0 left-0">
                     <div className="flex items-center justify-center gap-2">
                         {listOfItems.map((_, i) => (
-                            <div key={i} className={`transition-all w-3 h-3 bg-slate-500 dark:bg-white rounded-full ${curr === i ? "p-2" : "bg-opacity-50"}`} />
+                            <div key={i} className={`transition-all w-3 h-3 bg-base-content rounded-full ${curr === i ? "p-2" : "bg-opacity-50"}`} />
                         ))}
                     </div>
                 </div>

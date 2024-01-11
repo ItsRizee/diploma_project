@@ -1,6 +1,6 @@
-const Collapse = ({ id, categoryName, content, titleSize = "text-xl", bgColor = "bg-base-200 dark:bg-gray-800" }) => {
+const Collapse = ({ id, categoryName, content, titleSize = "text-xl" }) => {
     return (
-        <details tabIndex={id} className={`collapse collapse-arrow border border-base-300 ${bgColor} transition-all duration-500`}>
+        <details tabIndex={id} className="collapse collapse-arrow border border-base-300 bg-base-300 transition-all duration-500">
             <summary className={`collapse-title ${titleSize} font-medium cursor-pointer`}>
                 { categoryName }
             </summary>

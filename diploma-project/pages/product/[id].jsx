@@ -10,8 +10,13 @@ import Link from "next/link";
 
 const Product = ({product}) => {
     const [owner, setOwner] = useState(new User());
-    // const tags = ["silver craft", "wood craftttttttttt"];
     const router = useRouter();
+
+    useEffect(() => {
+        getUserById(product.owner).then((user) => {
+            setOwner(user);
+        });
+    }, []);
 
     if(router.isFallback) {
         return (
@@ -21,22 +26,16 @@ const Product = ({product}) => {
         );
     }
 
-    useEffect(() => {
-        getUserById(product.owner).then((user) => {
-            setOwner(user);
-        });
-    }, []);
-
     return (
         <div className="flex flex-col min-h-screen overflow-x-hidden">
             <StandardLayout title="Product page" page_content={
                 <main className="flex flex-col flex-1 justify-center pb-20 pt-5 space-y-20">
                     <section className="flex flex-col md:flex-row justify-center items-center space-y-10 md:space-y-0 md:space-x-10">
                         <figure className="w-4/5 md:w-3/6 xl:w-1/3 shadow-2xl rounded-xl">
-                            <Image src={product.displayImageURL} className="rounded-xl" alt="This is the display picture" layout="responsive" width={350} height={233} />
+                            <Image src={product.displayImageURL} className="h-full w-full object-cover rounded-xl" alt="This is the display picture" layout="responsive" width={350} height={233} />
                         </figure>
-                        <div className="flex flex-col space-y-10 w-2/3 md:w-2/6 xl:w-1/3">
-                            <h1 className="text-xl">{product.title}</h1>
+                        <div className="flex flex-col space-y-10 w-2/3 md:w-2/6">
+                            <h1 className="text-2xl font-bold">{product.title}</h1>
                             <p>{product.description}</p>
                             <div className="flex flex-wrap">
                                 {product.tags.map((item, index) => (
