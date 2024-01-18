@@ -1,10 +1,11 @@
-const InputField = ({ labelText, type, placeholder, value, onChange }) => {
+const InputField = ({ id, labelText, type, placeholder, value, onChange }) => {
     return (
         <div className="form-control">
-            <label className="label">
+            <label htmlFor={id} className="label">
                 <span className="label-text">{labelText}</span>
             </label>
             <input
+                id={id}
                 type={type}
                 placeholder={placeholder}
                 value={value}

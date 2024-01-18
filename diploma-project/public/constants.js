@@ -1,6 +1,8 @@
 import AvatarIcon from "../components/AvatarIcon";
 import TrendingCard from "../components/TrendingCard";
 import ProductCard from "../components/ProductCard";
+import {Product} from "../services/product";
+import {Timestamp} from "firebase/firestore";
 
 export const app_name = "Wavary";
 
@@ -18,13 +20,25 @@ export const newProducts = [<AvatarIcon key="1" img="/profile_picture.png" usern
 
 export const trending = [<TrendingCard key="1"/>, <TrendingCard key="2"/>, <TrendingCard key="3"/>];
 
-export const discoverProducts = [<ProductCard key="0" title="Silver ring" description="This is the best ring out here bro."/>,
-    <ProductCard key="1" title="Silver ring" description="This is the best ring out here bro. This is so good I can't even explain it with words."/>,
-    <ProductCard key="2" title="Silver ring" description="Hello there this is my description."/>,
-    <ProductCard key="3" title="Silver ring" description="Ammmmm I don't know what I am doing"/>,
-    <ProductCard key="4" title="Silver ring" description="This is the best ring out here bro. DAMN BRO THAT IS SO GOOD HOLY."/>,
-    <ProductCard key="5" title="Silver ring" description="This is the best ring out here bro."/>,
-    <ProductCard key="6" title="Silver ring" description="Hi!"/>,
-    <ProductCard key="7" title="Silver ring" description="GoOoooOooOOOd LoRdddDdDdDdDd"/>,
-    <ProductCard key="8" title="Silver ring" description="This is the best ring out here bro."/>,
-    <ProductCard key="9" title="Silver ring" description="REally good my friend!"/>];
+const product = new Product(
+    "Silver ring",
+    "This is the best ring out here bro. This is so good I can't even explain it with words.",
+    "https://firebasestorage.googleapis.com/v0/b/diploma-project-1ff8d.appspot.com/o/products%2F6mDtmoPkv8RZBULKiYk628UouUM2%2Fdisplay_image%2Frecommended_ring.jpg?alt=media&token=da8ad1da-966a-4118-8068-03806011a276",
+    "6mDtmoPkv8RZBULKiYk628UouUM2",
+    250,
+    Timestamp.now(),
+    ["master", "silver craft"],
+    );
+
+export const discoverProducts = [
+    <ProductCard product={product} inCatalog={false} productId="U80ihuClGyrNu8CGhEvM" />,
+    <ProductCard product={product} inCatalog={false} productId="U80ihuClGyrNu8CGhEvM" />,
+    <ProductCard product={product} inCatalog={false} productId="U80ihuClGyrNu8CGhEvM" />,
+    <ProductCard product={product} inCatalog={false} productId="U80ihuClGyrNu8CGhEvM" />,
+    <ProductCard product={product} inCatalog={false} productId="U80ihuClGyrNu8CGhEvM" />,
+    <ProductCard product={product} inCatalog={false} productId="U80ihuClGyrNu8CGhEvM" />,
+    <ProductCard product={product} inCatalog={false} productId="U80ihuClGyrNu8CGhEvM" />,
+    <ProductCard product={product} inCatalog={false} productId="U80ihuClGyrNu8CGhEvM" />,
+    <ProductCard product={product} inCatalog={false} productId="U80ihuClGyrNu8CGhEvM" />,
+    <ProductCard product={product} inCatalog={false} productId="U80ihuClGyrNu8CGhEvM" />,
+];

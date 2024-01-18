@@ -121,9 +121,8 @@ export const addUser = (name, email, uid) => {
     });
 }
 
-export const getUser = (email) => {
+const getUserByQuery = (q) => {
     return new Promise((resolve) => {
-        const q = query(collection(firestore, "users"), where("email", "==", email));
         getDocs(q).then((snapshot) => {
             const querySnapshot = snapshot;
             let user = new User();
@@ -147,22 +146,19 @@ export const getUser = (email) => {
     });
 }
 
-// const getUID = (email) => {
-//     return new Promise((resolve) => {
-//         const q = query(collection(firestore, "users"), where("email", "==", email));
-//         getDocs(q).then((snapshot) => {
-//             const querySnapshot = snapshot;
-//             let uid;
-//
-//             querySnapshot.forEach((doc) => {
-//                 const data = doc.data();
-//                 uid = data.uid;
-//             });
-//
-//             resolve(uid);
-//         });
-//     });
-// }
+export const getUserByEmail = (email) => {
+    return new Promise((resolve) => {
+        const q = query(collection(firestore, "users"), where("email", "==", email));
+        getUserByQuery(q).then((user) => resolve(user));
+    });
+}
+
+export const getUserById = (uid) => {
+    return new Promise((resolve) => {
+        const q = query(collection(firestore, "users"), where("uid", "==", uid));
+        getUserByQuery(q).then((user) => resolve(user));
+    });
+}
 
 export const getUserDoc = (uid) => {
     return new Promise((resolve) => {
@@ -290,6 +286,35 @@ export const addProductToCatalog = (productId, catalog) => {
                 .catch((error) => {
                     reject(error);
                 });
+        });
+    });
+}
+
+export const getAllCraftsman = () => {
+    return new Promise((resolve) => {
+        getDocs(collection(firestore, "users")).then((querySnapshot) => {
+            const users = [];
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+
+                if(data.craft !== null) {
+                    let user = new User();
+
+                    user.name = data.name;
+                    user.email = data.email;
+                    user.photoURL = data.photoURL;
+                    user.uid = data.uid;
+                    user.interests = data.interests;
+                    user.requests = data.requests;
+                    user.craft = data.craft;
+                    user.orders = data.orders;
+                    user.catalog = data.catalog;
+
+                    users.push(user);
+                }
+            });
+
+            resolve(users);
         });
     });
 }
