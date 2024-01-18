@@ -12,9 +12,9 @@ const Catalog = ({user}) => {
     const router = useRouter();
 
     useEffect(() => {
-        getCatalog(user.email).then((catalog) => {
+        getCatalog(user.email).then((products) => {
             setProducts(
-                catalog.map((product) => (
+                products.map((product) => (
                     new Product(
                         product.title,
                         product.description,

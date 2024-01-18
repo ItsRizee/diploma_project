@@ -24,6 +24,7 @@ const InputFieldTimeline = ({timeline, setTimeline}) => {
                             <Collapse id={1} categoryName={`Section ${index + 1}`} titleSize="text-lg" content={(
                                 <div className="pl-5">
                                     <InputField
+                                        id="title-input"
                                         type="text"
                                         labelText="Title"
                                         placeholder=""
@@ -37,6 +38,7 @@ const InputFieldTimeline = ({timeline, setTimeline}) => {
                                         }}
                                     />
                                     <Textarea
+                                        id="description-input"
                                         type="text"
                                         labelText="Description"
                                         placeholder=""
@@ -50,6 +52,7 @@ const InputFieldTimeline = ({timeline, setTimeline}) => {
                                         }}
                                     />
                                     <InputField
+                                        id="date-input"
                                         labelText="Date"
                                         type="date"
                                         placeholder=""

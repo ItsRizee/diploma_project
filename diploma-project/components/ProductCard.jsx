@@ -11,7 +11,6 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
     const [owner, setOwner] = useState(new User());
     const [isLiked, setIsLiked] = useState(false);
     const router = useRouter();
-    const tags = ["silver craft", "wood craftttttttttt"];
 
     useEffect(() => {
         getUserById(product.owner).then((user) => {
@@ -62,7 +61,7 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
                     </button>
                 </h3>
                 <div className="flex justify-start flex-wrap mt-2">
-                    {tags.map((item, index) => (
+                    {product.tags.map((item, index) => (
                         <div key={index} className="badge badge-outline whitespace-nowrap mb-3 mr-3 p-3">
                             {item}
                         </div>

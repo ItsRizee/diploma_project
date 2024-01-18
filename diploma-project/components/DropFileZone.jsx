@@ -18,7 +18,7 @@ const DropFileZone = ({isUploading, onImageChange}) => {
 
         const file = event.dataTransfer.files[0];
 
-        if (file) {
+        if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
             // Handle the dropped file, e.g., call onImageChange
             if (onImageChange) {
                 onImageChange(file);
@@ -31,7 +31,7 @@ const DropFileZone = ({isUploading, onImageChange}) => {
 
         const file = event.target.files[0];
 
-        if (file) {
+        if (file && (file.type === "image/png" || file.type === "image/jpeg")) {
             // Handle the dropped file, e.g., call onImageChange
             if (onImageChange) {
                 onImageChange(file);

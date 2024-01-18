@@ -55,6 +55,7 @@ const SignIn = () => {
                             <h1 className="text-xl lg:text-3xl text-center font-bold">Login to Your Account</h1>
                             {/* Use the InputField component */}
                             <InputField
+                                id="email-input"
                                 labelText="Email"
                                 type="email"
                                 placeholder="email@gmail.com"
@@ -65,6 +66,7 @@ const SignIn = () => {
                                 }}
                             />
                             <InputField
+                                id="password-input"
                                 labelText="Password"
                                 type="password"
                                 placeholder="password123"

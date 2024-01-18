@@ -1,23 +1,22 @@
 import {useState} from "react";
 
 const InputFieldTags = ({tags, setTags}) => {
-    const [newTag, setNewTag] = useState('');
+    const [newTag, setNewTag] = useState("");
 
     const handleTagChange = (e) => {
         setNewTag(e.target.value);
     };
 
-    const handleAddTag = () => {
-        if (newTag.trim() === '') {
-            return;
+    const handleAddTag = (event) => {
+         if(newTag && newTag.trim() && (event.type === "click" || event.code === "Enter")) {
+            event.preventDefault()
+            setTags([...tags, newTag.trim()]);
+            setNewTag('');
         }
-
-        setTags([...tags, newTag]);
-
-        setNewTag('');
     };
 
-    const handleRemoveTag = (tagToRemove) => {
+    const handleRemoveTag = (event, tagToRemove) => {
+        event.preventDefault();
         // Filter out the tag to be removed from the current tags
         const updatedTags = tags.filter((tag) => tag !== tagToRemove);
         setTags(updatedTags);
@@ -25,15 +24,17 @@ const InputFieldTags = ({tags, setTags}) => {
 
     return (
         <div className="form-control space-y-5">
-            <label className="label">
+            <label htmlFor="tag-input" className="label">
                 <span className="label-text">Tags - <em>Not required</em></span>
             </label>
             <div>
                 <input
+                    id="tag-input"
                     type="text"
                     value={newTag}
                     onChange={handleTagChange}
                     className="input input-bordered w-full pr-24"
+                    onKeyDown={handleAddTag}
                 />
                 <button type="button" className="btn btn-ghost absolute right-5" onClick={handleAddTag}>
                     Add Tag
@@ -44,7 +45,7 @@ const InputFieldTags = ({tags, setTags}) => {
                     <li key={index}>
                         <div key={index} className="badge badge-outline whitespace-nowrap mb-3 mr-3 space-x-2 p-3">
                             <p>{tag}</p>
-                            <button onClick={() => handleRemoveTag(tag)}>
+                            <button onClick={(event) => handleRemoveTag(event, tag)}>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                      className="w-5 h-5">
                                     <path

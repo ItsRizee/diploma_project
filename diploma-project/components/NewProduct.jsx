@@ -25,6 +25,7 @@ const NewProduct = () => {
                 setProductDescription("");
                 setProductImage(null);
                 setProductPrice(0);
+                setProductTimeline([]);
                 setProductTags([]);
 
                 // reset the form
@@ -40,6 +41,7 @@ const NewProduct = () => {
                 <h2 className="font-bold text-xl mb-5">New Product</h2>
                 <form className="space-y-5 w-full" onSubmit={onSubmit}>
                     <InputField
+                        id="title-input"
                         type="text"
                         labelText="Title"
                         placeholder=""
@@ -51,10 +53,17 @@ const NewProduct = () => {
                     />
                     <div className="w-full space-y-2">
                         <span className="label-text">Display Image</span>
-                        <input id="file-input" type="file" accept="image/png, image/jpeg"
-                               className="file-input file-input-bordered w-full" onChange={onImageChange}/>
+                        <input
+                            id="file-input"
+                            type="file"
+                            accept="image/png, image/jpeg"
+                            required
+                            className="file-input file-input-bordered w-full"
+                            onChange={onImageChange}
+                        />
                     </div>
                     <Textarea
+                        id="description-textarea"
                         type="text"
                         labelText="Description"
                         placeholder=""
@@ -65,6 +74,7 @@ const NewProduct = () => {
                         }}
                     />
                     <InputField
+                        id="price-input"
                         type="number"
                         labelText="Price €"
                         placeholder=""
