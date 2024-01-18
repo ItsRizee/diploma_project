@@ -57,10 +57,10 @@ const Carousel = ({ categoryName, listOfItems }) => {
     }, [isSwiped, carouselRef]);
 
     return (
-        <div className="ml-5 mr-5 space-y-5 w-auto relative">
+        <section className="ml-5 mr-5 space-y-5 w-auto relative">
             <h2 className="font-bold text-xl sm:text-2xl my-5">{categoryName}</h2>
             <div className="w-full h-full" ref={carouselRef}>
-                <div className="w-full carousel space-x-2 z-0 shadow-2xl rounded-box">
+                <div className="w-full carousel space-x-2 z-0 rounded-box">
                     {listOfItems.map((item, index) => (
                         <div key={index} className="carousel-item w-full relative">
                             {item}
@@ -76,7 +76,7 @@ const Carousel = ({ categoryName, listOfItems }) => {
                     </div>
                 )}
             </div>
-        </div>
+        </section>
     );
 };
 

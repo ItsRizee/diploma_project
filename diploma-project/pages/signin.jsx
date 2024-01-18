@@ -55,6 +55,7 @@ const SignIn = () => {
                             <h1 className="text-xl lg:text-3xl text-center font-bold">Login to Your Account</h1>
                             {/* Use the InputField component */}
                             <InputField
+                                id="email-input"
                                 labelText="Email"
                                 type="email"
                                 placeholder="email@gmail.com"
@@ -65,6 +66,7 @@ const SignIn = () => {
                                 }}
                             />
                             <InputField
+                                id="password-input"
                                 labelText="Password"
                                 type="password"
                                 placeholder="password123"
@@ -74,7 +76,7 @@ const SignIn = () => {
                                     setError(null); // Reset the error state on input change
                                 }}
                             />
-                            {error && <span className="error-text py-2 text-red-500">{error}</span>}
+                            {error && <span className="error-text py-2 text-error">{error}</span>}
                             <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
                                 <button className="btn btn-primary" type="submit">
                                     Sign in

@@ -1,32 +1,37 @@
-import {InputField, Textarea} from "../components";
+import {InputField, Textarea, InputFieldTags, InputFieldTimeline} from "../components";
 import {useState} from "react";
 import {addProduct} from "../services/product";
 import { useUserStore } from "../store/userStorage";
 
 const NewProduct = () => {
-    const { user: user } = useUserStore((state) => ({user: state.user}));
+    const {user} = useUserStore((state) => ({user: state.user}));
     const [productTitle, setProductTitle] = useState("");
     const [productImage, setProductImage] = useState(null);
     const [productDescription, setProductDescription] = useState("");
     const [error, setError] = useState(null);
+    const [productPrice, setProductPrice] = useState(0);
+    const [productTags, setProductTags] = useState([]);
+    const [productTimeline, setProductTimeline] = useState([]);
 
-    const onImageChange = () => {
-        const fileInput = document.getElementById('file-input');
-        setProductImage(fileInput.files[0]);
+    const onImageChange = (event) => {
+        setProductImage(event.target.files[0]);
     }
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addProduct(productTitle, productDescription, productImage, user.catalog)
+        addProduct(productTitle, productDescription, productImage, user.catalog, productPrice, productTimeline, productTags)
             .then(() => {
                 setProductTitle("");
                 setProductDescription("");
                 setProductImage(null);
+                setProductPrice(0);
+                setProductTimeline([]);
+                setProductTags([]);
 
                 // reset the form
                 event.target.reset();
             }).catch((errorMessage) => {
-                setError(errorMessage);
+            setError(errorMessage);
         });
     }
 
@@ -36,6 +41,7 @@ const NewProduct = () => {
                 <h2 className="font-bold text-xl mb-5">New Product</h2>
                 <form className="space-y-5 w-full" onSubmit={onSubmit}>
                     <InputField
+                        id="title-input"
                         type="text"
                         labelText="Title"
                         placeholder=""
@@ -47,10 +53,17 @@ const NewProduct = () => {
                     />
                     <div className="w-full space-y-2">
                         <span className="label-text">Display Image</span>
-                        {/*<DropFileZone isUploading={isUploading} onImageChange={onImageChange}/>*/}
-                        <input id="file-input" type="file" accept="image/png, image/jpeg" className="file-input file-input-bordered w-full" onChange={onImageChange}/>
+                        <input
+                            id="file-input"
+                            type="file"
+                            accept="image/png, image/jpeg"
+                            required
+                            className="file-input file-input-bordered w-full"
+                            onChange={onImageChange}
+                        />
                     </div>
                     <Textarea
+                        id="description-textarea"
                         type="text"
                         labelText="Description"
                         placeholder=""
@@ -60,8 +73,21 @@ const NewProduct = () => {
                             setError(null); // Reset the error state on input change
                         }}
                     />
+                    <InputField
+                        id="price-input"
+                        type="number"
+                        labelText="Price €"
+                        placeholder=""
+                        value={productPrice}
+                        onChange={(e) => {
+                            setProductPrice(e.target.value);
+                            setError(null); // Reset the error state on input change
+                        }}
+                    />
+                    <InputFieldTimeline timeline={productTimeline} setTimeline={setProductTimeline} />
+                    <InputFieldTags tags={productTags} setTags={setProductTags} />
                     <div>
-                        {error && <span className="error-text text-red-500 py-2">{error}</span>}
+                        {error && <span className="error-text text-error py-2">{error}</span>}
                         <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
                             <button className="btn btn-primary" type="submit">
                                 Add Product

@@ -60,6 +60,7 @@ const SignUp = () => {
                             <h1 className="text-xl lg:text-3xl text-center font-bold">Create Free Account</h1>
                             <div className="form-control">
                                 <InputField
+                                    id="name-input"
                                     labelText="Full name"
                                     type="text"
                                     placeholder="Melvin Simonds"
@@ -72,6 +73,7 @@ const SignUp = () => {
                             </div>
                             <div className="form-control">
                                 <InputField
+                                    id="email-input"
                                     labelText="Email"
                                     type="email"
                                     placeholder="email@gmail.com"
@@ -84,6 +86,7 @@ const SignUp = () => {
                             </div>
                             <div className="form-control">
                                 <InputField
+                                    id="password-input"
                                     labelText="Password"
                                     type="password"
                                     placeholder="password123"
@@ -96,6 +99,7 @@ const SignUp = () => {
                             </div>
                             <div className="form-control">
                                 <InputField
+                                    id="confirm-password-input"
                                     labelText="Confirm Password"
                                     type="password"
                                     placeholder="password123"
@@ -106,7 +110,7 @@ const SignUp = () => {
                                     }}
                                 />
                             </div>
-                            {error && <span className="error-text py-2 text-red-500">{error}</span>}
+                            {error && <span className="error-text py-2 text-error">{error}</span>}
                             <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
                                 <button className="btn btn-primary" type="submit">Sign Up</button>
                             </div>
