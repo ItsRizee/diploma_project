@@ -1,7 +1,10 @@
 import Head from "next/head";
-import {Drawer, Footer, Navbar, NewProduct} from "./index";
+import {Drawer, Footer, Navbar} from "./index";
+import {useState} from "react";
 
-const StandardLayout = ({title, page_content}) => {
+const StandardLayout = ({title, page_content, drawerState = null, craftsman = null}) => {
+    const [toggleDrawerContent, setToggleDrawerContent] = drawerState || useState(true);
+
     return (
         <div>
             <Head>
@@ -14,10 +17,10 @@ const StandardLayout = ({title, page_content}) => {
                 <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png"/>
                 <link rel="manifest" href="/images/site.webmanifest"/>
             </Head>
-            <Drawer sidebar_content={<NewProduct/>} page_content={
+            <Drawer toggleDrawerContent={toggleDrawerContent} craftsman={craftsman} page_content={
                 <div className="flex flex-col flex-1 min-h-screen w-full">
                     <header>
-                        <Navbar/>
+                        <Navbar setToggleDrawerContent={setToggleDrawerContent} />
                     </header>
                     {page_content}
                     <Footer/>

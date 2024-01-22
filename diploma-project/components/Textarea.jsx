@@ -1,4 +1,4 @@
-const Textarea = ({ id, labelText, placeholder, value, onChange }) => {
+const Textarea = ({ id, labelText, placeholder, value, onChange, height = "h-44" }) => {
     return (
         <div className="form-control">
             <label htmlFor={id} className="label">
@@ -8,7 +8,7 @@ const Textarea = ({ id, labelText, placeholder, value, onChange }) => {
                 id={id}
                 placeholder={placeholder}
                 value={value}
-                className="textarea textarea-bordered w-full h-44 resize-none"
+                className={`textarea textarea-bordered w-full ${height} resize-none`}
                 required
                 onChange={onChange}
             />

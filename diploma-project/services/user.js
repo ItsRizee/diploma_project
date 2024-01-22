@@ -318,3 +318,84 @@ export const getAllCraftsman = () => {
         });
     });
 }
+
+const updateUserRequests = (userId, updatedRequests) => {
+    return new Promise((resolve, reject) => {
+        getUserDoc(userId).then((userDocRef) => {
+            updateDoc(userDocRef, { requests: updatedRequests })
+                .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    });
+};
+
+const updateCraftsmanOrders = (craftsmanId, updatedOrders) => {
+    return new Promise((resolve, reject) => {
+        getUserDoc(craftsmanId).then((craftsmanDocRef) => {
+            updateDoc(craftsmanDocRef, { orders: updatedOrders })
+                .then(() => {
+                    resolve();
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    });
+};
+
+export const addRequestToList = (requestId, user, craftsman) => {
+    return new Promise((resolve, reject) => {
+        user.requests.push(requestId);
+        craftsman.orders.push(requestId);
+
+        Promise.all([
+            updateUserRequests(user.uid, user.requests),
+            updateCraftsmanOrders(craftsman.uid, craftsman.orders)
+        ]).then(() => {
+            resolve();
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+}
+
+export const removeRequestFromList = (requestId, user, setUser, craftsman, setCraftsman) => {
+    return new Promise((resolve, reject) => {
+        console.log("Before removing request from lists");
+        console.log(requestId);
+        console.log(user.requests);
+        console.log(craftsman.orders);
+
+        let requests = user.requests.filter(id => id !== requestId);
+        setUser(prevUser => ({
+            ...prevUser,
+            requests: requests,
+        }));
+
+        let orders = craftsman.orders.filter(id => id !== requestId);
+        setCraftsman(prevCraftsman => ({
+            ...prevCraftsman,
+            orders: orders,
+        }));
+
+        console.log("Removed request from lists");
+        console.log(requestId);
+        console.log(user.requests);
+        console.log(requests);
+        console.log(craftsman.orders);
+        console.log(orders);
+
+        Promise.all([
+            updateUserRequests(user.uid, requests),
+            updateCraftsmanOrders(craftsman.uid, orders)
+        ]).then(() => {
+            resolve();
+        }).catch((error) => {
+            reject(error);
+        });
+    });
+};

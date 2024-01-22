@@ -4,7 +4,7 @@ import {addProduct} from "../services/product";
 import { useUserStore } from "../store/userStorage";
 
 const NewProduct = () => {
-    const {user} = useUserStore((state) => ({user: state.user}));
+    const {currentUser} = useUserStore((state) => ({currentUser: state.user}));
     const [productTitle, setProductTitle] = useState("");
     const [productImage, setProductImage] = useState(null);
     const [productDescription, setProductDescription] = useState("");
@@ -19,7 +19,7 @@ const NewProduct = () => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addProduct(productTitle, productDescription, productImage, user.catalog, productPrice, productTimeline, productTags)
+        addProduct(productTitle, productDescription, productImage, currentUser.catalog, productPrice, productTimeline, productTags)
             .then(() => {
                 setProductTitle("");
                 setProductDescription("");
@@ -30,14 +30,15 @@ const NewProduct = () => {
 
                 // reset the form
                 event.target.reset();
-            }).catch((errorMessage) => {
-            setError(errorMessage);
+            })
+            .catch((errorMessage) => {
+                setError(errorMessage);
         });
     }
 
     return (
         <div className="flex flex-col bg-base-100 text-base-content">
-            <main className="flex flex-col justify-center items-center p-5">
+            <div className="flex flex-col justify-center items-center p-5">
                 <h2 className="font-bold text-xl mb-5">New Product</h2>
                 <form className="space-y-5 w-full" onSubmit={onSubmit}>
                     <InputField
@@ -95,7 +96,7 @@ const NewProduct = () => {
                         </div>
                     </div>
                 </form>
-            </main>
+            </div>
         </div>
     );
 }

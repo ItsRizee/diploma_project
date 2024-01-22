@@ -5,9 +5,10 @@ import Link from 'next/link'
 import registerWithEmailAndPassword from "../services/registerWithEmailAndPassword";
 import { InputField } from "../components";
 import { addUser } from "../services/user";
-import {auth} from "../firebase";
+import {useUserStore} from "../store/userStorage";
 
 const SignUp = () => {
+    const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [passwordOne, setPasswordOne] = useState("");
@@ -23,7 +24,7 @@ const SignUp = () => {
         if(passwordOne === passwordTwo) {
             registerWithEmailAndPassword(fullName, email, passwordOne)
                 .then(() => {
-                    addUser(fullName, email, auth.currentUser.uid)
+                    addUser(fullName, email, currentUser.uid)
                         .then(() => {
                             void router.push("/signin");
                         })

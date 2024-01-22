@@ -133,10 +133,13 @@ export const addProduct = (title, description, image, catalog, price, timeline =
                                 createdDate: serverTimestamp(),
                                 likes: 0,
                         }).then((doc) => {
-                            addProductToCatalog(doc.id, catalog).catch((errorMessage) => {
-                                resolve(errorMessage);
+                            addProductToCatalog(doc.id, catalog)
+                                .then(() => {
+                                    resolve(null);
+                                })
+                                .catch((errorMessage) => {
+                                    reject(errorMessage);
                             });
-                            resolve(null);
                         }).catch((error) => {
                             reject(error.message);
                         });
@@ -164,15 +167,17 @@ export const getProduct = (id) => {
     });
 }
 
-// returns list of products
-export const getCatalog = (email) => {
+// returns list of products for a given catalogType ("catalog" or "interests")
+const getProductsByListType = (email, listType) => {
     return new Promise((resolve) => {
         getUserByEmail(email).then((user) => {
             let promises = [];
             let products = [];
             let i = 0;
 
-            user.catalog.forEach((productId) => {
+            const listOfIndexes = listType === "catalog" ? user.catalog : user.interests;
+
+            listOfIndexes.forEach((productId) => {
                 const promise = getProduct(productId)
                     .then((product) => {
                         if (product != null) {
@@ -187,7 +192,7 @@ export const getCatalog = (email) => {
                                 likes: product.likes,
                                 timeline: product.timeline,
                                 index: i++,
-                            }
+                            };
                             products.push(item);
                         }
                     });
@@ -201,3 +206,50 @@ export const getCatalog = (email) => {
         });
     });
 }
+
+// Function to get products from the catalog list
+export const getCatalog = (email) => {
+    return getProductsByListType(email, "catalog");
+}
+
+// Function to get products from the interests list
+export const getInterests = (email) => {
+    return getProductsByListType(email, "interests");
+}
+
+// export const getCatalog = (email) => {
+//     return new Promise((resolve) => {
+//         getUserByEmail(email).then((user) => {
+//             let promises = [];
+//             let products = [];
+//             let i = 0;
+//
+//             user.catalog.forEach((productId) => {
+//                 const promise = getProduct(productId)
+//                     .then((product) => {
+//                         if (product != null) {
+//                             const item = {
+//                                 title: product.title,
+//                                 description: product.description,
+//                                 displayImageURL: product.displayImageURL,
+//                                 owner: product.owner,
+//                                 price: product.price,
+//                                 tags: product.tags,
+//                                 createdDate: product.createdDate,
+//                                 likes: product.likes,
+//                                 timeline: product.timeline,
+//                                 index: i++,
+//                             }
+//                             products.push(item);
+//                         }
+//                     });
+//                 promises.push(promise);
+//             });
+//
+//             // wait for all promises to finish up before resolving the main promise
+//             Promise.all(promises).then(() => {
+//                 resolve(products);
+//             });
+//         });
+//     });
+// }
