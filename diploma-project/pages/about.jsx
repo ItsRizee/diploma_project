@@ -1,10 +1,13 @@
 import { StandardLayout } from "../components";
 import { app_name } from "../public/constants";
+import {useState} from "react";
 
 const AboutPage = () => {
+    const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
+
     return (
         <div className="overflow-x-hidden">
-            <StandardLayout title="Home page" page_content={
+            <StandardLayout title="Home page" toggleDrawerContent={toggleDrawerContent} setToggleDrawerContent={setToggleDrawerContent} page_content={
                 <main className="flex flex-col flex-1 pb-20 pt-10 px-5 lg:mx-36 xl:mx-96 text-lg">
                     <article className="card card-bordered space-y-5 p-5 bg-base-300">
                         <h1 className="text-center text-2xl mb-5 font-bold">About {app_name}</h1>

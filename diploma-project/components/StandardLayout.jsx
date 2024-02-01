@@ -1,10 +1,7 @@
 import Head from "next/head";
 import {Drawer, Footer, Navbar} from "./index";
-import {useState} from "react";
 
-const StandardLayout = ({title, page_content, drawerState = null, craftsman = null}) => {
-    const [toggleDrawerContent, setToggleDrawerContent] = drawerState || useState(true);
-
+const StandardLayout = ({title, page_content, toggleDrawerContent, setToggleDrawerContent, craftsman = null}) => {
     return (
         <div>
             <Head>

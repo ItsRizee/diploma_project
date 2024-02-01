@@ -12,6 +12,7 @@ const DynamicCarousel = dynamic(() => import('../components/TrendingCarousel'), 
 
 const Home = () => {
     const [newProducts, setNewProducts] = useState(null);
+    const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
 
     useEffect(() => {
         getAllCraftsman().then((usersData) => {
@@ -27,7 +28,7 @@ const Home = () => {
 
     return (
         <div className="overflow-x-hidden">
-            <StandardLayout title="Home page" page_content={newProducts ?
+            <StandardLayout title="Home page" toggleDrawerContent={toggleDrawerContent} setToggleDrawerContent={setToggleDrawerContent} page_content={newProducts ?
                 <main className="flex flex-col flex-1 pb-20 pt-5 space-y-10 lg:mx-36 xl:mx-72">
                     <ItemsScroll categoryName="New products" listOfItems={newProducts}/>
                     <DynamicCarousel categoryName="Trending" listOfItems={trending}/>

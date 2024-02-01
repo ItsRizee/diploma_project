@@ -10,6 +10,7 @@ import Link from "next/link";
 
 const Product = ({product}) => {
     const [owner, setOwner] = useState(new User());
+    const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
@@ -28,7 +29,7 @@ const Product = ({product}) => {
 
     return (
         <div className="flex flex-col min-h-screen overflow-x-hidden">
-            <StandardLayout title="Product page" page_content={
+            <StandardLayout title="Product page" toggleDrawerContent={toggleDrawerContent} setToggleDrawerContent={setToggleDrawerContent} page_content={
                 <main className="flex flex-col flex-1 justify-center pb-20 pt-5 space-y-20">
                     <section className="flex flex-col md:flex-row justify-center items-center space-y-10 md:space-y-0 md:space-x-10">
                         <figure className="w-4/5 md:w-3/6 xl:w-1/3 shadow-2xl rounded-xl">

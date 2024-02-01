@@ -2,19 +2,32 @@ import {useUserStore} from "../store/userStorage";
 import Link from "next/link";
 import Image from "next/future/image";
 import {default_profile_picture} from "../public/constants";
-import {getRequest, updateStatus} from "../services/request";
+import {getRequest, updateRequest, updateStatus} from "../services/request";
 import {useState} from "react";
 import {InputField, Textarea} from "./index";
+import {Bounce, toast} from 'react-toastify';
 
-const InfoModal = ({request, setRequest, user, craftsman, requestID, index, error, setError}) => {
+const InfoModal = ({request, setRequest, user, craftsman, index}) => {
     const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
+    const [title, setTitle] = useState(request.title);
+    const [description, setDescription] = useState(request.description);
     const [editMode, setEditMode] = useState(false);
+    const errorToast = (content) => toast.error(content, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "colored",
+        transition: Bounce,
+    });
 
     const handleAccept = () => {
-        getRequest(requestID).then((requestData) => {
+        getRequest(request.id).then((requestData) => {
             // the craftsman and user can't be changed so check only for title, description and status
             if(request.title === requestData.title && request.description === requestData.description  && request.status === requestData.status) {
-                updateStatus(requestID, "accepted")
+                updateStatus(request.id, "accepted")
                     .then(() => {
                         setRequest({
                             title: request.title,
@@ -25,20 +38,20 @@ const InfoModal = ({request, setRequest, user, craftsman, requestID, index, erro
                         });
                         document.getElementById(`my_modal_${index}`).close();
                     })
-                    .catch((error) => {
-                        setError(error);
+                    .catch(() => {
+                        errorToast("Can't accept request. Please reload the page and try again!");
                 });
             } else {
-                setError("Can't accept request because it was edited or its status has changed. Please reload the page to see the changes!");
+                errorToast("Can't accept request. Please reload the page and try again!");
             }
         });
     }
 
     const handleDeny = () => {
-        getRequest(requestID).then((requestData) => {
+        getRequest(request.id).then((requestData) => {
             // the craftsman and user can't be changed so check only for title, description and status
             if(request.title === requestData.title && request.description === requestData.description && request.status === requestData.status) {
-                updateStatus(requestID, "denied")
+                updateStatus(request.id, "denied")
                     .then(() => {
                         setRequest({
                             title: request.title,
@@ -49,42 +62,50 @@ const InfoModal = ({request, setRequest, user, craftsman, requestID, index, erro
                         });
                         document.getElementById(`my_modal_${index}`).close();
                     })
-                    .catch((error) => {
-                        console.log(error);
+                    .catch(() => {
+                        errorToast("Can't deny request. Please reload the page and try again!");
                 });
             } else {
-                setError("Can't deny request because it was edited or its status has changed. Please reload the page to see the changes!");
+                errorToast("Can't deny request. Please reload the page and try again!");
             }
         });
     }
 
     const handleEdit = () => {
-        getRequest(requestID).then((requestData) => {
+        getRequest(request.id).then((requestData) => {
             // check if request was accepted or denied before editing
             if(request.status === requestData.status) {
                 setEditMode(true);
             } else {
-                setError("Can't edit request because it's status has changed. Please reload the page to see the new status!");
+                errorToast("Can't edit request. Please reload the page and try again!");
             }
         });
     }
 
     const handleSave = () => {
-        getRequest(requestID).then((requestData) => {
+        getRequest(request.id).then((requestData) => {
             // check if request was accepted or denied before editing
             if(request.status === requestData.status) {
+                setRequest({
+                    ...request,
+                    title: title,
+                    description: description,
+                })
                 setEditMode(false);
+                updateRequest(request.id, title, description).catch(() => {
+                    errorToast("Can't save request. Please reload the page and try again!");
+                });
             } else {
-                setError("Can't save request because it's status has changed. Please reload the page to see the new status!");
+                errorToast("Can't save request. Please reload the page and try again!");
             }
         });
     }
 
     const handleCancel = () => {
-        getRequest(requestID).then((requestData) => {
+        getRequest(request.id).then((requestData) => {
             // check if request was accepted or denied before editing
             if(request.status === requestData.status) {
-                updateStatus(requestID, "canceled")
+                updateStatus(request.id, "canceled")
                     .then(() => {
                         setRequest({
                             title: request.title,
@@ -95,11 +116,11 @@ const InfoModal = ({request, setRequest, user, craftsman, requestID, index, erro
                         });
                         document.getElementById(`my_modal_${index}`).close();
                     })
-                    .catch((error) => {
-                        console.log(error);
+                    .catch(() => {
+                        errorToast("Can't cancel request. Please reload the page and try again!");
                 });
             } else {
-                setError("Can't cancel request because it's status has changed. Please reload the page to see the new status!");
+                errorToast("Can't cancel request. Please reload the page and try again!");
             }
         });
     }
@@ -122,37 +143,25 @@ const InfoModal = ({request, setRequest, user, craftsman, requestID, index, erro
                             <h2 className="text-xl font-bold">{request.title}</h2> :
                             <InputField
                                 id="input-field-title"
-                                value={request.title}
+                                value={title}
                                 labelText="Title"
                                 type="text"
                                 placeholder=""
-                                onChange={() => setRequest({
-                                    title: request.title,
-                                    description: request.description,
-                                    user: request.user,
-                                    craftsman: request.craftsman,
-                                    status: request.status,
-                                })}
+                                onChange={(e) => setTitle(e.target.value)}
                             />
                         }
                         {editMode === false ?
                             <p className="text-justify">{request.description}</p> :
                             <Textarea
                                 id="textarea-description"
-                                value={request.description}
+                                value={description}
                                 labelText="Description"
                                 placeholder=""
                                 height="h-56"
-                                onChange={() => setRequest({
-                                    title: request.title,
-                                    description: request.description,
-                                    user: request.user,
-                                    craftsman: request.craftsman,
-                                    status: request.status,
-                                })}
+                                onChange={(e) => setDescription(e.target.value)}
                             />
                         }
-                        {currentUser.uid === craftsman.uid ?
+                        {currentUser.uid === request.craftsman ?
                             <div className="flex flex-col items-center space-y-1">
                                 <Link tabIndex={0} href={`/catalog/${user.uid}`}>
                                     <figure className="relative btn btn-ghost btn-circle avatar rounded-full">
@@ -175,27 +184,27 @@ const InfoModal = ({request, setRequest, user, craftsman, requestID, index, erro
                             </div>
                         }
                         <p>Status: <span className={`${request.status === "waiting" ? "text-warning" : (request.status === "accepted" ? "text-success" : "text-error")}`}>{request.status}</span></p>
-                        {craftsman.uid === currentUser.uid && request.status === "waiting" && <div className="flex justify-center space-x-2">
-                            <button className="btn btn-success w-20" onClick={handleAccept}>
+                        {request.craftsman === currentUser.uid && request.status === "waiting" && <div className="flex justify-center space-x-2">
+                            <button className="btn btn-success w-20" type="button" onClick={handleAccept}>
                                 Accept
                             </button>
-                            <button className="btn btn-error w-20" onClick={handleDeny}>
+                            <button className="btn btn-error w-20" type="button" onClick={handleDeny}>
                                 Deny
                             </button>
                         </div>}
-                        {user.uid === currentUser.uid && request.status === "waiting" && editMode === false &&
+                        {request.user === currentUser.uid && request.status === "waiting" && editMode === false &&
                             <div className="flex justify-center space-x-2">
-                                <button className="btn btn-info w-20" onClick={handleEdit}>
+                                <button className="btn btn-info w-20" type="button" onClick={handleEdit}>
                                     Edit
                                 </button>
-                                <button className="btn btn-error w-20" onClick={handleCancel}>
+                                <button className="btn btn-error w-20" type="button" onClick={handleCancel}>
                                     Cancel
                                 </button>
                             </div>
                         }
-                        {user.uid === currentUser.uid && request.status === "waiting" && editMode === true &&
+                        {request.user === currentUser.uid && request.status === "waiting" && editMode === true &&
                             <div className="flex justify-center space-x-2">
-                                <button className="btn btn-info w-20" onClick={handleSave}>
+                                <button className="btn btn-info w-20" type="button" onClick={handleSave}>
                                     Save
                                 </button>
                             </div>

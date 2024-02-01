@@ -10,6 +10,9 @@ import {getOrders, getRequests} from "../services/request";
 
 const Profile = () => {
     const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
+    const { setCurrentUser } = useUserStore((state) => ({setCurrentUser: state.setUser}));
+    const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
+    const [firstRender, setFirstRender] = useState(true);
     const [interests, setInterests] = useState([]);
     const [requests, setRequests] = useState([]);
     const [orders, setOrders] = useState([]);
@@ -30,39 +33,59 @@ const Profile = () => {
         if(!accessToken){
             void router.replace("/");
         }
-    }, []);
 
-    useEffect(() => {
-        getInterests(currentUser.email).then((products) => {
-            let interestsList = [];
-
-            products.map((product, index) => {
-                interestsList.push(<ProductCard key={index} product={product} productId={currentUser.interests[index]} inCatalog={false} />);
+        if(currentUser.uid && firstRender) {
+            Promise.all([getRequests(currentUser), getOrders(currentUser)]).then(([requests, orders]) => {
+                let userCopy = {...currentUser};
+                userCopy.requests = requests;
+                userCopy.orders = orders;
+                setCurrentUser(userCopy);
             });
 
-            setInterests(interestsList);
-        });
+            setFirstRender(false);
+        }
+    }, [currentUser]);
+
+    useEffect(() => {
+        if(currentUser.uid) {
+            getInterests(currentUser).then((products) => {
+                let interestsList = [];
+
+                products.map((product, index) => {
+                    interestsList.push(<ProductCard key={index} product={product}
+                                                    productId={currentUser.interests[index]} inCatalog={false}/>);
+                });
+
+                setInterests(interestsList);
+            });
+        }
     }, [currentUser.interests]);
 
     useEffect(() => {
-        getRequests(currentUser.email).then((products) => {
-            let requestsList = [];
+        if(currentUser.requests && currentUser.requests.length === 0) {
+            setRequests([]);
+        } else if(currentUser.uid) {
+            getRequests(currentUser).then((products) => {
+                let requestsList = [];
 
-            products.map((product, index) => {
-                requestsList.push(<RequestCard key={index} request={product} requestID={currentUser.requests[index]} index={"a" + index}/>);
+                products.map((product, index) => {
+                    requestsList.push(<RequestCard key={index} request={product} index={"a" + index}/>);
+                });
+
+                setRequests(requestsList);
             });
-
-            setRequests(requestsList);
-        });
+        }
     }, [currentUser.requests]);
 
     useEffect(() => {
-        if(currentUser.craft) {
-            getOrders(currentUser.email).then((products) => {
+        if(currentUser.orders && currentUser.orders.length === 0) {
+            setOrders([]);
+        } else if(currentUser.uid && currentUser.craft) {
+            getOrders(currentUser).then((products) => {
                 let ordersList = [];
 
                 products.map((product, index) => {
-                    ordersList.push(<RequestCard key={index} request={product} requestID={currentUser.orders[index]} index={index}/>);
+                    ordersList.push(<RequestCard key={index} request={product} index={index}/>);
                 });
 
                 setOrders(ordersList);
@@ -72,7 +95,7 @@ const Profile = () => {
 
     return (
         <div className="flex flex-col min-h-screen overflow-x-hidden">
-            <StandardLayout title="Profile page" page_content={ currentUser.uid ?
+            <StandardLayout title="Profile page" toggleDrawerContent={toggleDrawerContent} setToggleDrawerContent={setToggleDrawerContent} page_content={ currentUser.uid ?
                 <main className="flex flex-col flex-1 my-10 space-y-5 mx-5 sm:mx-10 md:mx-20 lg:mx-36 xl:mx-52 2xl:mx-72 justify-center items-center">
                     <div className="flex justify-center items-center mb-5 mt-10">
                         <div>
@@ -93,21 +116,21 @@ const Profile = () => {
                     </div>
                     <Collapse id={1} categoryName="My interests" content={ interests.length > 0 ?
                         <ItemsScroll listOfItems={interests} categoryName=""/> :
-                        <div className="flex items-center justify-center h-20">
-                            <p className="text-xl opacity-70">You haven't liked any products yet.</p>
+                        <div className="flex items-center justify-center ml-5 mr-5 h-20">
+                            <p className="text-xl opacity-60">You haven&apos;t liked any products yet.</p>
                         </div>
                     }/>
                     <Collapse id={2} categoryName="My Requests" content={requests.length > 0 ?
                         <ItemsScroll listOfItems={requests} categoryName=""/> :
-                        <div className="flex items-center justify-center h-20">
-                            <p className="text-xl opacity-70">You haven't made any requests yet.</p>
+                        <div className="flex items-center justify-center ml-5 mr-5 h-20">
+                            <p className="text-xl opacity-60">You haven&apos;t made any requests yet.</p>
                         </div>
                     }/>
                     {currentUser.craft &&
                         <Collapse id={3} categoryName="Received orders" content={orders.length > 0 ?
                             <ItemsScroll listOfItems={orders} categoryName=""/> :
-                            <div className="flex items-center justify-center h-20">
-                                <p className="text-xl opacity-70">You haven't received any orders yet.</p>
+                            <div className="flex items-center justify-center ml-5 mr-5 h-20">
+                                <p className="text-xl opacity-60">You haven&apos;t received any orders yet.</p>
                             </div>
                         }/>
                     }

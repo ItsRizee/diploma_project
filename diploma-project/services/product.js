@@ -1,7 +1,7 @@
-import {addDoc, collection, doc, getDoc, serverTimestamp} from "firebase/firestore";
+import {addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, where} from "firebase/firestore";
 import {getDownloadURL, ref, uploadBytesResumable} from "firebase/storage"
 import {auth, firestore, storage} from "../firebase";
-import {addProductToCatalog, getUserByEmail} from "./user";
+import {addProductToCatalog} from "./user";
 
 export class Product {
     #title;
@@ -168,88 +168,46 @@ export const getProduct = (id) => {
 }
 
 // returns list of products for a given catalogType ("catalog" or "interests")
-const getProductsByListType = (email, listType) => {
+const getProductsByListType = (user, listType) => {
     return new Promise((resolve) => {
-        getUserByEmail(email).then((user) => {
-            let promises = [];
-            let products = [];
-            let i = 0;
+        let products = [];
 
-            const listOfIndexes = listType === "catalog" ? user.catalog : user.interests;
+        const q = listType === "catalog" ?
+            query(collection(firestore, "products"), where("owner", "==", user.uid)) :
+            query(collection(firestore, "products"), where("interests", "array-contains", user.uid));
 
-            listOfIndexes.forEach((productId) => {
-                const promise = getProduct(productId)
-                    .then((product) => {
-                        if (product != null) {
-                            const item = {
-                                title: product.title,
-                                description: product.description,
-                                displayImageURL: product.displayImageURL,
-                                owner: product.owner,
-                                price: product.price,
-                                tags: product.tags,
-                                createdDate: product.createdDate,
-                                likes: product.likes,
-                                timeline: product.timeline,
-                                index: i++,
-                            };
-                            products.push(item);
-                        }
-                    });
-                promises.push(promise);
+        getDocs(q).then((snapshot) => {
+            snapshot.forEach((doc) => {
+                const product = doc.data();
+                const item = {
+                    title: product.title,
+                    description: product.description,
+                    displayImageURL: product.displayImageURL,
+                    owner: product.owner,
+                    price: product.price,
+                    tags: product.tags,
+                    createdDate: product.createdDate,
+                    likes: product.likes,
+                    timeline: product.timeline,
+                    id: doc.id,
+                };
+                products.push(item);
             });
 
-            // wait for all promises to finish up before resolving the main promise
-            Promise.all(promises).then(() => {
-                resolve(products);
-            });
+            // Sort products by createdDate in descending order (newest to oldest)
+            products.sort((a, b) => b.createdDate.toMillis() - a.createdDate.toMillis());
+
+            resolve(products);
         });
     });
 }
 
 // Function to get products from the catalog list
-export const getCatalog = (email) => {
-    return getProductsByListType(email, "catalog");
+export const getCatalog = (user) => {
+    return getProductsByListType(user, "catalog");
 }
 
 // Function to get products from the interests list
-export const getInterests = (email) => {
-    return getProductsByListType(email, "interests");
+export const getInterests = (user) => {
+    return getProductsByListType(user, "interests");
 }
-
-// export const getCatalog = (email) => {
-//     return new Promise((resolve) => {
-//         getUserByEmail(email).then((user) => {
-//             let promises = [];
-//             let products = [];
-//             let i = 0;
-//
-//             user.catalog.forEach((productId) => {
-//                 const promise = getProduct(productId)
-//                     .then((product) => {
-//                         if (product != null) {
-//                             const item = {
-//                                 title: product.title,
-//                                 description: product.description,
-//                                 displayImageURL: product.displayImageURL,
-//                                 owner: product.owner,
-//                                 price: product.price,
-//                                 tags: product.tags,
-//                                 createdDate: product.createdDate,
-//                                 likes: product.likes,
-//                                 timeline: product.timeline,
-//                                 index: i++,
-//                             }
-//                             products.push(item);
-//                         }
-//                     });
-//                 promises.push(promise);
-//             });
-//
-//             // wait for all promises to finish up before resolving the main promise
-//             Promise.all(promises).then(() => {
-//                 resolve(products);
-//             });
-//         });
-//     });
-// }

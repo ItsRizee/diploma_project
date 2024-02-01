@@ -14,7 +14,7 @@ export class User {
     #orders;
     #catalog;
 
-    constructor(name = "", email = "", photoURL = null, uid = null, interests = [], requests = [], craft = null, orders = null, catalog = null) {
+    constructor(name = "", email = "", photoURL = null, uid = null, interests = [], requests = [], craft = null, orders = [], catalog = null) {
         this.#name = name;
         this.#email = email;
         this.#photoURL = photoURL;
@@ -109,9 +109,7 @@ export const addUser = (name, email, uid) => {
                 photoURL: null,
                 uid: uid,
                 interests: [],
-                requests: [],
                 craft: null,
-                orders: null,
                 catalog: null,
         }).then(() => {
             resolve(null);
@@ -135,9 +133,9 @@ const getUserByQuery = (q) => {
                 user.photoURL = data.photoURL;
                 user.uid = data.uid;
                 user.interests = data.interests;
-                user.requests = data.requests;
+                user.requests = [];
                 user.craft = data.craft;
-                user.orders = data.orders;
+                user.orders = [];
                 user.catalog = data.catalog;
             });
 
@@ -162,6 +160,7 @@ export const getUserById = (uid) => {
 
 export const getUserDoc = (uid) => {
     return new Promise((resolve) => {
+        console.log(uid);
         const q = query(collection(firestore, "users"), where("uid", "==", uid));
         getDocs(q).then((snapshot) => {
             resolve(snapshot.docs[0].ref); // Assuming there is only one document for a specific user
@@ -263,7 +262,7 @@ export const UpdateProfileToCraftsman = (craft) => {
     return new Promise((resolve, reject) => {
         getUserDoc(auth.currentUser.uid).then((docRef) => {
             // Use updateDoc to update the document
-            updateDoc(docRef, { craft: craft, orders: [], catalog: [] })
+            updateDoc(docRef, { craft: craft, catalog: [] })
                 .then(() => {
                     resolve();
                 })
@@ -305,9 +304,9 @@ export const getAllCraftsman = () => {
                     user.photoURL = data.photoURL;
                     user.uid = data.uid;
                     user.interests = data.interests;
-                    user.requests = data.requests;
+                    user.requests = [];
                     user.craft = data.craft;
-                    user.orders = data.orders;
+                    user.orders = [];
                     user.catalog = data.catalog;
 
                     users.push(user);
@@ -319,83 +318,71 @@ export const getAllCraftsman = () => {
     });
 }
 
-const updateUserRequests = (userId, updatedRequests) => {
-    return new Promise((resolve, reject) => {
-        getUserDoc(userId).then((userDocRef) => {
-            updateDoc(userDocRef, { requests: updatedRequests })
-                .then(() => {
-                    resolve();
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    });
-};
+// const updateUserRequests = (userId, updatedRequests) => {
+//     return new Promise((resolve, reject) => {
+//         getUserDoc(userId).then((userDocRef) => {
+//             updateDoc(userDocRef, { requests: updatedRequests })
+//                 .then(() => {
+//                     resolve();
+//                 })
+//                 .catch((error) => {
+//                     reject(error);
+//                 });
+//         });
+//     });
+// };
+//
+// const updateCraftsmanOrders = (craftsmanId, updatedOrders) => {
+//     return new Promise((resolve, reject) => {
+//         getUserDoc(craftsmanId).then((craftsmanDocRef) => {
+//             updateDoc(craftsmanDocRef, { orders: updatedOrders })
+//                 .then(() => {
+//                     resolve();
+//                 })
+//                 .catch((error) => {
+//                     reject(error);
+//                 });
+//         });
+//     });
+// };
 
-const updateCraftsmanOrders = (craftsmanId, updatedOrders) => {
-    return new Promise((resolve, reject) => {
-        getUserDoc(craftsmanId).then((craftsmanDocRef) => {
-            updateDoc(craftsmanDocRef, { orders: updatedOrders })
-                .then(() => {
-                    resolve();
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    });
-};
-
-export const addRequestToList = (requestId, user, craftsman) => {
-    return new Promise((resolve, reject) => {
-        user.requests.push(requestId);
-        craftsman.orders.push(requestId);
-
-        Promise.all([
-            updateUserRequests(user.uid, user.requests),
-            updateCraftsmanOrders(craftsman.uid, craftsman.orders)
-        ]).then(() => {
-            resolve();
-        }).catch((error) => {
-            reject(error);
-        });
-    });
-}
-
-export const removeRequestFromList = (requestId, user, setUser, craftsman, setCraftsman) => {
-    return new Promise((resolve, reject) => {
-        console.log("Before removing request from lists");
-        console.log(requestId);
-        console.log(user.requests);
-        console.log(craftsman.orders);
-
-        let requests = user.requests.filter(id => id !== requestId);
-        setUser(prevUser => ({
-            ...prevUser,
-            requests: requests,
-        }));
-
-        let orders = craftsman.orders.filter(id => id !== requestId);
-        setCraftsman(prevCraftsman => ({
-            ...prevCraftsman,
-            orders: orders,
-        }));
-
-        console.log("Removed request from lists");
-        console.log(requestId);
-        console.log(user.requests);
-        console.log(requests);
-        console.log(craftsman.orders);
-        console.log(orders);
-
-        Promise.all([
-            updateUserRequests(user.uid, requests),
-            updateCraftsmanOrders(craftsman.uid, orders)
-        ]).then(() => {
-            resolve();
-        }).catch((error) => {
-            reject(error);
-        });
-    });
-};
+// export const addRequestToList = (requestId, user, craftsman) => {
+//     return new Promise((resolve, reject) => {
+//         user.requests.push(requestId);
+//         craftsman.orders.push(requestId);
+//
+//         Promise.all([
+//             updateUserRequests(user.uid, user.requests),
+//             updateCraftsmanOrders(craftsman.uid, craftsman.orders)
+//         ]).then(() => {
+//             resolve();
+//         }).catch((error) => {
+//             reject(error);
+//         });
+//     });
+// }
+//
+// export const removeRequestFromList = (requestId, user, setUser, craftsman, setCraftsman) => {
+//     return new Promise((resolve, reject) => {
+//         let requests = user.requests.filter(id => id !== requestId);
+//         setUser(prevUser => ({
+//             ...prevUser,
+//             requests: requests,
+//         }));
+//
+//         let orders = craftsman.orders.filter(id => id !== requestId);
+//         setCraftsman(prevCraftsman => ({
+//             ...prevCraftsman,
+//             orders: orders,
+//         }));
+//
+//         Promise.all([
+//             updateUserRequests(user.uid, requests),
+//             updateCraftsmanOrders(craftsman.uid, orders)
+//         ]).then(() => {
+//             resolve();
+//         }).catch((error) => {
+//             reject(error);
+//         });
+//     });
+// };

@@ -60,12 +60,17 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
                         }
                     </button>
                 </h3>
-                <div className="flex justify-start flex-wrap mt-2">
+                <div className="flex h-full justify-start flex-wrap mt-2">
                     {product.tags.map((item, index) => (
                         <div key={index} className="badge badge-outline whitespace-nowrap mb-3 mr-3 p-3">
                             {item}
                         </div>
                     ))}
+                    {product.tags.length === 0 &&
+                        <p className="flex-1 opacity-60">
+                            There are no tags for this product.
+                        </p>
+                    }
                 </div>
                 {!inCatalog &&
                     <div className="flex items-center mt-4 space-x-4">

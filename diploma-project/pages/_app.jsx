@@ -6,8 +6,11 @@ import auth, { firestore } from '../firebase';
 import { useUserStore } from '../store/userStorage';
 import {getUserByEmail, User} from '../services/user';
 import {ThemeProvider} from "next-theme";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const MyApp = ({ Component, pageProps }) => {
+  const { user } = useUserStore((state) => ({user: state.user}));
   const { setUser } = useUserStore((state) => ({setUser: state.setUser}));
 
   useEffect(() => {
@@ -35,9 +38,9 @@ const MyApp = ({ Component, pageProps }) => {
               photoURL: data.photoURL,
               uid: data.uid,
               interests: data.interests,
-              requests: data.requests,
+              requests: user.requests,
               craft: data.craft,
-              orders: data.orders,
+              orders: user.orders,
               catalog: data.catalog,
             };
           });
@@ -69,6 +72,7 @@ const MyApp = ({ Component, pageProps }) => {
   return (
       <ThemeProvider defaultTheme="system" attribute="data-theme">
         <Component {...pageProps} />
+        <ToastContainer/>
       </ThemeProvider>
   );
 };

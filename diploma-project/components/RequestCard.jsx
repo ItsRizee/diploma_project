@@ -7,53 +7,49 @@ import {default_profile_picture} from "../public/constants";
 import {InfoModal} from "./index";
 import {deleteRequest} from "../services/request";
 
-const RequestCard = ({request, requestID, index}) => {
+const RequestCard = ({request, index}) => {
     const {currentUser} = useUserStore((state) => ({currentUser: state.user}));
+    const { setCurrentUser } = useUserStore((state) => ({setCurrentUser: state.setUser}));
     const [craftsman, setCraftsman] = useState(null);
     const [user, setUser] = useState(null);
     const [stateRequest, setStateRequest] = useState(request);
     const [error, setError] = useState("");
 
-    const handleDelete = () => {
-        getUserById(stateRequest.craftsman).then((craftsmanData) => {
-            getUserById(stateRequest.user).then((userData) => {
-                if(user.requests.join() === userData.requests.join() && craftsman.orders.join() === craftsmanData.orders.join()){
-                    deleteRequest(requestID, user, setUser, craftsman, setCraftsman).catch((error) => {
-                        setError(error);
-                    });
-                } else {
-                    setError("Can't delete because there is mismatch in the information. Please reload the page and try again!");
-                }
-            });
+    const handleDelete = (event) => {
+        event.preventDefault();
+
+        console.log(user);
+        console.log(currentUser);
+        deleteRequest(request.id, currentUser, setCurrentUser).catch((error) => {
+            setError(error);
         });
     };
 
     useEffect(() => {
-        getUserById(stateRequest.craftsman).then((craftsmanData) => {
-            setCraftsman(craftsmanData);
-        });
+        if(!craftsman && !user) {
+            if (currentUser.uid === request.craftsman) {
+                getUserById(request.user).then((userData) => {
+                    setUser(userData);
+                });
+            } else {
+                getUserById(request.craftsman).then((craftsmanData) => {
+                    setCraftsman(craftsmanData);
+                });
+            }
+        }
+    }, []);
 
-        getUserById(stateRequest.user).then((userData) => {
-            setUser(userData);
-        });
-    }, [craftsman, user]);
-
-    if(!user || !craftsman) {
+    if(!user && !craftsman) {
         return (
-            <div className="flex flex-col gap-4 w-52">
-                <div className="skeleton h-32 w-full"></div>
-                <div className="skeleton h-4 w-28"></div>
-                <div className="skeleton h-4 w-full"></div>
-                <div className="skeleton h-4 w-full"></div>
-            </div>
+            <div className="skeleton w-72 h-52"></div>
         );
     }
 
     return (
-        <article className="card bg-base-100 w-72">
+        <article className="card bg-base-100 w-48 sm:w-72">
             <div className="card-body items-center text-center space-y-3">
-                <h2 className="card-title">{stateRequest.title} {requestID}</h2>
-                {currentUser.uid === craftsman.uid ?
+                <h2 className="card-title">{stateRequest.title}</h2>
+                {!craftsman ?
                     <div className="flex flex-col items-center space-y-1">
                         <Link tabIndex={0} href={`/catalog/${user.uid}`}>
                             <figure className="relative btn btn-ghost btn-circle avatar rounded-full">
@@ -77,11 +73,10 @@ const RequestCard = ({request, requestID, index}) => {
                 <p>Status: <span
                     className={`${stateRequest.status === "waiting" ? "text-warning" : (stateRequest.status === "accepted" ? "text-success" : "text-error")}`}>{stateRequest.status}</span>
                 </p>
-                <InfoModal request={stateRequest} setRequest={setStateRequest} user={user} craftsman={craftsman}
-                           requestID={requestID} index={index} error={error} setError={setError}/>
+                <InfoModal request={stateRequest} setRequest={setStateRequest} user={user} craftsman={craftsman} index={index} error={error} setError={setError}/>
             </div>
             {(stateRequest.status === "denied" || stateRequest.status === "canceled") &&
-                <button className="flex absolute -top-3.5 -right-3.5 transition-transform transform hover:scale-110" onClick={handleDelete}>
+                <button className="flex absolute -top-3.5 -right-3.5 transition-transform transform hover:scale-110" type="button" onClick={handleDelete}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                          className="w-8 h-8 text-red-600">
                         <path fillRule="evenodd"

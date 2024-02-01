@@ -12,26 +12,12 @@ const Catalog = ({craftsman}) => {
     const {currentUser} = useUserStore((state) => ({currentUser: state.user}));
     const [isLogged, setIsLogged] = useState(false);
     const [products, setProducts] = useState(null);
-    const drawerState = useState(true);
-    const [toggleDrawerContent, setToggleDrawerContent] = drawerState;
+    const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
-        getCatalog(craftsman.email).then((products) => {
-            setProducts(
-                products.map((product) => (
-                    new Product(
-                        product.title,
-                        product.description,
-                        product.displayImageURL,
-                        product.owner,
-                        product.price,
-                        product.createdDate,
-                        product.likes,
-                        product.tags
-                    )
-                ))
-            );
+        getCatalog(craftsman).then((catalog) => {
+            setProducts(catalog);
         });
     }, [craftsman.catalog]);
 
@@ -52,7 +38,7 @@ const Catalog = ({craftsman}) => {
 
     return (
         <div className="flex flex-col min-h-screen overflow-x-hidden">
-            <StandardLayout title="Catalog page" craftsman={craftsman} drawerState={drawerState} page_content={products ?
+            <StandardLayout title="Catalog page" craftsman={craftsman} toggleDrawerContent={toggleDrawerContent} setToggleDrawerContent={setToggleDrawerContent} page_content={products ?
                 <main
                     className="flex flex-col flex-1 my-10 space-y-5 mx-5 sm:mx-10 md:mx-20 lg:mx-36 xl:mx-52 2xl:mx-72 justify-center items-center">
                     <div className="flex flex-col flex-1 mb-5 mt-10 space-y-10 items-center">
@@ -70,12 +56,12 @@ const Catalog = ({craftsman}) => {
                         </div>
                         { products.length !== 0 ?
                             <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 sm:gap-x-5 2xl:gap-x-16 gap-y-16">
-                                {products.slice().reverse().map((product, index) => (
+                                {products.map((product, index) => (
                                     <ProductCard
                                         key={index}
                                         product={product}
                                         inCatalog={true}
-                                        productId={craftsman.catalog[products.length - index - 1]}
+                                        productId={product.id}
                                     />
                                 ))}
                             </div> :
@@ -104,9 +90,9 @@ export async function getServerSideProps({ params }) {
                 photoURL: userData.photoURL,
                 uid: userData.uid,
                 interests: userData.interests,
-                requests: userData.requests,
+                requests: [],
                 craft: userData.craft,
-                orders: userData.orders,
+                orders: [],
                 catalog: userData.catalog,
             }
 
