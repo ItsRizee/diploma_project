@@ -1,6 +1,5 @@
 import {addDoc, collection, doc, getDoc, updateDoc, deleteDoc, query, where, getDocs} from "firebase/firestore";
 import {firestore} from "../firebase";
-import {addRequestToList, getUserByEmail, removeRequestFromList, User} from "./user";
 
 export class Request {
     #title;
@@ -58,7 +57,7 @@ export class Request {
     }
 }
 
-export const addRequest = (title, description, user, setUser, craftsmanUID, status) => {
+export const addRequest = (title, description, user, craftsmanUID, status) => {
     return new Promise((resolve, reject) => {
         addDoc(
             collection(firestore, "requests"),
@@ -69,20 +68,7 @@ export const addRequest = (title, description, user, setUser, craftsmanUID, stat
                 craftsman: craftsmanUID,
                 status: status,
             })
-            .then((doc) => {
-                // addRequestToList(doc.id, user, craftsman)
-                //     .then(() => {
-                //         resolve();
-                //     })
-                //     .catch((errorMessage) => {
-                //         reject(errorMessage);
-                // });
-                // NEW CODE
-                let requests = [...user.requests, doc.id];
-                let userCopy = {...user};
-                userCopy.requests = requests;
-                setUser(userCopy);
-
+            .then(() => {
                 resolve();
             })
             .catch((error) => {
@@ -100,21 +86,6 @@ export const getRequest = (id) => {
                 resolve(documentSnapshot.data());
             } else {
                 reject("Request doesn't exist");
-            }
-        });
-
-    });
-}
-
-// return request's data
-export const getRequestDoc = (id) => {
-    return new Promise((resolve) => {
-        const docRef = doc(firestore, "requests", id);
-        getDoc(docRef).then((documentSnapshot) => {
-            if(documentSnapshot.exists()){
-                resolve(documentSnapshot.ref);
-            } else {
-                resolve(null);
             }
         });
 
@@ -167,31 +138,25 @@ export const getOrders = (user) => {
 
 export const updateRequest = (requestID, title, description) => {
     return new Promise((resolve, reject) => {
-        getRequestDoc(requestID).then((docRef) => {
-            // Use updateDoc to update the document
-            updateDoc(docRef, { title: title, description: description })
-                .then(() => {
-                    resolve();
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
+        updateDoc(doc(firestore, "requests", requestID), { title: title, description: description })
+            .then(() => {
+                resolve();
+            })
+            .catch((error) => {
+                reject(error);
+            });
     });
 }
 
 export const updateStatus = (requestID, newStatus) => {
     return new Promise((resolve, reject) => {
-        getRequestDoc(requestID).then((docRef) => {
-            // Use updateDoc to update the document
-            updateDoc(docRef, { status: newStatus })
-                .then(() => {
-                    resolve();
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
+        updateDoc(doc(firestore, "requests", requestID), { status: newStatus })
+            .then(() => {
+                resolve();
+            })
+            .catch((error) => {
+                reject(error);
+            });
     });
 }
 
@@ -206,28 +171,20 @@ export const deleteRequest = (requestId, user, setUser) => {
                     // Remove the request from Firestore
                     deleteDoc(requestDocRef)
                         .then(() => {
-                            // Remove the request from user's and craftsman's lists
-                            // removeRequestFromList(requestId, user, setUser, craftsman, setCraftsman)
-                            //     .then(() => {
-                            //         resolve();
-                            //     })
-                            //     .catch((errorMessage) => {
-                            //         console.log(errorMessage);
-                            //         reject(errorMessage);
-                            // });
-                            // NEW CODE
-                            console.log("Before:");
-                            console.log(user.orders);
-                            console.log(requestId);
-
                             let orders = user.orders.filter(request => request.id !== requestId);
 
-                            console.log("After:")
-                            console.log(orders);
+                            setUser({
+                                name: user.name,
+                                email: user.email,
+                                photoURL: user.photoURL,
+                                uid: user.uid,
+                                interests: user.interests,
+                                requests: user.requests,
+                                craft: user.craft,
+                                orders : orders,
+                                catalog: user.catalog
+                            });
 
-                            let userCopy = {...user};
-                            userCopy.orders = orders;
-                            setUser(userCopy);
                             resolve();
                         })
                         .catch((error) => {

@@ -38,7 +38,7 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
     }, []);
 
     const calculateTranslation = () => {
-        const spacingInPixels = 8; // Assuming a constant spacing of 8 pixels
+        const spacingInPixels = 16; // Assuming a constant spacing of 8 pixels
         return curr * (cardWidthRef.current + spacingInPixels);
     };
 
@@ -47,7 +47,7 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
             <h2 className="font-bold text-xl sm:text-2xl my-5">{categoryName}</h2>
             <div className="overflow-hidden relative shadow-2xl rounded-box" ref={containerRef}>
                 <div
-                    className="flex w-full h-full transition-transform ease-out duration-500 space-x-2"
+                    className="flex w-full h-full transition-transform ease-out duration-500 space-x-4"
                     style={{ transform: `translateX(-${calculateTranslation()}px)` }}
                 >
                     {listOfItems.map((item, index) => (
@@ -59,11 +59,11 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
                         </div>
                     ))}
                 </div>
-                <div className="absolute inset-0 flex items-center justify-between p-4">
-                    <button onClick={prev} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white">
+                <div className="absolute inset-0 flex items-center justify-between p-4 pointer-events-none">
+                    <button onClick={prev} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white pointer-events-auto">
                         <ChevronLeft className="text-base-100" size={40} />
                     </button>
-                    <button onClick={next} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white">
+                    <button onClick={next} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white pointer-events-auto">
                         <ChevronRight className="text-base-100" size={40} />
                     </button>
                 </div>

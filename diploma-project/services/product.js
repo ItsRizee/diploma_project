@@ -1,7 +1,7 @@
-import {addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, where} from "firebase/firestore";
+import {addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where} from "firebase/firestore";
 import {getDownloadURL, ref, uploadBytesResumable} from "firebase/storage"
 import {auth, firestore, storage} from "../firebase";
-import {addProductToCatalog} from "./user";
+import {addProductToCatalog, getUserById} from "./user";
 
 export class Product {
     #title;
@@ -14,7 +14,7 @@ export class Product {
     #timeline;
     #tags;
 
-    constructor(title = "", description = "", displayImageURL = null, owner = null, price = null, createdDate = null, likes = 0, timeline = [], tags = []) {
+    constructor(title = "", description = "", displayImageURL = null, owner = null, price = null, createdDate = null, likes = [], timeline = [], tags = []) {
         this.#title = title;
         this.#description = description;
         this.#displayImageURL = displayImageURL;
@@ -131,7 +131,7 @@ export const addProduct = (title, description, image, catalog, price, timeline =
                                 tags: tags,
                                 timeline: timeline,
                                 createdDate: serverTimestamp(),
-                                likes: 0,
+                                likes: [],
                         }).then((doc) => {
                             addProductToCatalog(doc.id, catalog)
                                 .then(() => {
@@ -167,6 +167,18 @@ export const getProduct = (id) => {
     });
 }
 
+export const updateLikesOfProduct = (productID, likes) => {
+    return new Promise((resolve, reject) => {
+        updateDoc(doc(firestore, "products", productID), { likes: likes })
+            .then(() => {
+                resolve();
+            })
+            .catch((error) => {
+                reject(error);
+            });
+    });
+}
+
 // returns list of products for a given catalogType ("catalog" or "interests")
 const getProductsByListType = (user, listType) => {
     return new Promise((resolve) => {
@@ -174,7 +186,7 @@ const getProductsByListType = (user, listType) => {
 
         const q = listType === "catalog" ?
             query(collection(firestore, "products"), where("owner", "==", user.uid)) :
-            query(collection(firestore, "products"), where("interests", "array-contains", user.uid));
+            query(collection(firestore, "products"), where("likes", "array-contains", user.uid));
 
         getDocs(q).then((snapshot) => {
             snapshot.forEach((doc) => {
@@ -210,4 +222,71 @@ export const getCatalog = (user) => {
 // Function to get products from the interests list
 export const getInterests = (user) => {
     return getProductsByListType(user, "interests");
+}
+
+export const getNewProducts = () => {
+    return new Promise((resolve) => {
+        // Get the current time and calculate the timestamp for 24 hours ago
+        const currentTime = new Date();
+        const twentyFourHoursAgo = new Date(currentTime - 86400000); // 86400000 milliseconds in 24 hours
+
+        getDocs(query(collection(firestore, "products"), where('createdDate', '>', twentyFourHoursAgo))).then((querySnapshot) => {
+            let newProducts = [];
+            let promises = [];
+
+            querySnapshot.forEach((doc) => {
+                const product = doc.data();
+                let promise = getUserById(product.owner).then((userData) => {
+                    const item = {
+                        name: userData.name,
+                        photoURL: userData.photoURL,
+                        userID: product.owner,
+                        productID: doc.id,
+                    }
+
+                    newProducts.push(item);
+                });
+
+                promises.push(promise);
+            });
+
+            Promise.all(promises).then(() => {
+                resolve(newProducts);
+            });
+        });
+    });
+}
+
+export const getTrendingProducts = () => {
+    return new Promise((resolve) => {
+        // Get the current time and calculate the timestamp for a week ago
+        const currentTime = new Date();
+        const weekAgo = new Date(currentTime - 604800000);
+
+        getDocs(query(collection(firestore, "products"), where('createdDate', '>', weekAgo))).then((querySnapshot) => {
+            let newProducts = [];
+            let promises = [];
+
+            querySnapshot.forEach((doc) => {
+                const product = doc.data();
+                let promise = getUserById(product.owner).then((userData) => {
+                    const item = {
+                        title: product.title,
+                        description: product.description,
+                        likes: product.likes,
+                        displayImageURL: product.displayImageURL,
+                        id: doc.id,
+                    }
+
+                    newProducts.push(item);
+                });
+
+                promises.push(promise);
+            });
+
+            Promise.all(promises).then(() => {
+                resolve(newProducts);
+            });
+        });
+    });
 }

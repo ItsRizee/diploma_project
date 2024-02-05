@@ -18,7 +18,7 @@ export const newProducts = [<AvatarIcon key="1" img="/profile_picture.png" usern
     <AvatarIcon key="14" img="/profile_picture.png" username="Plamen"/>, <AvatarIcon key="15" img="/profile_picture.png" username="Lachezar"/>,
     <AvatarIcon key="16" img="/profile_picture.png" username="Kiril"/>];
 
-export const trending = [<TrendingCard key="1"/>, <TrendingCard key="2"/>, <TrendingCard key="3"/>];
+export const trending = [<TrendingCard key="1"/>, <TrendingCard key="2"/>, <TrendingCard key="3"/>, <TrendingCard key="4"/>, <TrendingCard key="5"/>];
 
 const product = new Product(
     "Silver ring",

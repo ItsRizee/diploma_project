@@ -1,15 +1,18 @@
 import Image from "next/future/image";
 import {default_profile_picture} from "../public/constants";
 import {useEffect, useState} from "react";
-import {getUserById, User} from "../services/user";
+import {getUserById, updateInterestsOfUser, User} from "../services/user";
+import {updateLikesOfProduct} from "../services/product";
 import {Timestamp} from "firebase/firestore";
 import {useRouter} from "next/router";
 import Link from "next/link";
+import {useUserStore} from "../store/userStorage";
 
 const ProductCard = ({product, inCatalog = false, productId}) => {
+    const { currentUser, setCurrentUser } = useUserStore((state) => ({currentUser: state.user, setCurrentUser: state.setUser}));
     const [isNew, setIsNew] = useState(false);
     const [owner, setOwner] = useState(new User());
-    const [isLiked, setIsLiked] = useState(false);
+    const [isLiked, setIsLiked] = useState(product.likes.includes(currentUser.uid));
     const router = useRouter();
 
     useEffect(() => {
@@ -28,6 +31,34 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
     };
 
     const onLike = () => {
+        let interests;
+
+        if(isLiked){
+            product.likes = product.likes.filter(uid => uid !== currentUser.uid);
+            interests = currentUser.interests.filter(id => id !== productId);
+        } else {
+            product.likes.push(currentUser.uid);
+            interests = [...currentUser.interests, productId];
+        }
+        updateLikesOfProduct(productId, product.likes).catch((error) => {
+            console.log(error);
+        });
+
+        setCurrentUser({
+            name: currentUser.name,
+            email: currentUser.email,
+            photoURL: currentUser.photoURL,
+            uid: currentUser.uid,
+            interests: interests,
+            requests: currentUser.requests,
+            craft: currentUser.craft,
+            orders : currentUser.orders,
+            catalog: currentUser.catalog
+        });
+        updateInterestsOfUser(interests).catch((error) => {
+           console.log(error);
+        });
+
         setIsLiked(() => !isLiked);
     };
 

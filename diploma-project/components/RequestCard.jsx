@@ -8,8 +8,7 @@ import {InfoModal} from "./index";
 import {deleteRequest} from "../services/request";
 
 const RequestCard = ({request, index}) => {
-    const {currentUser} = useUserStore((state) => ({currentUser: state.user}));
-    const { setCurrentUser } = useUserStore((state) => ({setCurrentUser: state.setUser}));
+    const { currentUser, setCurrentUser } = useUserStore((state) => ({currentUser: state.user, setCurrentUser: state.setUser}));
     const [craftsman, setCraftsman] = useState(null);
     const [user, setUser] = useState(null);
     const [stateRequest, setStateRequest] = useState(request);
@@ -18,8 +17,6 @@ const RequestCard = ({request, index}) => {
     const handleDelete = (event) => {
         event.preventDefault();
 
-        console.log(user);
-        console.log(currentUser);
         deleteRequest(request.id, currentUser, setCurrentUser).catch((error) => {
             setError(error);
         });

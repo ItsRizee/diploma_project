@@ -9,8 +9,7 @@ import {getInterests} from "../services/product";
 import {getOrders, getRequests} from "../services/request";
 
 const Profile = () => {
-    const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
-    const { setCurrentUser } = useUserStore((state) => ({setCurrentUser: state.setUser}));
+    const { currentUser, setCurrentUser } = useUserStore((state) => ({currentUser: state.user, setCurrentUser: state.setUser}));
     const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
     const [firstRender, setFirstRender] = useState(true);
     const [interests, setInterests] = useState([]);
@@ -34,12 +33,19 @@ const Profile = () => {
             void router.replace("/");
         }
 
-        if(currentUser.uid && firstRender) {
+        if(currentUser.uid !== null && firstRender) {
             Promise.all([getRequests(currentUser), getOrders(currentUser)]).then(([requests, orders]) => {
-                let userCopy = {...currentUser};
-                userCopy.requests = requests;
-                userCopy.orders = orders;
-                setCurrentUser(userCopy);
+                setCurrentUser({
+                    name: currentUser.name,
+                    email: currentUser.email,
+                    photoURL: currentUser.photoURL,
+                    uid: currentUser.uid,
+                    interests: currentUser.interests,
+                    requests: requests,
+                    craft: currentUser.craft,
+                    orders : orders,
+                    catalog: currentUser.catalog
+                });
             });
 
             setFirstRender(false);
@@ -47,7 +53,7 @@ const Profile = () => {
     }, [currentUser]);
 
     useEffect(() => {
-        if(currentUser.uid) {
+        if(currentUser.uid !== null) {
             getInterests(currentUser).then((products) => {
                 let interestsList = [];
 
@@ -64,7 +70,7 @@ const Profile = () => {
     useEffect(() => {
         if(currentUser.requests && currentUser.requests.length === 0) {
             setRequests([]);
-        } else if(currentUser.uid) {
+        } else if(currentUser.uid !== null) {
             getRequests(currentUser).then((products) => {
                 let requestsList = [];
 
@@ -80,7 +86,7 @@ const Profile = () => {
     useEffect(() => {
         if(currentUser.orders && currentUser.orders.length === 0) {
             setOrders([]);
-        } else if(currentUser.uid && currentUser.craft) {
+        } else if(currentUser.uid !== null && currentUser.craft !== null) {
             getOrders(currentUser).then((products) => {
                 let ordersList = [];
 
@@ -88,6 +94,9 @@ const Profile = () => {
                     ordersList.push(<RequestCard key={index} request={product} index={index}/>);
                 });
 
+                console.log("here");
+                console.log(products);
+                console.log(ordersList);
                 setOrders(ordersList);
             });
         }
@@ -115,20 +124,20 @@ const Profile = () => {
                         </div>
                     </div>
                     <Collapse id={1} categoryName="My interests" content={ interests.length > 0 ?
-                        <ItemsScroll listOfItems={interests} categoryName=""/> :
+                        <ItemsScroll listOfItems={interests}/> :
                         <div className="flex items-center justify-center ml-5 mr-5 h-20">
                             <p className="text-xl opacity-60">You haven&apos;t liked any products yet.</p>
                         </div>
                     }/>
                     <Collapse id={2} categoryName="My Requests" content={requests.length > 0 ?
-                        <ItemsScroll listOfItems={requests} categoryName=""/> :
+                        <ItemsScroll listOfItems={requests}/> :
                         <div className="flex items-center justify-center ml-5 mr-5 h-20">
                             <p className="text-xl opacity-60">You haven&apos;t made any requests yet.</p>
                         </div>
                     }/>
                     {currentUser.craft &&
                         <Collapse id={3} categoryName="Received orders" content={orders.length > 0 ?
-                            <ItemsScroll listOfItems={orders} categoryName=""/> :
+                            <ItemsScroll listOfItems={orders}/> :
                             <div className="flex items-center justify-center ml-5 mr-5 h-20">
                                 <p className="text-xl opacity-60">You haven&apos;t received any orders yet.</p>
                             </div>

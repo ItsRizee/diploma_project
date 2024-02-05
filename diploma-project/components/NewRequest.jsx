@@ -4,8 +4,7 @@ import {addRequest} from "../services/request";
 import {useUserStore} from "../store/userStorage";
 
 const NewRequest = ({craftsman}) => {
-    const {currentUser} = useUserStore((state) => ({currentUser: state.user}));
-    const { setCurrentUser } = useUserStore((state) => ({setCurrentUser: state.setUser}));
+    const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
     const [requestTitle, setRequestTitle] = useState("");
     const [requestDescription, setRequestDescription] = useState("");
     const [error, setError] = useState(null);
@@ -13,9 +12,7 @@ const NewRequest = ({craftsman}) => {
     const onSubmit = (event) => {
         event.preventDefault();
 
-        console.log(currentUser);
-
-        addRequest(requestTitle, requestDescription, currentUser, setCurrentUser, craftsman.uid, "waiting")
+        addRequest(requestTitle, requestDescription, currentUser, craftsman.uid, "waiting")
             .then(() => {
                 setRequestTitle("");
                 setRequestDescription("");
