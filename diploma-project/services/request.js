@@ -168,22 +168,41 @@ export const deleteRequest = (requestId, user, setUser) => {
         getDoc(requestDocRef)
             .then((requestDoc) => {
                 if (requestDoc.exists()) {
+                    // checks if it is delete or cancel operation => change orders or requests arrays
+                    const isDelete = requestDoc.data().craftsman === user.uid;
+
                     // Remove the request from Firestore
                     deleteDoc(requestDocRef)
                         .then(() => {
-                            let orders = user.orders.filter(request => request.id !== requestId);
+                            if(isDelete) {
+                                let orders = user.orders.filter(request => request.id !== requestId);
 
-                            setUser({
-                                name: user.name,
-                                email: user.email,
-                                photoURL: user.photoURL,
-                                uid: user.uid,
-                                interests: user.interests,
-                                requests: user.requests,
-                                craft: user.craft,
-                                orders : orders,
-                                catalog: user.catalog
-                            });
+                                setUser({
+                                    name: user.name,
+                                    email: user.email,
+                                    photoURL: user.photoURL,
+                                    uid: user.uid,
+                                    interests: user.interests,
+                                    requests: user.requests,
+                                    craft: user.craft,
+                                    orders: orders,
+                                    catalog: user.catalog
+                                });
+                            } else {
+                                let requests = user.requests.filter(request => request.id !== requestId);
+
+                                setUser({
+                                    name: user.name,
+                                    email: user.email,
+                                    photoURL: user.photoURL,
+                                    uid: user.uid,
+                                    interests: user.interests,
+                                    requests: requests,
+                                    craft: user.craft,
+                                    orders: user.orders,
+                                    catalog: user.catalog
+                                });
+                            }
 
                             resolve();
                         })

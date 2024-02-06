@@ -6,6 +6,7 @@ import Image from "next/future/image";
 import {default_profile_picture} from "../public/constants";
 import {InfoModal} from "./index";
 import {deleteRequest} from "../services/request";
+import {Bounce, toast} from "react-toastify";
 
 const RequestCard = ({request, index}) => {
     const { currentUser, setCurrentUser } = useUserStore((state) => ({currentUser: state.user, setCurrentUser: state.setUser}));
@@ -14,11 +15,22 @@ const RequestCard = ({request, index}) => {
     const [stateRequest, setStateRequest] = useState(request);
     const [error, setError] = useState("");
 
+    const errorToast = (content) => toast.error(content, {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: true,
+        closeOnClick: false,
+        pauseOnHover: false,
+        draggable: true,
+        theme: "colored",
+        transition: Bounce,
+    });
+
     const handleDelete = (event) => {
         event.preventDefault();
 
         deleteRequest(request.id, currentUser, setCurrentUser).catch((error) => {
-            setError(error);
+            errorToast(error);
         });
     };
 

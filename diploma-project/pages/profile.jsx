@@ -57,9 +57,9 @@ const Profile = () => {
             getInterests(currentUser).then((products) => {
                 let interestsList = [];
 
-                products.map((product, index) => {
-                    interestsList.push(<ProductCard key={index} product={product}
-                                                    productId={currentUser.interests[index]} inCatalog={false}/>);
+                products.map((product) => {
+                    interestsList.push(<ProductCard key={product.id} product={product}
+                                                    productId={product.id} inCatalog={false}/>);
                 });
 
                 setInterests(interestsList);
@@ -74,8 +74,8 @@ const Profile = () => {
             getRequests(currentUser).then((products) => {
                 let requestsList = [];
 
-                products.map((product, index) => {
-                    requestsList.push(<RequestCard key={index} request={product} index={"a" + index}/>);
+                products.map((product) => {
+                    requestsList.push(<RequestCard key={product.id} request={product} index={product.id}/>);
                 });
 
                 setRequests(requestsList);
@@ -90,13 +90,10 @@ const Profile = () => {
             getOrders(currentUser).then((products) => {
                 let ordersList = [];
 
-                products.map((product, index) => {
-                    ordersList.push(<RequestCard key={index} request={product} index={index}/>);
+                products.map((product) => {
+                    ordersList.push(<RequestCard key={product.id} request={product} index={product.id}/>);
                 });
 
-                console.log("here");
-                console.log(products);
-                console.log(ordersList);
                 setOrders(ordersList);
             });
         }
