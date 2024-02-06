@@ -20,7 +20,7 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
             setOwner(user);
         });
 
-        const timeDifference = Timestamp.now().toMillis() - product.createdDate.toMillis();
+        const timeDifference = Timestamp.now().toMillis() - (typeof product.createdDate === 'number' ? product.createdDate : product.createdDate.toMillis());
         if (timeDifference < 24 * 60 * 60 * 1000) {
             setIsNew(true);
         }
@@ -72,11 +72,11 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
                 <Image src={product.displayImageURL} alt="Silver ring" className="h-full w-full object-cover" layout="responsive" width={350} height={233}/>
             </figure>
             <div className="card-body">
-                <h3 className="card-title justify-between">
-                    <div className="text-start">
+                <h3 className="absolute card-title justify-between w-4/5 pr-10">
+                    <p className="text-start">
                         {product.title}
-                    </div>
-                    <button className="transition-transform transform hover:scale-110" onClick={onLike}>
+                    </p>
+                    <button className="transition-transform transform hover:scale-110 absolute top-0.5 right-0" onClick={onLike}>
                         {isLiked ?
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                                  className="w-6 h-6">
@@ -91,7 +91,7 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
                         }
                     </button>
                 </h3>
-                <div className="flex h-full justify-start flex-wrap mt-2">
+                <div className="h-full justify-start flex-wrap mt-20">
                     {product.tags.map((item, index) => (
                         <div key={index} className="badge badge-outline whitespace-nowrap mb-3 mr-3 p-3">
                             {item}

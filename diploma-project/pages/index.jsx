@@ -1,80 +1,74 @@
-import dynamic from 'next/dynamic';
-import {ItemsScroll, StandardLayout, TrendingCard} from '../components'
-import { discoverProducts } from "../public/constants";
-import {useEffect, useState} from "react";
-import {getNewProducts, getTrendingProducts} from "../services/product";
-import AvatarIcon from "../components/AvatarIcon";
+    import {ItemsScroll, ProductCard, StandardLayout, TrendingCard, TrendingCarousel} from '../components'
+    import {useEffect, useState} from "react";
+    import {getNewProducts, getTrendingProducts, getDiscoverProducts} from "../services/product";
+    import AvatarIcon from "../components/AvatarIcon";
 
-const DynamicCarousel = dynamic(() => import('../components/TrendingCarousel'), {
-    ssr: false, // This disables server-side rendering
-    // need server-side rendering to be disabled to find if screen is touch or not in TrendingCarousel.jsx
-});
+    const Home = ({trending, discover}) => {
+        const [newProducts, setNewProducts] = useState(null);
+        const [trendingProducts, setTrendingProducts] = useState(null);
+        const [discoverProducts, setDiscoverProducts] = useState(null);
+        const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
 
-const Home = ({trending, discover}) => {
-    const [newProducts, setNewProducts] = useState(null);
-    const [trendingProducts, setTrendingProducts] = useState(null);
-    const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
+        useEffect(() => {
+            getNewProducts().then((newProductsData) => {
+                let products = [];
 
-    useEffect(() => {
-        getNewProducts().then((newProductsData) => {
+                newProductsData.map((item, index) => {
+                        products.push(<AvatarIcon key={index} img={item.photoURL} username={item.name} catalogHref={`/catalog/${item.userID}`} productHref={`/product/${item.productID}`}/>);
+                });
+
+                setNewProducts(products);
+            });
+        }, []);
+
+        useEffect(() => {
             let products = [];
 
-            newProductsData.map((item, index) => {
-                    products.push(<AvatarIcon key={index} img={item.photoURL} username={item.name} catalogHref={`/catalog/${item.userID}`} productHref={`/product/${item.productID}`}/>);
+            trending.map((product, index) => {
+                products.push(<TrendingCard key={index} product={product}/>);
             });
 
-            setNewProducts(products);
-        });
-    }, []);
+            setTrendingProducts(products);
+        }, []);
 
-    useEffect(() => {
-        let products = [];
+        useEffect(() => {
+            let products = [];
 
-        trending.map((product, index) => {
-            products.push(<TrendingCard key={index} product={product}/>);
-        });
+            discover.map((product, index) => {
+                products.push(<ProductCard key={index} product={product} productId={product.id} inCatalog={false}/>);
+            });
 
-        setTrendingProducts(products);
-    }, []);
+            setDiscoverProducts(products);
+        }, []);
 
-    return (
-        <div className="overflow-x-hidden">
-            <StandardLayout title="Home page" toggleDrawerContent={toggleDrawerContent} setToggleDrawerContent={setToggleDrawerContent} page_content={newProducts && trendingProducts ?
-                <main className="flex flex-col flex-1 pb-20 pt-5 space-y-10 lg:mx-36 xl:mx-72">
-                    <ItemsScroll categoryName="New products" listOfItems={newProducts}/>
-                    <DynamicCarousel categoryName="Trending" listOfItems={trendingProducts}/>
-                    <ItemsScroll categoryName="Discover products" listOfItems={discoverProducts}/>
-                </main> :
-                <div className="flex h-screen justify-center items-center">
-                    <span className="loading loading-spinner loading-lg"></span>
-                </div>
-            }/>
-        </div>
-    )
-}
+        return (
+            <div className="overflow-x-hidden">
+                <StandardLayout title="Home page" toggleDrawerContent={toggleDrawerContent} setToggleDrawerContent={setToggleDrawerContent} page_content={newProducts && trendingProducts ?
+                    <main className="flex flex-col flex-1 pb-20 pt-5 space-y-10 lg:mx-36 xl:mx-72">
+                        <ItemsScroll categoryName="New products" listOfItems={newProducts} message="There aren&apos;t any new products."/>
+                        <TrendingCarousel categoryName="Trending" listOfItems={trendingProducts}/>
+                        <ItemsScroll categoryName="Discover products" listOfItems={discoverProducts} message="There aren&apos;t any products to discover."/>
+                    </main> :
+                    <div className="flex h-screen justify-center items-center">
+                        <span className="loading loading-spinner loading-lg"></span>
+                    </div>
+                }/>
+            </div>
+        )
+    }
 
-export async function getServerSideProps() {
-    return Promise.all([getTrendingProducts()]).then(([trendingProducts]) => {
+    export async function getServerSideProps() {
+        return Promise.all([getTrendingProducts(), getDiscoverProducts()]).then(([trendingProducts, discoverProducts]) => {
 
-        const top5TrendingProducts = trendingProducts.sort((a, b) => b.likes.length - a.likes.length).slice(0, 5);
+            const top5TrendingProducts = trendingProducts.sort((a, b) => b.likes.length - a.likes.length).slice(0, 5);
 
-        return {
-            props: {
-                trending: top5TrendingProducts,
-                discover: []
+            return {
+                props: {
+                    trending: top5TrendingProducts,
+                    discover: discoverProducts,
+                }
             }
-        }
-    });
+        });
+    }
 
-    // return {
-    //     notFound: true,
-    // }
-
-    // return {
-    //     props: {
-    //         craftsman: jsonUser,
-    //     }
-    // }
-}
-
-export default Home;
+    export default Home;

@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {ChevronLeft, ChevronRight} from "react-feather";
 
-const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, autoSlideInterval = 3000 }) => {
+const CarouselWithArrows = ({ categoryName, listOfItems }) => {
     const [curr, setCurr] = useState(0);
     const containerRef = useRef(null);
     const cardWidthRef = useRef(0);
@@ -10,12 +10,6 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
     const next = useCallback(() => setCurr((curr) => (curr === listOfItems.length - 1 ? 0 : curr + 1)), [listOfItems.length]);
 
     const resetToFirst = () => setCurr(0);
-
-    useEffect(() => {
-        if (!autoSlide) return;
-        const slideInterval = setInterval(next, autoSlideInterval);
-        return () => clearInterval(slideInterval);
-    }, [autoSlide, autoSlideInterval, next]);
 
     useEffect(() => {
         const updateCardWidth = () => {
@@ -38,7 +32,7 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
     }, []);
 
     const calculateTranslation = () => {
-        const spacingInPixels = 16; // Assuming a constant spacing of 8 pixels
+        const spacingInPixels = 16;
         return curr * (cardWidthRef.current + spacingInPixels);
     };
 

@@ -10,10 +10,10 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const MyApp = ({ Component, pageProps }) => {
-  const { user } = useUserStore((state) => ({user: state.user}));
-  const { setUser } = useUserStore((state) => ({setUser: state.setUser}));
+  const { user, setUser, setIsTouchEnabled } = useUserStore((state) => ({user: state.user, setUser: state.setUser, setIsTouchEnabled: state.setIsTouchEnabled}));
 
   useEffect(() => {
+    setIsTouchEnabled(window.matchMedia("(pointer: coarse)").matches);
     let unsubscribeSnapshot = null
     const unsubscribeAuth = getAuth(auth).onAuthStateChanged((currentUser) => {
       if (currentUser) {

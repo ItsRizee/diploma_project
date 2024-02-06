@@ -1,8 +1,9 @@
 import { Carousel, CarouselWithArrows} from "../components"
+import {useUserStore} from "../store/userStorage";
 
 export default function TrendingCarousel({categoryName, listOfItems}) {
+    const { isTouchEnabled } = useUserStore((state) => ({isTouchEnabled: state.isTouchEnabled}));
 
-    const isTouchEnabled = window.matchMedia("(pointer: coarse)").matches;
 
     return (
         <div className="h-full w-full">

@@ -1,4 +1,4 @@
-import {addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where} from "firebase/firestore";
+import {addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where, limit} from "firebase/firestore";
 import {getDownloadURL, ref, uploadBytesResumable} from "firebase/storage"
 import {auth, firestore, storage} from "../firebase";
 import {addProductToCatalog, getUserById} from "./user";
@@ -265,28 +265,52 @@ export const getTrendingProducts = () => {
 
         getDocs(query(collection(firestore, "products"), where('createdDate', '>', weekAgo))).then((querySnapshot) => {
             let newProducts = [];
-            let promises = [];
 
             querySnapshot.forEach((doc) => {
                 const product = doc.data();
-                let promise = getUserById(product.owner).then((userData) => {
-                    const item = {
-                        title: product.title,
-                        description: product.description,
-                        likes: product.likes,
-                        displayImageURL: product.displayImageURL,
-                        id: doc.id,
-                    }
+                const item = {
+                    title: product.title,
+                    description: product.description,
+                    likes: product.likes,
+                    displayImageURL: product.displayImageURL,
+                    id: doc.id,
+                }
 
-                    newProducts.push(item);
-                });
-
-                promises.push(promise);
+                newProducts.push(item);
             });
 
-            Promise.all(promises).then(() => {
-                resolve(newProducts);
+            resolve(newProducts);
+        });
+    });
+}
+
+export const getDiscoverProducts = () => {
+    return new Promise((resolve) => {
+        // Get the current time and calculate the timestamp for a week ago
+        const currentTime = new Date();
+        const monthAgo = new Date(currentTime - 2629800000);
+
+        getDocs(query(collection(firestore, "products"), where('createdDate', '>', monthAgo), limit(10))).then((querySnapshot) => {
+            let newProducts = [];
+
+            querySnapshot.forEach((doc) => {
+                const product = doc.data();
+                const item = {
+                    title: product.title,
+                    description: product.description,
+                    displayImageURL: product.displayImageURL,
+                    owner: product.owner,
+                    price: product.price,
+                    tags: product.tags,
+                    createdDate: product.createdDate.toMillis(),
+                    likes: product.likes,
+                    id: doc.id,
+                };
+
+                newProducts.push(item);
             });
+
+            resolve(newProducts);
         });
     });
 }
