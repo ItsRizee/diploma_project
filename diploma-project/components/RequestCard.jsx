@@ -3,34 +3,21 @@ import {useEffect, useState} from "react";
 import {getUserById} from "../services/user";
 import Link from "next/link";
 import Image from "next/future/image";
-import {default_profile_picture} from "../public/constants";
+import {default_profile_picture, infoToast, errorToast} from "../public/constants";
 import {InfoModal} from "./index";
 import {deleteRequest} from "../services/request";
-import {Bounce, toast} from "react-toastify";
 
 const RequestCard = ({request, index}) => {
     const { currentUser, setCurrentUser } = useUserStore((state) => ({currentUser: state.user, setCurrentUser: state.setUser}));
     const [craftsman, setCraftsman] = useState(null);
     const [user, setUser] = useState(null);
     const [stateRequest, setStateRequest] = useState(request);
-    const [error, setError] = useState("");
-
-    const errorToast = (content) => toast.error(content, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: true,
-        closeOnClick: false,
-        pauseOnHover: false,
-        draggable: true,
-        theme: "colored",
-        transition: Bounce,
-    });
 
     const handleDelete = (event) => {
         event.preventDefault();
 
-        deleteRequest(request.id, currentUser, setCurrentUser).catch((error) => {
-            errorToast(error);
+        deleteRequest(request.id, currentUser, setCurrentUser).catch((errorMessage) => {
+            errorToast(errorMessage);
         });
     };
 
@@ -60,12 +47,18 @@ const RequestCard = ({request, index}) => {
                 <h2 className="card-title">{stateRequest.title}</h2>
                 {!craftsman ?
                     <div className="flex flex-col items-center space-y-1">
-                        <Link tabIndex={0} href={`/catalog/${user.uid}`}>
-                            <figure className="relative btn btn-ghost btn-circle avatar rounded-full">
+                        { user && user.craft ?
+                            <Link tabIndex={0} href={`/catalog/${user.uid}`}>
+                                <figure className="relative btn btn-ghost btn-circle avatar rounded-full">
+                                    <Image src={user.photoURL ? user.photoURL : default_profile_picture} alt="avatar icon"
+                                           width={40} height={40}/>
+                                </figure>
+                            </Link> :
+                            <figure className="relative btn btn-ghost btn-circle avatar rounded-full" onClick={() => infoToast("This user doesn't have a catalog.")}>
                                 <Image src={user.photoURL ? user.photoURL : default_profile_picture} alt="avatar icon"
                                        width={40} height={40}/>
                             </figure>
-                        </Link>
+                        }
                         <p className="font-normal normal-case">{user.name}</p>
                     </div> :
                     <div className="flex flex-col items-center space-y-1">
@@ -82,7 +75,7 @@ const RequestCard = ({request, index}) => {
                 <p>Status: <span
                     className={`${stateRequest.status === "waiting" ? "text-warning" : (stateRequest.status === "accepted" ? "text-success" : "text-error")}`}>{stateRequest.status}</span>
                 </p>
-                <InfoModal request={stateRequest} setRequest={setStateRequest} user={user} craftsman={craftsman} index={index} error={error} setError={setError}/>
+                <InfoModal request={stateRequest} setRequest={setStateRequest} user={user} craftsman={craftsman} index={index}/>
             </div>
             {(stateRequest.status === "denied" || stateRequest.status === "canceled") &&
                 <button className="flex absolute -top-3.5 -right-3.5 transition-transform transform hover:scale-110" type="button" onClick={handleDelete}>

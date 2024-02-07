@@ -2,6 +2,7 @@ import {InputField, Textarea} from "./index";
 import {useState} from "react";
 import {addRequest} from "../services/request";
 import {useUserStore} from "../store/userStorage";
+import {successToast} from "../public/constants";
 
 const NewRequest = ({craftsman}) => {
     const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
@@ -16,6 +17,8 @@ const NewRequest = ({craftsman}) => {
             .then(() => {
                 setRequestTitle("");
                 setRequestDescription("");
+
+                successToast("Successfully added new request!");
 
                 // reset the form
                 event.target.reset();

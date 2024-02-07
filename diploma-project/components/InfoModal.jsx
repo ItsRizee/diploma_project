@@ -5,23 +5,13 @@ import {default_profile_picture} from "../public/constants";
 import {getRequest, updateRequest, updateStatus} from "../services/request";
 import {useState} from "react";
 import {InputField, Textarea} from "./index";
-import {Bounce, toast} from 'react-toastify';
+import {successToast, errorToast} from "../public/constants";
 
 const InfoModal = ({request, setRequest, user, craftsman, index}) => {
     const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
     const [title, setTitle] = useState(request.title);
     const [description, setDescription] = useState(request.description);
     const [editMode, setEditMode] = useState(false);
-    const errorToast = (content) => toast.error(content, {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: true,
-        closeOnClick: false,
-        pauseOnHover: false,
-        draggable: true,
-        theme: "colored",
-        transition: Bounce,
-    });
 
     const handleAccept = () => {
         getRequest(request.id).then((requestData) => {
@@ -92,7 +82,11 @@ const InfoModal = ({request, setRequest, user, craftsman, index}) => {
                     description: description,
                 })
                 setEditMode(false);
-                updateRequest(request.id, title, description).catch(() => {
+                updateRequest(request.id, title, description)
+                    .then(() => {
+                        successToast("Successfully updated request's content!");
+                    })
+                    .catch(() => {
                     errorToast("Can't save request. Please reload the page and try again!");
                 });
             } else {

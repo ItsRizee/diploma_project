@@ -1,5 +1,5 @@
 import Image from "next/future/image";
-import {default_profile_picture} from "../public/constants";
+import {default_profile_picture, errorToast} from "../public/constants";
 import {useEffect, useState} from "react";
 import {getUserById, updateInterestsOfUser, User} from "../services/user";
 import {updateLikesOfProduct} from "../services/product";
@@ -41,7 +41,7 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
             interests = [...currentUser.interests, productId];
         }
         updateLikesOfProduct(productId, product.likes).catch((error) => {
-            console.log(error);
+            errorToast(error.message);
         });
 
         setCurrentUser({
@@ -56,7 +56,7 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
             catalog: currentUser.catalog
         });
         updateInterestsOfUser(interests).catch((error) => {
-           console.log(error);
+            errorToast(error.message);
         });
 
         setIsLiked(() => !isLiked);
@@ -107,8 +107,7 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
                     <div className="flex items-center mt-4 space-x-4">
                         <Link tabIndex={0} href={`/catalog/${owner.uid}`}>
                             <figure className="relative btn btn-ghost btn-circle avatar rounded-full">
-                                <Image src={owner.photoURL ? owner.photoURL : default_profile_picture} alt="avatar icon"
-                                       width={40} height={40}/>
+                                <Image src={owner.photoURL ? owner.photoURL : default_profile_picture} className="rounded-full" alt="avatar icon" width={40} height={40}/>
                             </figure>
                         </Link>
                         <p className="font-normal normal-case">{owner.name}</p>

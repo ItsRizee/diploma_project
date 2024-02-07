@@ -8,6 +8,7 @@ import {getUserByEmail, User} from '../services/user';
 import {ThemeProvider} from "next-theme";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {errorToast} from "../public/constants";
 
 const MyApp = ({ Component, pageProps }) => {
   const { user, setUser, setIsTouchEnabled } = useUserStore((state) => ({user: state.user, setUser: state.setUser, setIsTouchEnabled: state.setIsTouchEnabled}));
@@ -47,7 +48,7 @@ const MyApp = ({ Component, pageProps }) => {
 
           setUser(userData);
         }, (error) => {
-          console.log(error);
+          errorToast(error.message);
         });
       } else {
         setUser(new User());
@@ -57,7 +58,7 @@ const MyApp = ({ Component, pageProps }) => {
         }
       }
     }, (error) => {
-      console.log(error);
+      errorToast(error.message);
     });
 
     // Return a cleanup function to unsubscribe from the AuthStateChanged listener

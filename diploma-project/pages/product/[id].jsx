@@ -50,9 +50,7 @@ const Product = ({product}) => {
                                 <div className="flex items-center space-x-1 sm:space-x-4">
                                     <Link tabIndex={0} href={`/catalog/${owner.uid}`}>
                                         <figure className="relative btn btn-ghost btn-circle avatar rounded-full">
-                                            <Image src={owner.photoURL ? owner.photoURL : default_profile_picture}
-                                                   alt="avatar icon"
-                                                   width={40} height={40}/>
+                                            <Image src={owner.photoURL ? owner.photoURL : default_profile_picture} className="rounded-full" alt="avatar icon" width={40} height={40}/>
                                         </figure>
                                     </Link>
                                     <p className="font-normal normal-case">{owner.name}</p>

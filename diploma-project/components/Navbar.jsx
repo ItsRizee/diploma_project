@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {app_name, default_profile_picture} from "../public/constants";
+import {app_name, default_profile_picture, errorToast} from "../public/constants";
 import {useRouter} from "next/router";
 import Link from "next/link";
 import logOut from "../services/logOut";
@@ -9,7 +9,6 @@ import useTheme from "next-theme";
 
 const Navbar = ({setToggleDrawerContent}) => {
     const [isLogged, setIsLogged] = useState(false);
-    const [error, setError] = useState(null);
     const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
     const router = useRouter();
     const themeToggleRef = useRef(null);
@@ -22,8 +21,6 @@ const Navbar = ({setToggleDrawerContent}) => {
     const handleLogout = (event) => {
         event.preventDefault();
 
-        setError(null);
-
         logOut()
             .then(() => {
                 // Logout was successful, navigate to the signIn page
@@ -31,7 +28,7 @@ const Navbar = ({setToggleDrawerContent}) => {
             })
             .catch((error) => {
                 // Logout failed, set the error message
-                setError(error.message);
+                errorToast(error.message);
             });
     };
 
@@ -139,10 +136,10 @@ const Navbar = ({setToggleDrawerContent}) => {
                     </svg>
                 </label>
                 <div className="dropdown dropdown-end">
-                    <div tabIndex={0} className="btn btn-ghost btn-circle avatar p-1">
-                        <figure className="relative rounded-full h-7 w-7 sm:h-9 sm:w-9">
+                    <div tabIndex={0} className="relative btn btn-ghost btn-circle avatar rounded-full">
+                        <figure className="h-7 w-7 sm:h-9 sm:w-9">
                             <Image src={currentUser.photoURL ? currentUser.photoURL : default_profile_picture} alt="avatar icon"
-                                   width={40} height={40}/>
+                                   className="h-full w-full object-cover rounded-full" layout="responsive" width={40} height={40}/>
                         </figure>
                     </div>
                     <div
@@ -179,7 +176,6 @@ const Navbar = ({setToggleDrawerContent}) => {
                                                 Logout
                                             </button>
                                         </li>
-                                        {error && <span className="error-text py-2 text-error">{error}</span>}
                                     </>
                                 ) : (
                                     <li>

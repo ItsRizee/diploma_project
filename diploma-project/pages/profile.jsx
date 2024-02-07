@@ -7,6 +7,7 @@ import {useRouter} from "next/router";
 import {useUserStore} from "../store/userStorage";
 import {getInterests} from "../services/product";
 import {getOrders, getRequests} from "../services/request";
+import {successToast, errorToast} from "../public/constants";
 
 const Profile = () => {
     const { currentUser, setCurrentUser } = useUserStore((state) => ({currentUser: state.user, setCurrentUser: state.setUser}));
@@ -15,21 +16,22 @@ const Profile = () => {
     const [interests, setInterests] = useState([]);
     const [requests, setRequests] = useState([]);
     const [orders, setOrders] = useState([]);
-    const [error, setError] = useState(null);
     const router = useRouter();
 
     const BecomeCraftsman = () => {
         UpdateProfileToCraftsman("woodcarver")
-            .then()
-            .catch((error) => {
-                setError(error);
+            .then(() => {
+                successToast("Successfully became a craftsman!");
+            })
+            .catch(() => {
+                errorToast("Error: Couldn't become a craftsman! Refresh the page and try again!");
         });
     };
 
     useEffect(() => {
         // redirect if user is not authenticated
         let accessToken = sessionStorage.getItem("accessToken");
-        if(!accessToken){
+        if(!accessToken && currentUser.uid){
             void router.replace("/");
         }
 
@@ -107,17 +109,29 @@ const Profile = () => {
                         <div>
                             <figure className="static rounded-full flex justify-center mb-5">
                                 <div className="relative w-24">
-                                    <UploadImageModal />
-                                    <div className="absolute -right-1 -bottom-2 z-[1] h-10 w-10 bg-base-100 rounded-full"/>
-                                    <Image src={currentUser.photoURL ? currentUser.photoURL : default_profile_picture} alt="avatar icon" width={96} height={96}/>
+                                    <UploadImageModal/>
+                                    <div
+                                        className="absolute -right-1 -bottom-2 z-[1] h-10 w-10 bg-base-100 rounded-full"/>
+                                    <figure className="h-24 w-24">
+                                        <Image
+                                            src={currentUser.photoURL ? currentUser.photoURL : default_profile_picture}
+                                            alt="avatar icon"
+                                            className="h-full w-full object-cover rounded-full" layout="responsive"
+                                            width={96} height={96}/>
+                                    </figure>
                                 </div>
                             </figure>
                             <div className="pb-5">
                                 <div className="text-lg text-center mt-5">{currentUser.name}</div>
                                 <div className="font-medium text-center">{currentUser.email}</div>
                             </div>
-                            {!currentUser.craft && <button className="btn bg-base-300 flex justify-center normal-case text-lg" onClick={BecomeCraftsman}>Become Craftsman</button>}
-                            {error && <span className="error-text py-2 text-error">{error}</span>}
+                            {!currentUser.craft &&
+                                <div className="flex justify-center w-full">
+                                    <button className="btn bg-base-300 normal-case text-lg" onClick={BecomeCraftsman}>
+                                        Become Craftsman
+                                    </button>
+                                </div>
+                            }
                         </div>
                     </div>
                     <Collapse id={1} categoryName="My interests" content={ interests.length > 0 ?

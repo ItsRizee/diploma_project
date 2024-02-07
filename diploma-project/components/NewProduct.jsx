@@ -2,6 +2,7 @@ import {InputField, Textarea, InputFieldTags, InputFieldTimeline} from "../compo
 import {useState} from "react";
 import {addProduct} from "../services/product";
 import { useUserStore } from "../store/userStorage";
+import {successToast} from "../public/constants";
 
 const NewProduct = () => {
     const {currentUser} = useUserStore((state) => ({currentUser: state.user}));
@@ -27,6 +28,8 @@ const NewProduct = () => {
                 setProductPrice(0);
                 setProductTimeline([]);
                 setProductTags([]);
+
+                successToast("Successfully added new product!");
 
                 // reset the form
                 event.target.reset();

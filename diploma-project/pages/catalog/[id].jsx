@@ -2,7 +2,7 @@ import {StandardLayout} from "../../components";
 import {default_profile_picture} from "../../public/constants";
 import Image from "next/future/image";
 import {useEffect, useState} from "react";
-import {getCatalog, Product} from "../../services/product";
+import {getCatalog} from "../../services/product";
 import {ProductCard} from "../../components";
 import {useRouter} from "next/router";
 import {getUserById} from "../../services/user";
@@ -43,19 +43,26 @@ const Catalog = ({craftsman}) => {
                     className="flex flex-col flex-1 my-10 space-y-5 mx-5 sm:mx-10 md:mx-20 lg:mx-36 xl:mx-52 2xl:mx-72 justify-center items-center">
                     <div className="flex flex-col flex-1 mb-5 mt-10 space-y-10 items-center">
                         <div className="mb-5">
-                            <figure className="relative rounded-full flex justify-center mb-2">
-                                <Image src={craftsman.photoURL ? craftsman.photoURL : default_profile_picture} alt="avatar icon"
-                                       width={96} height={96}/>
-                            </figure>
+                            <div className="relative flex justify-center mb-2">
+                                <figure className="h-24 w-24">
+                                    <Image
+                                        src={craftsman.photoURL ? craftsman.photoURL : default_profile_picture}
+                                        alt="avatar icon"
+                                        className="h-full w-full object-cover rounded-full" layout="responsive"
+                                        width={96} height={96}/>
+                                </figure>
+                            </div>
                             <div className="text-xl text-center">{craftsman.name}</div>
                             {isLogged && craftsman.uid !== currentUser.uid &&
-                                <label htmlFor="my-drawer" className="drawer-button bg-base-300 btn btn-lg mt-5" onClick={() => setToggleDrawerContent(false)}>
+                                <label htmlFor="my-drawer" className="drawer-button bg-base-300 btn btn-lg mt-5"
+                                       onClick={() => setToggleDrawerContent(false)}>
                                     New Request
                                 </label>
                             }
                         </div>
-                        { products.length !== 0 ?
-                            <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 sm:gap-x-5 2xl:gap-x-16 gap-y-16">
+                        {products.length !== 0 ?
+                            <div
+                                className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 sm:gap-x-5 2xl:gap-x-16 gap-y-16">
                                 {products.map((product, index) => (
                                     <ProductCard
                                         key={index}
