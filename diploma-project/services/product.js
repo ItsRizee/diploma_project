@@ -98,57 +98,74 @@ export class Product {
     }
 }
 
+const updateDisplayImageURLOfProduct = (productID, displayImageURL) => {
+    return new Promise((resolve, reject) => {
+        updateDoc(doc(firestore, "products", productID), { displayImageURL: displayImageURL })
+            .then(() => {
+                resolve();
+            })
+            .catch((error) => {
+                reject(error);
+            });
+    });
+}
+
 export const addProduct = (title, description, image, catalog, price, timeline = [], tags = []) => {
     return new Promise((resolve, reject) => {
-        // Create a Storage Ref
-        const storageRef = ref(storage, 'products/' + auth.currentUser.uid + '/display_image/'  + image.name);
+        addDoc(
+            collection(firestore, "products"),
+            {
+                title: title,
+                description: description,
+                displayImageURL: null,
+                owner: auth.currentUser.uid,
+                price: price,
+                tags: tags,
+                timeline: timeline,
+                createdDate: serverTimestamp(),
+                likes: [],
+            }).then((doc) => {
+            addProductToCatalog(doc.id, catalog)
+                .then(() => {
+                    const fileExtension = image.name.split('.').pop();
+                    image = new File([image], doc.id + '.' + fileExtension, { type: image.type });
 
-        // Upload the file and metadata
-        const uploadTask = uploadBytesResumable(storageRef, image);
+                    // Create a Storage Ref
+                    const storageRef = ref(storage, 'products/' + auth.currentUser.uid + '/display_image/'  + image.name);
 
-        uploadTask.on(
-            'state_changed',
-            () => {
-                // Get task progress, including the number of bytes uploaded
-            },
-            (error) => {
-                // Handle unsuccessful uploads
-                reject(error);
-            },
-            () => {
-                // Handle successful uploads on complete
-                // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                getDownloadURL(uploadTask.snapshot.ref)
-                    .then((downloadURL) => {
-                        addDoc(
-                            collection(firestore, "products"),
-                            {
-                                title: title,
-                                description: description,
-                                displayImageURL: downloadURL,
-                                owner: auth.currentUser.uid,
-                                price: price,
-                                tags: tags,
-                                timeline: timeline,
-                                createdDate: serverTimestamp(),
-                                likes: [],
-                        }).then((doc) => {
-                            addProductToCatalog(doc.id, catalog)
-                                .then(() => {
-                                    resolve(null);
+                    // Upload the file and metadata
+                    const uploadTask = uploadBytesResumable(storageRef, image);
+
+                    uploadTask.on(
+                        'state_changed',
+                        () => {
+                            // Get task progress, including the number of bytes uploaded
+                        },
+                        (error) => {
+                            // Handle unsuccessful uploads
+                            reject(error);
+                        },
+                        () => {
+                            // Handle successful uploads on complete
+                            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                            getDownloadURL(uploadTask.snapshot.ref)
+                                .then((downloadURL) => {
+                                    updateDisplayImageURLOfProduct(doc.id, downloadURL).then(() => {
+                                        resolve(null);
+                                    });
                                 })
-                                .catch((errorMessage) => {
-                                    reject(errorMessage);
-                            });
-                        }).catch((error) => {
-                            reject(error.message);
-                        });
-                    })
-                    .catch((error) => {
-                        reject(error);
-                    });
-            }
-        );
+                                .catch((error) => {
+                                    reject(error);
+                                });
+                        }
+                    );
+                })
+                .catch((errorMessage) => {
+                    reject(errorMessage);
+                });
+        }).catch((error) => {
+            reject(error.message);
+        });
     });
 }
 
@@ -263,7 +280,7 @@ export const getTrendingProducts = () => {
         const currentTime = new Date();
         const weekAgo = new Date(currentTime - 604800000);
 
-        getDocs(query(collection(firestore, "products"), where('createdDate', '>', weekAgo))).then((querySnapshot) => {
+        getDocs(query(collection(firestore, "products"), where('createdDate', '>', weekAgo), limit(5))).then((querySnapshot) => {
             let newProducts = [];
 
             querySnapshot.forEach((doc) => {
@@ -289,8 +306,9 @@ export const getDiscoverProducts = () => {
         // Get the current time and calculate the timestamp for a week ago
         const currentTime = new Date();
         const monthAgo = new Date(currentTime - 2629800000);
+        const dayAgo = new Date(currentTime - 86400000);
 
-        getDocs(query(collection(firestore, "products"), where('createdDate', '>', monthAgo), limit(10))).then((querySnapshot) => {
+        getDocs(query(collection(firestore, "products"), where('createdDate', '>', monthAgo), where('createdDate', '<', dayAgo), limit(10))).then((querySnapshot) => {
             let newProducts = [];
 
             querySnapshot.forEach((doc) => {

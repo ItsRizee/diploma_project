@@ -9,9 +9,11 @@ const NewRequest = ({craftsman}) => {
     const [requestTitle, setRequestTitle] = useState("");
     const [requestDescription, setRequestDescription] = useState("");
     const [error, setError] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
 
     const onSubmit = (event) => {
         event.preventDefault();
+        setSubmitting(true);
 
         addRequest(requestTitle, requestDescription, currentUser, craftsman.uid, "waiting")
             .then(() => {
@@ -19,6 +21,7 @@ const NewRequest = ({craftsman}) => {
                 setRequestDescription("");
 
                 successToast("Successfully added new request!");
+                setSubmitting(false);
 
                 // reset the form
                 event.target.reset();
@@ -58,9 +61,14 @@ const NewRequest = ({craftsman}) => {
                     <div>
                         {error && <span className="error-text text-error py-2">{error}</span>}
                         <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
-                            <button className="btn btn-primary" type="submit">
-                                Add Request
-                            </button>
+                            {submitting ?
+                                <button className="btn btn-primary btn-disabled" type="submit">
+                                    <span className="loading loading-spinner loading-lg"></span>
+                                </button> :
+                                <button className="btn btn-primary" type="submit">
+                                    Add Request
+                                </button>
+                            }
                         </div>
                     </div>
                 </form>

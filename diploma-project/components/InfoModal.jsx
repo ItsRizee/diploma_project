@@ -126,13 +126,13 @@ const InfoModal = ({request, setRequest, user, craftsman, index}) => {
                     More info
                 </button>
             </div>
-            <dialog id={`my_modal_${index}`} className="modal">
+            <dialog id={`my_modal_${index}`} className="modal overflow-y-auto">
                 {/*  UploadImageModal's content  */}
-                <div className="modal-box flex items-center justify-center w-4/5 md:w-full p-0">
+                <div className="modal-box w-4/5 md:w-full p-0">
                     <form method="dialog">
                         <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                     </form>
-                    <article className="p-10 space-y-5 w-full">
+                    <article className="p-5 md:p-10 space-y-5 h-full w-full">
                         {editMode === false ?
                             <h2 className="text-xl font-bold">{request.title}</h2> :
                             <InputField

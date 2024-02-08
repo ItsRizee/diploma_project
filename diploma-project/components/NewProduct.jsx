@@ -13,6 +13,7 @@ const NewProduct = () => {
     const [productPrice, setProductPrice] = useState(0);
     const [productTags, setProductTags] = useState([]);
     const [productTimeline, setProductTimeline] = useState([]);
+    const [submitting, setSubmitting] = useState(false);
 
     const onImageChange = (event) => {
         setProductImage(event.target.files[0]);
@@ -20,6 +21,8 @@ const NewProduct = () => {
 
     const onSubmit = (event) => {
         event.preventDefault();
+        setSubmitting(true);
+
         addProduct(productTitle, productDescription, productImage, currentUser.catalog, productPrice, productTimeline, productTags)
             .then(() => {
                 setProductTitle("");
@@ -30,6 +33,7 @@ const NewProduct = () => {
                 setProductTags([]);
 
                 successToast("Successfully added new product!");
+                setSubmitting(false);
 
                 // reset the form
                 event.target.reset();
@@ -93,9 +97,14 @@ const NewProduct = () => {
                     <div>
                         {error && <span className="error-text text-error py-2">{error}</span>}
                         <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
-                            <button className="btn btn-primary" type="submit">
-                                Add Product
-                            </button>
+                            {submitting ?
+                                <button className="btn btn-primary btn-disabled" type="submit">
+                                    <span className="loading loading-spinner loading-lg"></span>
+                                </button> :
+                                <button className="btn btn-primary" type="submit">
+                                    Add Product
+                                </button>
+                            }
                         </div>
                     </div>
                 </form>
