@@ -23,8 +23,6 @@ const ItemsScrollWithArrows = ({categoryName = "", listOfItems, message = ""}) =
                     const temp = Math.ceil(itemScrollWidth / 680);
                     setTimesToScroll(temp);
                     setTranslation(itemScrollWidth / temp);
-                    console.log(categoryName);
-                    console.log(temp);
                 }
                 resetToFirst(); // Reset to the first element on window resize
             }

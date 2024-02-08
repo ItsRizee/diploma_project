@@ -44,6 +44,8 @@ const MyApp = ({ Component, pageProps }) => {
               orders: user.orders,
               catalog: data.catalog,
             };
+
+            console.log(userData);
           });
 
           setUser(userData);

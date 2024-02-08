@@ -37,7 +37,7 @@ const Profile = () => {
 
         if(currentUser.uid !== null && firstRender) {
             Promise.all([getRequests(currentUser), getOrders(currentUser)]).then(([requests, orders]) => {
-                setCurrentUser({
+                const tmp = {
                     name: currentUser.name,
                     email: currentUser.email,
                     photoURL: currentUser.photoURL,
@@ -47,7 +47,10 @@ const Profile = () => {
                     craft: currentUser.craft,
                     orders : orders,
                     catalog: currentUser.catalog
-                });
+                };
+                console.log("Profile:");
+                console.log(tmp);
+                setCurrentUser(tmp);
             });
 
             setFirstRender(false);
