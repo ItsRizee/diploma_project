@@ -96,7 +96,7 @@ export async function getServerSideProps({ params }) {
                 email: userData.email,
                 photoURL: userData.photoURL,
                 uid: userData.uid,
-                interests: userData.interests,
+                interests: [],
                 requests: [],
                 craft: userData.craft,
                 orders: [],

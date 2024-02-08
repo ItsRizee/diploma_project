@@ -36,16 +36,16 @@ const Profile = () => {
         }
 
         if(currentUser.uid !== null && firstRender) {
-            Promise.all([getRequests(currentUser), getOrders(currentUser)]).then(([requests, orders]) => {
+            Promise.all([getInterests(currentUser), getRequests(currentUser), getOrders(currentUser)]).then(([interestsData, requestsData, ordersData]) => {
                 const tmp = {
                     name: currentUser.name,
                     email: currentUser.email,
                     photoURL: currentUser.photoURL,
                     uid: currentUser.uid,
-                    interests: currentUser.interests,
-                    requests: requests,
+                    interests: interestsData,
+                    requests: requestsData,
                     craft: currentUser.craft,
-                    orders : orders,
+                    orders : ordersData,
                     catalog: currentUser.catalog
                 };
                 console.log("Profile:");

@@ -23,6 +23,8 @@ const ItemsScrollWithArrows = ({categoryName = "", listOfItems, message = ""}) =
                     const temp = Math.ceil(itemScrollWidth / 680);
                     setTimesToScroll(temp);
                     setTranslation(itemScrollWidth / temp);
+                } else {
+                    setTranslation(null);
                 }
                 resetToFirst(); // Reset to the first element on window resize
             }
@@ -38,7 +40,7 @@ const ItemsScrollWithArrows = ({categoryName = "", listOfItems, message = ""}) =
         return () => {
             window.removeEventListener("resize", updateCardWidth);
         };
-    }, []);
+    }, [listOfItems]);
 
     const calculateTranslation = () => {
         return curr * translation;

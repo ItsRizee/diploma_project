@@ -19,8 +19,18 @@ const MyApp = ({ Component, pageProps }) => {
     const unsubscribeAuth = getAuth(auth).onAuthStateChanged((currentUser) => {
       if (currentUser) {
         // Store the user data in the global state
-        getUserByEmail(currentUser.email).then((userData) => {
-          setUser(userData);
+        getUserByEmail(currentUser.email).then((data) => {
+          setUser({
+            name: data.name,
+            email: data.email,
+            photoURL: data.photoURL,
+            uid: data.uid,
+            interests: user.interests,
+            requests: user.requests,
+            craft: data.craft,
+            orders: user.orders,
+            catalog: data.catalog,
+          });
           currentUser.getIdToken().then((token) => {
             sessionStorage.setItem('accessToken', token);
           });
@@ -38,14 +48,12 @@ const MyApp = ({ Component, pageProps }) => {
               email: data.email,
               photoURL: data.photoURL,
               uid: data.uid,
-              interests: data.interests,
+              interests: user.interests,
               requests: user.requests,
               craft: data.craft,
               orders: user.orders,
               catalog: data.catalog,
             };
-
-            console.log(userData);
           });
 
           setUser(userData);

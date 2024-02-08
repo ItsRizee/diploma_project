@@ -1,7 +1,7 @@
 import Image from "next/future/image";
 import {default_profile_picture, errorToast} from "../public/constants";
 import {useEffect, useState} from "react";
-import {getUserById, updateInterestsOfUser, User} from "../services/user";
+import {getUserById, User} from "../services/user";
 import {updateLikesOfProduct} from "../services/product";
 import {Timestamp} from "firebase/firestore";
 import {useRouter} from "next/router";
@@ -40,26 +40,25 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
             product.likes.push(currentUser.uid);
             interests = [...currentUser.interests, productId];
         }
-        updateLikesOfProduct(productId, product.likes).catch((error) => {
-            errorToast(error.message);
-        });
 
-        setCurrentUser({
-            name: currentUser.name,
-            email: currentUser.email,
-            photoURL: currentUser.photoURL,
-            uid: currentUser.uid,
-            interests: interests,
-            requests: currentUser.requests,
-            craft: currentUser.craft,
-            orders : currentUser.orders,
-            catalog: currentUser.catalog
+        updateLikesOfProduct(productId, product.likes)
+            .then(() => {
+                setCurrentUser({
+                    name: currentUser.name,
+                    email: currentUser.email,
+                    photoURL: currentUser.photoURL,
+                    uid: currentUser.uid,
+                    interests: interests,
+                    requests: currentUser.requests,
+                    craft: currentUser.craft,
+                    orders : currentUser.orders,
+                    catalog: currentUser.catalog
+                });
+                setIsLiked(() => !isLiked);
+            })
+            .catch((error) => {
+                errorToast(error.message);
         });
-        updateInterestsOfUser(interests).catch((error) => {
-            errorToast(error.message);
-        });
-
-        setIsLiked(() => !isLiked);
     };
 
     return (

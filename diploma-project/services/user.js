@@ -108,7 +108,6 @@ export const addUser = (name, email, uid) => {
                 email: email,
                 photoURL: null,
                 uid: uid,
-                interests: [],
                 craft: null,
                 catalog: null,
         }).then(() => {
@@ -132,7 +131,7 @@ const getUserByQuery = (q) => {
                 user.email = data.email;
                 user.photoURL = data.photoURL;
                 user.uid = data.uid;
-                user.interests = data.interests;
+                user.interests = [];
                 user.requests = [];
                 user.craft = data.craft;
                 user.orders = [];
@@ -284,21 +283,6 @@ export const addProductToCatalog = (productId, catalog) => {
                 .catch((error) => {
                     reject(error);
                 });
-        });
-    });
-}
-
-export const updateInterestsOfUser = (interests) => {
-    return new Promise((resolve, reject) => {
-        getUserDoc(auth.currentUser.uid).then((docRef) => {
-            // Use updateDoc to update the document
-            updateDoc(docRef, { interests: interests })
-                .then(() => {
-                    resolve();
-                })
-                .catch((error) => {
-                    reject(error);
-            });
         });
     });
 }
