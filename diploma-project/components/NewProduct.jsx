@@ -2,7 +2,7 @@ import {InputField, Textarea, InputFieldTags, InputFieldTimeline} from "../compo
 import {useState} from "react";
 import {addProduct} from "../services/product";
 import { useUserStore } from "../store/userStorage";
-import {successToast} from "../public/constants";
+import {errorToast, successToast} from "../public/constants";
 
 const NewProduct = () => {
     const {currentUser} = useUserStore((state) => ({currentUser: state.user}));
@@ -21,26 +21,34 @@ const NewProduct = () => {
 
     const onSubmit = (event) => {
         event.preventDefault();
-        setSubmitting(true);
+        if(!submitting) {
+            setSubmitting(true);
 
-        addProduct(productTitle, productDescription, productImage, currentUser.catalog, productPrice, productTimeline, productTags)
-            .then(() => {
-                setProductTitle("");
-                setProductDescription("");
-                setProductImage(null);
-                setProductPrice(0);
-                setProductTimeline([]);
-                setProductTags([]);
-
-                successToast("Successfully added new product!");
+            if (productPrice === 0) {
+                errorToast("Product's price can't be 0!");
                 setSubmitting(false);
+                return;
+            }
 
-                // reset the form
-                event.target.reset();
-            })
-            .catch((errorMessage) => {
-                setError(errorMessage);
-        });
+            addProduct(productTitle, productDescription, productImage, currentUser.catalog, productPrice, productTimeline, productTags)
+                .then(() => {
+                    setProductTitle("");
+                    setProductDescription("");
+                    setProductImage(null);
+                    setProductPrice(0);
+                    setProductTimeline([]);
+                    setProductTags([]);
+
+                    successToast("Successfully added new product!");
+                    setSubmitting(false);
+
+                    // reset the form
+                    event.target.reset();
+                })
+                .catch((errorMessage) => {
+                    setError(errorMessage);
+                });
+        }
     }
 
     return (
