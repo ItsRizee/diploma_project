@@ -1,7 +1,7 @@
 import {addDoc, collection, doc, getDoc, getDocs, query, serverTimestamp, updateDoc, where, limit} from "firebase/firestore";
 import {getDownloadURL, ref, uploadBytesResumable} from "firebase/storage"
 import {auth, firestore, storage} from "../firebase";
-import {addProductToCatalog, getUserById} from "./user";
+import {getUserById} from "./user";
 
 export class Product {
     #title;
@@ -110,7 +110,7 @@ const updateDisplayImageURLOfProduct = (productID, displayImageURL) => {
     });
 }
 
-export const addProduct = (title, description, image, catalog, price, timeline = [], tags = []) => {
+export const addProduct = (title, description, image, price, timeline = [], tags = []) => {
     return new Promise((resolve, reject) => {
         addDoc(
             collection(firestore, "products"),
@@ -125,44 +125,38 @@ export const addProduct = (title, description, image, catalog, price, timeline =
                 createdDate: serverTimestamp(),
                 likes: [],
             }).then((doc) => {
-            addProductToCatalog(doc.id, catalog)
-                .then(() => {
-                    const fileExtension = image.name.split('.').pop();
-                    image = new File([image], doc.id + '.' + fileExtension, { type: image.type });
+                const fileExtension = image.name.split('.').pop();
+                image = new File([image], doc.id + '.' + fileExtension, { type: image.type });
 
-                    // Create a Storage Ref
-                    const storageRef = ref(storage, 'products/' + auth.currentUser.uid + '/display_image/'  + image.name);
+                // Create a Storage Ref
+                const storageRef = ref(storage, 'products/' + auth.currentUser.uid + '/display_image/'  + image.name);
 
-                    // Upload the file and metadata
-                    const uploadTask = uploadBytesResumable(storageRef, image);
+                // Upload the file and metadata
+                const uploadTask = uploadBytesResumable(storageRef, image);
 
-                    uploadTask.on(
-                        'state_changed',
-                        () => {
-                            // Get task progress, including the number of bytes uploaded
-                        },
-                        (error) => {
-                            // Handle unsuccessful uploads
-                            reject(error);
-                        },
-                        () => {
-                            // Handle successful uploads on complete
-                            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                            getDownloadURL(uploadTask.snapshot.ref)
-                                .then((downloadURL) => {
-                                    updateDisplayImageURLOfProduct(doc.id, downloadURL).then(() => {
-                                        resolve(null);
-                                    });
-                                })
-                                .catch((error) => {
-                                    reject(error);
+                uploadTask.on(
+                    'state_changed',
+                    () => {
+                        // Get task progress, including the number of bytes uploaded
+                    },
+                    (error) => {
+                        // Handle unsuccessful uploads
+                        reject(error);
+                    },
+                    () => {
+                        // Handle successful uploads on complete
+                        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                        getDownloadURL(uploadTask.snapshot.ref)
+                            .then((downloadURL) => {
+                                updateDisplayImageURLOfProduct(doc.id, downloadURL).then(() => {
+                                    resolve(null);
                                 });
-                        }
-                    );
-                })
-                .catch((errorMessage) => {
-                    reject(errorMessage);
-                });
+                            })
+                            .catch((error) => {
+                                reject(error);
+                            });
+                    }
+                );
         }).catch((error) => {
             reject(error.message);
         });

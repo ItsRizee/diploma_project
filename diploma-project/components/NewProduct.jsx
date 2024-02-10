@@ -1,11 +1,9 @@
 import {InputField, Textarea, InputFieldTags, InputFieldTimeline} from "../components";
 import {useState} from "react";
 import {addProduct} from "../services/product";
-import { useUserStore } from "../store/userStorage";
 import {errorToast, successToast} from "../public/constants";
 
 const NewProduct = () => {
-    const {currentUser} = useUserStore((state) => ({currentUser: state.user}));
     const [productTitle, setProductTitle] = useState("");
     const [productImage, setProductImage] = useState(null);
     const [productDescription, setProductDescription] = useState("");
@@ -30,7 +28,7 @@ const NewProduct = () => {
                 return;
             }
 
-            addProduct(productTitle, productDescription, productImage, currentUser.catalog, productPrice, productTimeline, productTags)
+            addProduct(productTitle, productDescription, productImage, productPrice, productTimeline, productTags)
                 .then(() => {
                     setProductTitle("");
                     setProductDescription("");

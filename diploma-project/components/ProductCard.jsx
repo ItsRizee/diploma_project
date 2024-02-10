@@ -15,17 +15,6 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
     const [isLiked, setIsLiked] = useState(product.likes.includes(currentUser.uid));
     const router = useRouter();
 
-    useEffect(() => {
-        getUserById(product.owner).then((user) => {
-            setOwner(user);
-        });
-
-        const timeDifference = Timestamp.now().toMillis() - (typeof product.createdDate === 'number' ? product.createdDate : product.createdDate.toMillis());
-        if (timeDifference < 24 * 60 * 60 * 1000) {
-            setIsNew(true);
-        }
-    }, []);
-
     const onClick = () => {
         void router.push(`/product/${productId}`);
     };
@@ -52,7 +41,8 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
                     requests: currentUser.requests,
                     craft: currentUser.craft,
                     orders : currentUser.orders,
-                    catalog: currentUser.catalog
+                    catalog: currentUser.catalog,
+                    followers: currentUser.followers,
                 });
                 setIsLiked(() => !isLiked);
             })
@@ -60,6 +50,17 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
                 errorToast(error.message);
         });
     };
+
+    useEffect(() => {
+        getUserById(product.owner).then((user) => {
+            setOwner(user);
+        });
+
+        const timeDifference = Timestamp.now().toMillis() - (typeof product.createdDate === 'number' ? product.createdDate : product.createdDate.toMillis());
+        if (timeDifference < 24 * 60 * 60 * 1000) {
+            setIsNew(true);
+        }
+    }, []);
 
     return (
         <article className="card card-bordered border-b-gray-400 w-60 lg:w-80 h-full bg-base-100 shadow-md">
@@ -79,7 +80,7 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
                         <button className="transition-transform transform hover:scale-110 absolute top-0.5 right-0" onClick={onLike}>
                             {isLiked ?
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                     className="w-6 h-6">
+                                     className="w-6 h-6 text-red-600">
                                     <path
                                         d="m11.645 20.91-.007-.003-.022-.012a15.247 15.247 0 0 1-.383-.218 25.18 25.18 0 0 1-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0 1 12 5.052 5.5 5.5 0 0 1 16.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 0 1-4.244 3.17 15.247 15.247 0 0 1-.383.219l-.022.012-.007.004-.003.001a.752.752 0 0 1-.704 0l-.003-.001Z"/>
                                 </svg> :

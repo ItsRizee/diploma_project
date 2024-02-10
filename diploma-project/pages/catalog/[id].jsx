@@ -1,27 +1,47 @@
 import {StandardLayout} from "../../components";
-import {default_profile_picture} from "../../public/constants";
+import {default_profile_picture, errorToast, successToast} from "../../public/constants";
 import Image from "next/future/image";
 import {useEffect, useState} from "react";
 import {getCatalog} from "../../services/product";
 import {ProductCard} from "../../components";
 import {useRouter} from "next/router";
-import {getUserById} from "../../services/user";
+import {getUserById, UpdateFollowers} from "../../services/user";
 import {useUserStore} from "../../store/userStorage";
 
 const Catalog = ({craftsman}) => {
-    const {currentUser} = useUserStore((state) => ({currentUser: state.user}));
+    const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
     const [isLogged, setIsLogged] = useState(false);
     const [products, setProducts] = useState(null);
     const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
+    const [isFollower, setIsFollower] = useState(null);
     const router = useRouter();
+
+    const onFollow = () => {
+        let followers = [...craftsman.followers];
+        if(isFollower) {
+            followers = followers.filter((uid) => uid !== currentUser.uid);
+        } else {
+            followers.push(currentUser.uid);
+        }
+
+        UpdateFollowers(craftsman.uid, followers)
+            .then(() => {
+                successToast(`Successfully ${isFollower ? "unfollowed" : "followed"} ${craftsman.name}!`);
+                setIsFollower(() => !isFollower);
+            })
+            .catch(() => {
+                errorToast(`Error: Couldn't ${isFollower ? "unfollow" : "follow"} ${craftsman.name}! Refresh the page and try again!`);
+        });
+    }
 
     useEffect(() => {
         getCatalog(craftsman).then((catalog) => {
             setProducts(catalog);
         });
-    }, [craftsman.catalog]);
+    }, []);
 
     useEffect(() => {
+        setIsFollower(craftsman.followers.includes(currentUser.uid));
         let accessToken = sessionStorage.getItem("accessToken");
         if(accessToken !== ''){
             setIsLogged(true);
@@ -53,11 +73,17 @@ const Catalog = ({craftsman}) => {
                                 </figure>
                             </div>
                             <div className="text-xl text-center">{craftsman.name}</div>
+                            <div className="text-lg text-center opacity-60">{craftsman.followers.length} followers</div>
                             {isLogged && craftsman.uid !== currentUser.uid &&
-                                <label htmlFor="my-drawer" className="drawer-button bg-base-300 btn btn-lg mt-5"
-                                       onClick={() => setToggleDrawerContent(false)}>
-                                    New Request
-                                </label>
+                                <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-3 sm:space-y-0 mt-5">
+                                    <label htmlFor="my-drawer" className="drawer-button bg-base-300 btn btn-lg w-44"
+                                           onClick={() => setToggleDrawerContent(false)}>
+                                        New Request
+                                    </label>
+                                    <button className="btn btn-lg bg-base-300 w-44" onClick={onFollow}>
+                                        {isFollower ? "Unfollow" : "Follow"}
+                                    </button>
+                                </div>
                             }
                         </div>
                         {products.length !== 0 ?
@@ -90,17 +116,18 @@ const Catalog = ({craftsman}) => {
 export async function getServerSideProps({ params }) {
     return getUserById(params.id).then((userData) => {
         // if user is not a craftsman return notFound - 404 page
-        if(userData.catalog !== null) {
+        if(userData.craft !== null) {
             const jsonUser = {
                 name: userData.name,
                 email: userData.email,
                 photoURL: userData.photoURL,
                 uid: userData.uid,
+                craft: userData.craft,
+                followers: userData.followers,
                 interests: [],
                 requests: [],
-                craft: userData.craft,
                 orders: [],
-                catalog: userData.catalog,
+                catalog: [],
             }
 
             return {
@@ -118,136 +145,3 @@ export async function getServerSideProps({ params }) {
 
 
 export default Catalog;
-
-
-
-
-
-
-
-
-
-// import {StandardLayout} from "../../components";
-// import {default_profile_picture} from "../../public/constants";
-// import Image from "next/future/image";
-// import {useEffect, useState} from "react";
-// import {getCatalog, Product} from "../../services/product";
-// import {ProductCard} from "../../components";
-// import {useRouter} from "next/router";
-// import {getUserById} from "../../services/user";
-//
-// const Catalog = ({user, products}) => {
-//     // const [products, setProducts] = useState(null);
-//     const router = useRouter();
-//
-//     // useEffect(() => {
-//     //     getCatalog(user.email).then((catalog) => {
-//     //         setProducts(
-//     //             catalog.map((product) => (
-//     //                 new Product(
-//     //                     product.title,
-//     //                     product.description,
-//     //                     product.displayImageURL,
-//     //                     product.owner,
-//     //                     product.price,
-//     //                     product.createdDate,
-//     //                     product.likes,
-//     //                     product.tags
-//     //                 )
-//     //             ))
-//     //         );
-//     //     });
-//     // }, []);
-//
-//     if(router.isFallback) {
-//         return (
-//             <div className="flex h-screen justify-center items-center">
-//                 <span className="loading loading-spinner loading-lg"></span>
-//             </div>
-//         );
-//     }
-//
-//     return (
-//         <div className="flex flex-col min-h-screen overflow-x-hidden">
-//             <StandardLayout title="Catalog page" page_content={products ?
-//                 <main
-//                     className="flex flex-col flex-1 my-10 space-y-5 mx-5 sm:mx-10 md:mx-20 lg:mx-36 xl:mx-52 2xl:mx-72 justify-center items-center">
-//                     <div className="flex flex-col flex-1 mb-5 mt-10 space-y-10">
-//                         <div className="mb-5">
-//                             <figure className="relative rounded-full flex justify-center mb-2">
-//                                 <Image src={user.photoURL ? user.photoURL : default_profile_picture} alt="avatar icon"
-//                                        width={96} height={96}/>
-//                             </figure>
-//                             <div className="text-xl text-center">{user.name}</div>
-//                         </div>
-//                         { products.length !== 0 ?
-//                             <div className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 sm:gap-x-5 2xl:gap-x-16 gap-y-16">
-//                                 {products.slice().reverse().map((product, index) => (
-//                                     <ProductCard
-//                                         key={index}
-//                                         product={product}
-//                                         inCatalog={true}
-//                                         productId={user.catalog[products.length - index - 1]}
-//                                     />
-//                                 ))}
-//                             </div> :
-//                             <div className="flex flex-col justify-center items-center space-y-5">
-//                                 <Image className="opacity-60" src="/questionable_man.png" alt="Some craftsman thinking" width={221} height={242}/>
-//                                 <p className="text-center opacity-60">This craftsman doesn&apos;t have any products</p>
-//                             </div>
-//                         }
-//                     </div>
-//                 </main> :
-//                 <div className="flex flex-1 justify-center items-center">
-//                     <span className="loading loading-spinner loading-lg"></span>
-//                 </div>
-//             }/>
-//         </div>
-//     );
-// }
-//
-// export async function getServerSideProps({ params }) {
-//     return getUserById(params.id).then((userData) => {
-//         // if user is not a craftsman return notFound - 404 page
-//         if(userData.catalog !== null) {
-//             getCatalog(userData.email).then((catalog) => {
-//                 const jsonUser = {
-//                     name: userData.name,
-//                     email: userData.email,
-//                     photoURL: userData.photoURL,
-//                     uid: userData.uid,
-//                     interests: userData.interests,
-//                     requests: userData.requests,
-//                     craft: userData.craft,
-//                     orders: userData.orders,
-//                     catalog: userData.catalog,
-//                     products: catalog.map((product) => (
-//                         new Product(
-//                             product.title,
-//                             product.description,
-//                             product.displayImageURL,
-//                             product.owner,
-//                             product.price,
-//                             product.createdDate,
-//                             product.likes,
-//                             product.tags
-//                         )
-//                     )),
-//                 }
-//
-//                 return {
-//                     props: {
-//                         user: jsonUser,
-//                     }
-//                 }
-//             });
-//         } else {
-//             return {
-//                 notFound: true,
-//             }
-//         }
-//     });
-// }
-//
-//
-// export default Catalog;

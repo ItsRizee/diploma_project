@@ -29,7 +29,8 @@ const MyApp = ({ Component, pageProps }) => {
             requests: user.requests,
             craft: data.craft,
             orders: user.orders,
-            catalog: data.catalog,
+            catalog: user.catalog,
+            followers: data.followers,
           });
           currentUser.getIdToken().then((token) => {
             sessionStorage.setItem('accessToken', token);
@@ -52,7 +53,8 @@ const MyApp = ({ Component, pageProps }) => {
               requests: user.requests,
               craft: data.craft,
               orders: user.orders,
-              catalog: data.catalog,
+              catalog: user.catalog,
+              followers: data.followers,
             };
           });
 

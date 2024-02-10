@@ -19,7 +19,7 @@ const Profile = () => {
     const router = useRouter();
 
     const BecomeCraftsman = () => {
-        UpdateProfileToCraftsman("woodcarver")
+        UpdateProfileToCraftsman("craftsman")
             .then(() => {
                 successToast("Successfully became a craftsman!");
             })
@@ -37,7 +37,7 @@ const Profile = () => {
 
         if(currentUser.uid !== null && firstRender) {
             Promise.all([getInterests(currentUser), getRequests(currentUser), getOrders(currentUser)]).then(([interestsData, requestsData, ordersData]) => {
-                const tmp = {
+                setCurrentUser({
                     name: currentUser.name,
                     email: currentUser.email,
                     photoURL: currentUser.photoURL,
@@ -46,11 +46,9 @@ const Profile = () => {
                     requests: requestsData,
                     craft: currentUser.craft,
                     orders : ordersData,
-                    catalog: currentUser.catalog
-                };
-                console.log("Profile:");
-                console.log(tmp);
-                setCurrentUser(tmp);
+                    catalog: currentUser.catalog,
+                    followers: currentUser.followers,
+                });
             });
 
             setFirstRender(false);

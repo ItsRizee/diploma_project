@@ -13,8 +13,9 @@ export class User {
     #craft;
     #orders;
     #catalog;
+    #followers;
 
-    constructor(name = "", email = "", photoURL = null, uid = null, interests = [], requests = [], craft = null, orders = [], catalog = null) {
+    constructor(name = "", email = "", photoURL = null, uid = null, interests = [], requests = [], craft = null, orders = [], catalog = [], followers = []) {
         this.#name = name;
         this.#email = email;
         this.#photoURL = photoURL;
@@ -24,6 +25,7 @@ export class User {
         this.#craft = craft;
         this.#orders = orders;
         this.#catalog = catalog;
+        this.#followers = followers;
     }
 
     get name(){
@@ -97,6 +99,14 @@ export class User {
     set catalog(newCatalog){
         this.#catalog = newCatalog;
     }
+
+    get followers(){
+        return this.#followers;
+    }
+
+    set followers(newFollowers){
+        this.#followers = newFollowers;
+    }
 }
 
 export const addUser = (name, email, uid) => {
@@ -109,7 +119,6 @@ export const addUser = (name, email, uid) => {
                 photoURL: null,
                 uid: uid,
                 craft: null,
-                catalog: null,
         }).then(() => {
             resolve(null);
         }).catch((error) => {
@@ -131,11 +140,12 @@ const getUserByQuery = (q) => {
                 user.email = data.email;
                 user.photoURL = data.photoURL;
                 user.uid = data.uid;
+                user.craft = data.craft;
+                user.followers = data.followers;
                 user.interests = [];
                 user.requests = [];
-                user.craft = data.craft;
                 user.orders = [];
-                user.catalog = data.catalog;
+                user.catalog = [];
             });
 
             resolve(user);
@@ -157,7 +167,7 @@ export const getUserById = (uid) => {
     });
 }
 
-export const getUserDoc = (uid) => {
+const getUserDoc = (uid) => {
     return new Promise((resolve) => {
         const q = query(collection(firestore, "users"), where("uid", "==", uid));
         getDocs(q).then((snapshot) => {
@@ -260,7 +270,7 @@ export const UpdateProfileToCraftsman = (craft) => {
     return new Promise((resolve, reject) => {
         getUserDoc(auth.currentUser.uid).then((docRef) => {
             // Use updateDoc to update the document
-            updateDoc(docRef, { craft: craft, catalog: [] })
+            updateDoc(docRef, { craft: craft, followers: [] })
                 .then(() => {
                     resolve();
                 })
@@ -271,12 +281,11 @@ export const UpdateProfileToCraftsman = (craft) => {
     });
 }
 
-export const addProductToCatalog = (productId, catalog) => {
+export const UpdateFollowers = (uid, followers) => {
     return new Promise((resolve, reject) => {
-        catalog.push(productId);
-        getUserDoc(auth.currentUser.uid).then((docRef) => {
+        getUserDoc(uid).then((docRef) => {
             // Use updateDoc to update the document
-            updateDoc(docRef, { catalog: catalog })
+            updateDoc(docRef, { followers: followers })
                 .then(() => {
                     resolve();
                 })
