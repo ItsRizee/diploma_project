@@ -3,22 +3,20 @@
     import {getNewProducts, getTrendingProducts, getDiscoverProducts} from "../services/product";
     import AvatarIcon from "../components/AvatarIcon";
 
-    const Home = ({trending, discover}) => {
+    const Home = ({newCrafts, trending, discover}) => {
         const [newProducts, setNewProducts] = useState(null);
         const [trendingProducts, setTrendingProducts] = useState(null);
         const [discoverProducts, setDiscoverProducts] = useState(null);
         const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
 
         useEffect(() => {
-            getNewProducts().then((newProductsData) => {
-                let products = [];
+            let products = [];
 
-                newProductsData.map((item, index) => {
-                        products.push(<AvatarIcon key={index} img={item.photoURL} username={item.name} catalogHref={`/catalog/${item.userID}`} productHref={`/product/${item.productID}`}/>);
-                });
-
-                setNewProducts(products);
+            newCrafts.map((item, index) => {
+                    products.push(<AvatarIcon key={index} img={item.photoURL} username={item.name} catalogHref={`/catalog/${item.userID}`} productHref={`/product/${item.productID}`}/>);
             });
+
+            setNewProducts(products);
         }, []);
 
         useEffect(() => {
@@ -58,12 +56,13 @@
     }
 
     export async function getServerSideProps() {
-        return Promise.all([getTrendingProducts(), getDiscoverProducts()]).then(([trendingProducts, discoverProducts]) => {
+        return Promise.all([getNewProducts(), getTrendingProducts(), getDiscoverProducts()]).then(([newProducts, trendingProducts, discoverProducts]) => {
 
             const top5TrendingProducts = trendingProducts.sort((a, b) => b.likes.length - a.likes.length).slice(0, 5);
 
             return {
                 props: {
+                    newCrafts: newProducts,
                     trending: top5TrendingProducts,
                     discover: discoverProducts,
                 }
