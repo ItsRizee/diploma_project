@@ -78,7 +78,7 @@ const RequestCard = ({request, index}) => {
                 <InfoModal request={stateRequest} setRequest={setStateRequest} user={user} craftsman={craftsman} index={index}/>
             </div>
             {(stateRequest.status === "denied" || stateRequest.status === "canceled") &&
-                <button className="flex absolute -top-3.5 -right-3.5 transition-transform transform hover:scale-110" type="button" onClick={handleDelete}>
+                <button className="flex absolute top-1 right-1 transition-transform transform hover:scale-110" type="button" onClick={handleDelete}>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
                          className="w-8 h-8 text-red-600">
                         <path fillRule="evenodd"

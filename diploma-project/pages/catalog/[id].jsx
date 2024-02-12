@@ -13,11 +13,12 @@ const Catalog = ({craftsman}) => {
     const [isLogged, setIsLogged] = useState(false);
     const [products, setProducts] = useState(null);
     const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
-    const [isFollower, setIsFollower] = useState(null);
+    const [craftsmanFollowers, setCraftsmanFollowers] = useState(craftsman.followers);
     const router = useRouter();
 
     const onFollow = () => {
-        let followers = [...craftsman.followers];
+        let followers = [...craftsmanFollowers];
+        const isFollower = craftsmanFollowers.includes(currentUser.uid);
         if(isFollower) {
             followers = followers.filter((uid) => uid !== currentUser.uid);
         } else {
@@ -26,8 +27,8 @@ const Catalog = ({craftsman}) => {
 
         UpdateFollowers(craftsman.uid, followers)
             .then(() => {
+                setCraftsmanFollowers(followers);
                 successToast(`Successfully ${isFollower ? "unfollowed" : "followed"} ${craftsman.name}!`);
-                setIsFollower(() => !isFollower);
             })
             .catch(() => {
                 errorToast(`Error: Couldn't ${isFollower ? "unfollow" : "follow"} ${craftsman.name}! Refresh the page and try again!`);
@@ -41,7 +42,6 @@ const Catalog = ({craftsman}) => {
     }, []);
 
     useEffect(() => {
-        setIsFollower(craftsman.followers.includes(currentUser.uid));
         let accessToken = sessionStorage.getItem("accessToken");
         if(accessToken !== ''){
             setIsLogged(true);
@@ -73,7 +73,7 @@ const Catalog = ({craftsman}) => {
                                 </figure>
                             </div>
                             <div className="text-xl text-center">{craftsman.name}</div>
-                            <div className="text-lg text-center opacity-60">{craftsman.followers.length} followers</div>
+                            <div className="text-lg text-center opacity-60">{craftsmanFollowers.length} followers</div>
                             {isLogged && craftsman.uid !== currentUser.uid &&
                                 <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-3 sm:space-y-0 mt-5">
                                     <label htmlFor="my-drawer" className="drawer-button bg-base-300 btn btn-lg w-44"
@@ -81,7 +81,7 @@ const Catalog = ({craftsman}) => {
                                         New Request
                                     </label>
                                     <button className="btn btn-lg bg-base-300 w-44" onClick={onFollow}>
-                                        {isFollower ? "Unfollow" : "Follow"}
+                                        {craftsmanFollowers.includes(currentUser.uid) ? "Unfollow" : "Follow"}
                                     </button>
                                 </div>
                             }

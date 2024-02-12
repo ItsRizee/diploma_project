@@ -6,7 +6,6 @@ const ItemsScrollWithArrows = ({categoryName = "", listOfItems, message = ""}) =
     const [translation, setTranslation] = useState(null);
     const [timesToScroll, setTimesToScroll] = useState(null);
     const containerRef = useRef(null);
-    const cardWidthRef = useRef(0);
     const spacingInPixels = 20;
 
     const prev = useCallback(() => setCurr((curr) => (curr === 0 ? 0 : curr - 1)), []);
@@ -16,17 +15,21 @@ const ItemsScrollWithArrows = ({categoryName = "", listOfItems, message = ""}) =
 
     useEffect(() => {
         const updateCardWidth = () => {
-            if (containerRef.current) {
-                cardWidthRef.current = containerRef.current.querySelector(".carousel-item").getBoundingClientRect().width;
-                let itemScrollWidth = listOfItems.length * cardWidthRef.current + (listOfItems.length - 1) * spacingInPixels - containerRef.current.offsetWidth;
-                if(itemScrollWidth > 0) {
-                    const temp = Math.ceil(itemScrollWidth / 680);
-                    setTimesToScroll(temp);
-                    setTranslation(itemScrollWidth / temp);
-                } else {
-                    setTranslation(null);
+            if(listOfItems.length === 0) {
+                setTranslation(null);
+            } else if (containerRef.current) {
+                const cardWidth = containerRef.current.querySelector("#item-0").getBoundingClientRect().width;
+                if(cardWidth) {
+                    let itemScrollWidth = listOfItems.length * cardWidth + (listOfItems.length - 1) * spacingInPixels - containerRef.current.offsetWidth;
+                    if (itemScrollWidth > 0) {
+                        const temp = Math.ceil(itemScrollWidth / 680);
+                        setTimesToScroll(temp);
+                        setTranslation(itemScrollWidth / temp);
+                    } else {
+                        setTranslation(null);
+                    }
+                    resetToFirst(); // Reset to the first element on window resize
                 }
-                resetToFirst(); // Reset to the first element on window resize
             }
         };
 
@@ -40,9 +43,12 @@ const ItemsScrollWithArrows = ({categoryName = "", listOfItems, message = ""}) =
         return () => {
             window.removeEventListener("resize", updateCardWidth);
         };
-    }, [listOfItems]);
+    }, [listOfItems, containerRef.current]);
 
     const calculateTranslation = () => {
+        if(translation === null) {
+            return 0;
+        }
         return curr * translation;
     };
 
@@ -52,8 +58,8 @@ const ItemsScrollWithArrows = ({categoryName = "", listOfItems, message = ""}) =
             { listOfItems.length > 0 ?
                 <div className="relative overflow-x-hidden no-scrollbar w-auto py-2" ref={containerRef}>
                     <div className="flex space-x-5 pt-2 transition-transform ease-out duration-500" style={{ transform: `translateX(-${calculateTranslation()}px)` }}>
-                        {listOfItems.map((item) => (
-                            <div key={item.key} className="carousel-item">
+                        {listOfItems.map((item, index) => (
+                            <div id={`item-${index}`} key={item.key} className="carousel-item">
                                 {item}
                             </div>
                         ))}

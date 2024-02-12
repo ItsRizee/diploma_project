@@ -10,9 +10,8 @@ import {getOrders, getRequests} from "../services/request";
 import {successToast, errorToast} from "../public/constants";
 
 const Profile = () => {
-    const { currentUser, setCurrentUser } = useUserStore((state) => ({currentUser: state.user, setCurrentUser: state.setUser}));
+    const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
     const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
-    const [firstRender, setFirstRender] = useState(true);
     const [interests, setInterests] = useState([]);
     const [requests, setRequests] = useState([]);
     const [orders, setOrders] = useState([]);
@@ -31,29 +30,10 @@ const Profile = () => {
     useEffect(() => {
         // redirect if user is not authenticated
         let accessToken = sessionStorage.getItem("accessToken");
-        if(!accessToken && currentUser.uid){
+        if(!accessToken){
             void router.replace("/");
         }
-
-        if(currentUser.uid !== null && firstRender) {
-            Promise.all([getInterests(currentUser), getRequests(currentUser), getOrders(currentUser)]).then(([interestsData, requestsData, ordersData]) => {
-                setCurrentUser({
-                    name: currentUser.name,
-                    email: currentUser.email,
-                    photoURL: currentUser.photoURL,
-                    uid: currentUser.uid,
-                    interests: interestsData,
-                    requests: requestsData,
-                    craft: currentUser.craft,
-                    orders : ordersData,
-                    catalog: currentUser.catalog,
-                    followers: currentUser.followers,
-                });
-            });
-
-            setFirstRender(false);
-        }
-    }, [currentUser]);
+    }, []);
 
     useEffect(() => {
         if(currentUser.uid !== null) {
@@ -68,12 +48,10 @@ const Profile = () => {
                 setInterests(interestsList);
             });
         }
-    }, [currentUser.interests]);
+    }, [currentUser.uid, currentUser.interests]);
 
     useEffect(() => {
-        if(currentUser.requests && currentUser.requests.length === 0) {
-            setRequests([]);
-        } else if(currentUser.uid !== null) {
+        if(currentUser.uid !== null) {
             getRequests(currentUser).then((products) => {
                 let requestsList = [];
 
@@ -84,12 +62,10 @@ const Profile = () => {
                 setRequests(requestsList);
             });
         }
-    }, [currentUser.requests]);
+    }, [currentUser.uid, currentUser.requests]);
 
     useEffect(() => {
-        if(currentUser.orders && currentUser.orders.length === 0) {
-            setOrders([]);
-        } else if(currentUser.uid !== null && currentUser.craft !== null) {
+        if(currentUser.uid !== null && currentUser.craft !== null) {
             getOrders(currentUser).then((products) => {
                 let ordersList = [];
 
@@ -100,7 +76,7 @@ const Profile = () => {
                 setOrders(ordersList);
             });
         }
-    }, [currentUser.orders]);
+    }, [currentUser.uid, currentUser.orders]);
 
     return (
         <div className="flex flex-col min-h-screen overflow-x-hidden">
