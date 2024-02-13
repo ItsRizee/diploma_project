@@ -62,7 +62,7 @@ const Carousel = ({ categoryName, listOfItems }) => {
             <div className="w-full h-full" ref={carouselRef}>
                 <div className="w-full carousel space-x-4 z-0 rounded-box">
                     {listOfItems.map((item, index) => (
-                        <div key={index} className="carousel-item w-full relative">
+                        <div key={`trending-${index}`} className="carousel-item w-full relative">
                             {item}
                         </div>
                     ))}

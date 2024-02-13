@@ -3,15 +3,18 @@ import Link from "next/link";
 import Image from "next/future/image";
 import {default_profile_picture} from "../public/constants";
 import {getRequest, updateRequest, updateStatus} from "../services/request";
-import {useState} from "react";
+import {useState, useRef} from "react";
 import {InputField, Textarea} from "./index";
 import {successToast, errorToast} from "../public/constants";
+import {toast} from "react-toastify";
 
-const InfoModal = ({request, setRequest, user, craftsman, index}) => {
-    const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
+const InfoModal = ({request, setRequest, user, craftsman}) => {
+    const { currentUser, isTouchEnabled } = useUserStore((state) => ({currentUser: state.user, isTouchEnabled: state.isTouchEnabled}));
     const [title, setTitle] = useState(request.title);
     const [description, setDescription] = useState(request.description);
     const [editMode, setEditMode] = useState(false);
+    const toastId = useRef(null);
+    const modalRef = useRef(null);
 
     const handleAccept = () => {
         getRequest(request.id).then((requestData) => {
@@ -26,7 +29,7 @@ const InfoModal = ({request, setRequest, user, craftsman, index}) => {
                             craftsman: request.craftsman,
                             status: "accepted",
                         });
-                        document.getElementById(`my_modal_${index}`).close();
+                        modalRef.current.close();
                     })
                     .catch(() => {
                         errorToast("Can't accept request. Please reload the page and try again!");
@@ -50,7 +53,7 @@ const InfoModal = ({request, setRequest, user, craftsman, index}) => {
                             craftsman: request.craftsman,
                             status: "denied",
                         });
-                        document.getElementById(`my_modal_${index}`).close();
+                        modalRef.current.close();
                     })
                     .catch(() => {
                         errorToast("Can't deny request. Please reload the page and try again!");
@@ -87,8 +90,8 @@ const InfoModal = ({request, setRequest, user, craftsman, index}) => {
                         successToast("Successfully updated request's content!");
                     })
                     .catch(() => {
-                    errorToast("Can't save request. Please reload the page and try again!");
-                });
+                        errorToast("Can't save request. Please reload the page and try again!");
+                    });
             } else {
                 errorToast("Can't save request. Please reload the page and try again!");
             }
@@ -108,7 +111,7 @@ const InfoModal = ({request, setRequest, user, craftsman, index}) => {
                             craftsman: request.craftsman,
                             status: "canceled",
                         });
-                        document.getElementById(`my_modal_${index}`).close();
+                        modalRef.current.close();
                     })
                     .catch(() => {
                         errorToast("Can't cancel request. Please reload the page and try again!");
@@ -121,17 +124,27 @@ const InfoModal = ({request, setRequest, user, craftsman, index}) => {
 
     return (
         <div>
-            <div className="card-actions justify-end">
-                <button className="btn btn-primary" onClick={() => document.getElementById(`my_modal_${index}`).showModal()}>
-                    More info
-                </button>
+            <div className="card-actions">
+                <div className="flex flex-col space-y-3">
+                    <p>Status:
+                        <span
+                            className={`${request.status === "waiting" ? "text-warning" : (request.status === "accepted" ? "text-success" : "text-error")}`}>
+                        {` ${request.status}`}
+                    </span>
+                    </p>
+                    <button className="btn btn-primary" onClick={() => modalRef.current.showModal()}>
+                        More info
+                    </button>
+                </div>
             </div>
-            <dialog id={`my_modal_${index}`} className="modal overflow-y-auto">
-                {/*  UploadImageModal's content  */}
+            <dialog className="modal overflow-y-auto" ref={modalRef}>
                 <div className="modal-box w-4/5 md:w-full p-0">
-                    <form method="dialog">
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
+                    {
+                        !isTouchEnabled &&
+                        <form method="dialog">
+                            <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        </form>
+                    }
                     <article className="p-5 md:p-10 space-y-5 h-full w-full">
                         {editMode === false ?
                             <h2 className="text-xl font-bold">{request.title}</h2> :
@@ -141,7 +154,17 @@ const InfoModal = ({request, setRequest, user, craftsman, index}) => {
                                 labelText="Title"
                                 type="text"
                                 placeholder=""
-                                onChange={(e) => setTitle(e.target.value)}
+                                onChange={(e) => {
+                                    const requestTitle = e.target.value;
+
+                                    if(requestTitle.length > 20) {
+                                        if(!toast.isActive(toastId.current)) {
+                                            toastId.current = errorToast("Error: Title can't be more than 20 characters!");
+                                        }
+                                    } else {
+                                        setTitle(requestTitle);
+                                    }
+                                }}
                             />
                         }
                         {editMode === false ?
@@ -152,7 +175,18 @@ const InfoModal = ({request, setRequest, user, craftsman, index}) => {
                                 labelText="Description"
                                 placeholder=""
                                 height="h-56"
-                                onChange={(e) => setDescription(e.target.value)}
+                                onChange={(e) => {
+                                    const requestDescription = e.target.value;
+
+                                    if(requestDescription.length > 500) {
+                                        if(!toast.isActive(toastId.current)) {
+                                            toastId.current = errorToast("Error: Description can't be more than 500 characters!");
+                                        }
+                                    } else {
+                                        setDescription(requestDescription);
+
+                                    }
+                                }}
                             />
                         }
                         {currentUser.uid === request.craftsman ?

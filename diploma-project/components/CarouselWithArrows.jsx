@@ -46,7 +46,7 @@ const CarouselWithArrows = ({ categoryName, listOfItems }) => {
                 >
                     {listOfItems.map((item, index) => (
                         <div
-                            key={index}
+                            key={`trending-${index}`}
                             className="flex-shrink-0 w-full h-full carousel-item"
                         >
                             {item}
@@ -54,10 +54,10 @@ const CarouselWithArrows = ({ categoryName, listOfItems }) => {
                     ))}
                 </div>
                 <div className="absolute inset-0 flex items-center justify-between p-4 pointer-events-none">
-                    <button onClick={prev} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white pointer-events-auto">
+                    <button onClick={prev} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white pointer-events-auto opacity-100 transition-opacity duration-300 ease-in-out hover:opacity-80">
                         <ChevronLeft className="text-base-100" size={40} />
                     </button>
-                    <button onClick={next} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white pointer-events-auto">
+                    <button onClick={next} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white pointer-events-auto opacity-100 transition-opacity duration-300 ease-in-out hover:opacity-80">
                         <ChevronRight className="text-base-100" size={40} />
                     </button>
                 </div>

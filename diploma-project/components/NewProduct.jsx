@@ -1,20 +1,27 @@
 import {InputField, Textarea, InputFieldTags, InputFieldTimeline} from "../components";
-import {useState} from "react";
+import {useState, useRef} from "react";
 import {addProduct} from "../services/product";
 import {errorToast, successToast} from "../public/constants";
+import {toast} from "react-toastify";
 
 const NewProduct = () => {
-    const [productTitle, setProductTitle] = useState("");
-    const [productImage, setProductImage] = useState(null);
-    const [productDescription, setProductDescription] = useState("");
-    const [error, setError] = useState(null);
-    const [productPrice, setProductPrice] = useState(0);
+    const [title, setTitle] = useState("");
+    const [image, setImage] = useState(null);
+    const [description, setDescription] = useState("");
+    const [productPrice, setProductPrice] = useState("");
     const [productTags, setProductTags] = useState([]);
     const [productTimeline, setProductTimeline] = useState([]);
     const [submitting, setSubmitting] = useState(false);
+    const toastId = useRef(null);
 
     const onImageChange = (event) => {
-        setProductImage(event.target.files[0]);
+        const image = event.target.files[0];
+
+        if (image && (image.type === "image/png" || image.type === "image/jpeg")) {
+            setImage(image);
+        } else {
+            errorToast("Product's image must be .png or .jpeg!");
+        }
     }
 
     const onSubmit = (event) => {
@@ -22,18 +29,12 @@ const NewProduct = () => {
         if(!submitting) {
             setSubmitting(true);
 
-            if (productPrice === 0) {
-                errorToast("Product's price can't be 0!");
-                setSubmitting(false);
-                return;
-            }
-
-            addProduct(productTitle, productDescription, productImage, productPrice, productTimeline, productTags)
+            addProduct(title, description, image, parseInt(productPrice), productTimeline, productTags)
                 .then(() => {
-                    setProductTitle("");
-                    setProductDescription("");
-                    setProductImage(null);
-                    setProductPrice(0);
+                    setTitle("");
+                    setDescription("");
+                    setImage(null);
+                    setProductPrice("");
                     setProductTimeline([]);
                     setProductTags([]);
 
@@ -44,8 +45,8 @@ const NewProduct = () => {
                     event.target.reset();
                 })
                 .catch((errorMessage) => {
-                    setError(errorMessage);
-                });
+                    errorToast(errorMessage);
+            });
         }
     }
 
@@ -59,10 +60,17 @@ const NewProduct = () => {
                         type="text"
                         labelText="Title"
                         placeholder=""
-                        value={productTitle}
+                        value={title}
                         onChange={(e) => {
-                            setProductTitle(e.target.value);
-                            setError(null); // Reset the error state on input change
+                            const productTitle = e.target.value;
+
+                            if(productTitle.length > 25) {
+                                if(!toast.isActive(toastId.current)) {
+                                    toastId.current = errorToast("Error: Title can't be more than 25 characters!");
+                                }
+                            } else {
+                                setTitle(productTitle);
+                            }
                         }}
                     />
                     <div className="w-full space-y-2">
@@ -81,28 +89,45 @@ const NewProduct = () => {
                         type="text"
                         labelText="Description"
                         placeholder=""
-                        value={productDescription}
+                        value={description}
                         onChange={(e) => {
-                            setProductDescription(e.target.value);
-                            setError(null); // Reset the error state on input change
+                            const productDescription = e.target.value;
+
+                            if(productDescription.length > 500) {
+                                if(!toast.isActive(toastId.current)) {
+                                    toastId.current = errorToast("Error: Description can't be more than 500 characters!");
+                                }
+                            } else {
+                                setDescription(productDescription);
+                            }
                         }}
                     />
                     <InputField
                         id="price-input"
-                        type="number"
+                        type="text"
                         labelText="Price €"
                         placeholder=""
                         value={productPrice}
                         onChange={(e) => {
-                            setProductPrice(e.target.value);
-                            setError(null); // Reset the error state on input change
+                            const productPrice = e.target.value;
+
+                            if(parseInt(productPrice)> 100000 || parseInt(productPrice) === 0) {
+                                if(!toast.isActive(toastId.current)) {
+                                    if(parseInt(productPrice) > 100000) {
+                                        toastId.current = errorToast("Error: Price can't be more than 100 000 euro!");
+                                    } else {
+                                        toastId.current = errorToast("Error: Price can't be 0 euro!");
+                                    }
+                                }
+                            } else {
+                                setProductPrice(productPrice);
+                            }
                         }}
                     />
                     <InputFieldTimeline timeline={productTimeline} setTimeline={setProductTimeline} />
                     <InputFieldTags tags={productTags} setTags={setProductTags} />
                     <div>
-                        {error && <span className="error-text text-error py-2">{error}</span>}
-                        <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
+                        <div className="form-control">
                             {submitting ?
                                 <button className="btn btn-primary btn-disabled" type="submit">
                                     <span className="loading loading-spinner loading-lg"></span>

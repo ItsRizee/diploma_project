@@ -39,7 +39,7 @@ const Catalog = ({craftsman}) => {
         getCatalog(craftsman).then((catalog) => {
             setProducts(catalog);
         });
-    }, []);
+    }, [craftsman]);
 
     useEffect(() => {
         let accessToken = sessionStorage.getItem("accessToken");
@@ -56,11 +56,10 @@ const Catalog = ({craftsman}) => {
         );
     }
 
-    return (
-        <div className="flex flex-col min-h-screen overflow-x-hidden">
-            <StandardLayout title="Catalog page" craftsman={craftsman} toggleDrawerContent={toggleDrawerContent} setToggleDrawerContent={setToggleDrawerContent} page_content={products ?
-                <main
-                    className="flex flex-col flex-1 my-10 space-y-5 mx-5 sm:mx-10 md:mx-20 lg:mx-36 xl:mx-52 2xl:mx-72 justify-center items-center">
+    const PageContent = () => {
+        if(products !== null) {
+            return (
+                <div className="flex flex-col flex-1 my-10 space-y-5 mx-5 sm:mx-10 md:mx-20 lg:mx-36 xl:mx-52 2xl:mx-72 justify-center items-center">
                     <div className="flex flex-col flex-1 mb-5 mt-10 space-y-10 items-center">
                         <div className="mb-5">
                             <div className="relative flex justify-center mb-2">
@@ -73,7 +72,8 @@ const Catalog = ({craftsman}) => {
                                 </figure>
                             </div>
                             <div className="text-xl text-center">{craftsman.name}</div>
-                            <div className="text-lg text-center opacity-60">{craftsmanFollowers.length} followers</div>
+                            <div className="text-lg text-center opacity-60">{craftsmanFollowers.length} followers
+                            </div>
                             {isLogged && craftsman.uid !== currentUser.uid &&
                                 <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-3 sm:space-y-0 mt-5">
                                     <label htmlFor="my-drawer" className="drawer-button bg-base-300 btn btn-lg w-44"
@@ -87,8 +87,7 @@ const Catalog = ({craftsman}) => {
                             }
                         </div>
                         {products.length !== 0 ?
-                            <div
-                                className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 sm:gap-x-5 2xl:gap-x-16 gap-y-16">
+                            <main className="grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-3 sm:gap-x-5 2xl:gap-x-16 gap-y-16">
                                 {products.map((product, index) => (
                                     <ProductCard
                                         key={index}
@@ -97,18 +96,35 @@ const Catalog = ({craftsman}) => {
                                         productId={product.id}
                                     />
                                 ))}
-                            </div> :
+                            </main> :
                             <div className="flex flex-col justify-center items-center space-y-5">
-                                <Image className="opacity-60" src="/questionable_man.png" alt="Some craftsman thinking" width={221} height={242}/>
-                                <p className="text-center opacity-60">This craftsman doesn&apos;t have any products</p>
+                                <Image className="opacity-60" src="/questionable_man.png"
+                                       alt="Some craftsman thinking" width={221} height={242}/>
+                                <p className="text-center opacity-60">This craftsman doesn&apos;t have any
+                                    products</p>
                             </div>
                         }
                     </div>
-                </main> :
+                </div>
+            );
+        } else {
+            return (
                 <div className="flex flex-1 justify-center items-center">
                     <span className="loading loading-spinner loading-lg"></span>
                 </div>
-            }/>
+            );
+        }
+    }
+
+    return (
+        <div className="flex flex-col min-h-screen overflow-x-hidden">
+            <StandardLayout
+                title="Catalog page"
+                craftsman={craftsman}
+                toggleDrawerContent={toggleDrawerContent}
+                setToggleDrawerContent={setToggleDrawerContent}
+                page_content={PageContent()}
+            />
         </div>
     );
 }

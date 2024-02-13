@@ -17,7 +17,7 @@
             });
 
             setNewProducts(products);
-        }, []);
+        }, [newCrafts]);
 
         useEffect(() => {
             let products = [];
@@ -27,7 +27,7 @@
             });
 
             setTrendingProducts(products);
-        }, []);
+        }, [trending]);
 
         useEffect(() => {
             let products = [];
@@ -37,22 +37,36 @@
             });
 
             setDiscoverProducts(products);
-        }, []);
+        }, [discover]);
 
-        return (
-            <div className="overflow-x-hidden">
-                <StandardLayout title="Home page" toggleDrawerContent={toggleDrawerContent} setToggleDrawerContent={setToggleDrawerContent} page_content={newProducts && trendingProducts ?
+        const PageContent = () => {
+            if (newProducts !== null && trendingProducts !== null && discoverProducts !== null) {
+                return (
                     <main className="flex flex-col flex-1 pb-20 pt-5 space-y-10 lg:mx-36 xl:mx-72">
                         <ItemsScroll categoryName="New products" listOfItems={newProducts} message="There aren&apos;t any new products."/>
                         <TrendingCarousel categoryName="Trending" listOfItems={trendingProducts}/>
                         <ItemsScroll categoryName="Discover products" listOfItems={discoverProducts} message="There aren&apos;t any products to discover."/>
-                    </main> :
+                    </main>
+                );
+            } else {
+                return (
                     <div className="flex h-screen justify-center items-center">
                         <span className="loading loading-spinner loading-lg"></span>
                     </div>
-                }/>
+                );
+            }
+        }
+
+        return (
+            <div className="overflow-x-hidden">
+                <StandardLayout
+                    title="Home page"
+                    toggleDrawerContent={toggleDrawerContent}
+                    setToggleDrawerContent={setToggleDrawerContent}
+                    page_content={PageContent()}
+                />
             </div>
-        )
+        );
     }
 
     export async function getServerSideProps() {

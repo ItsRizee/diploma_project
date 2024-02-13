@@ -6,6 +6,7 @@ const ItemsScrollWithArrows = ({categoryName = "", listOfItems, message = ""}) =
     const [translation, setTranslation] = useState(null);
     const [timesToScroll, setTimesToScroll] = useState(null);
     const containerRef = useRef(null);
+    const cardRef = useRef(null);
     const spacingInPixels = 20;
 
     const prev = useCallback(() => setCurr((curr) => (curr === 0 ? 0 : curr - 1)), []);
@@ -18,7 +19,7 @@ const ItemsScrollWithArrows = ({categoryName = "", listOfItems, message = ""}) =
             if(listOfItems.length === 0) {
                 setTranslation(null);
             } else if (containerRef.current) {
-                const cardWidth = containerRef.current.querySelector("#item-0").getBoundingClientRect().width;
+                const cardWidth = cardRef.current.getBoundingClientRect().width;
                 if(cardWidth) {
                     let itemScrollWidth = listOfItems.length * cardWidth + (listOfItems.length - 1) * spacingInPixels - containerRef.current.offsetWidth;
                     if (itemScrollWidth > 0) {
@@ -43,7 +44,7 @@ const ItemsScrollWithArrows = ({categoryName = "", listOfItems, message = ""}) =
         return () => {
             window.removeEventListener("resize", updateCardWidth);
         };
-    }, [listOfItems, containerRef.current]);
+    }, [listOfItems]);
 
     const calculateTranslation = () => {
         if(translation === null) {
@@ -53,41 +54,41 @@ const ItemsScrollWithArrows = ({categoryName = "", listOfItems, message = ""}) =
     };
 
     return (
-        <section className="ml-5 mr-5 space-y-5 w-auto">
+        <section className="relative ml-5 mr-5 space-y-5 w-auto">
             <h2 className="font-bold text-xl sm:text-2xl my-5">{categoryName}</h2>
             { listOfItems.length > 0 ?
                 <div className="relative overflow-x-hidden no-scrollbar w-auto py-2" ref={containerRef}>
                     <div className="flex space-x-5 pt-2 transition-transform ease-out duration-500" style={{ transform: `translateX(-${calculateTranslation()}px)` }}>
                         {listOfItems.map((item, index) => (
-                            <div id={`item-${index}`} key={item.key} className="carousel-item">
+                            <div id={`item-${index}`} key={`item-${item.key}`} className="carousel-item" ref={index === 0 ? cardRef : null}>
                                 {item}
                             </div>
                         ))}
                     </div>
-                    { translation !== null &&
-                        <div className="absolute inset-0 flex items-center justify-between p-4 pointer-events-none">
-                            <button className={`p-1 rounded-full shadow-xl text-gray-800 ${curr === 0 ? "bg-base-content/30" : "bg-base-content pointer-events-auto"}`}
-                                    onClick={() => {
-                                        if(curr !== 0) {
-                                            prev();
-                                        }
-                                    }}>
-                                <ChevronLeft className="text-base-100" size={40}/>
-                            </button>
-                            <button
-                                className={`p-1 rounded-full shadow-xl text-gray-800 ${curr === timesToScroll ? "bg-base-content/30" : "bg-base-content pointer-events-auto"}`}
-                                onClick={() => {
-                                    if (curr !== timesToScroll) {
-                                        next();
-                                    }
-                                }}>
-                                <ChevronRight className="text-base-100" size={40}/>
-                            </button>
-                        </div>
-                    }
                 </div> :
                 <div className="flex items-center">
                     <p className="text-xl opacity-60">{message}</p>
+                </div>
+            }
+            { listOfItems.length > 0 && translation !== null &&
+                <div className="absolute -inset-10 flex items-center justify-between p-4 pointer-events-none">
+                    <button className={`p-1 rounded-full shadow-xl text-gray-800 opacity-100 transition-opacity duration-300 ease-in-out hover:opacity-80 ${curr === 0 ? "bg-base-content/30" : "bg-base-content pointer-events-auto"}`}
+                            onClick={() => {
+                                if(curr !== 0) {
+                                    prev();
+                                }
+                            }}>
+                        <ChevronLeft className="text-base-100" size={40}/>
+                    </button>
+                    <button
+                        className={`p-1 rounded-full shadow-xl text-gray-800 opacity-100 transition-opacity duration-300 ease-in-out hover:opacity-80 ${curr === timesToScroll ? "bg-base-content/30" : "bg-base-content pointer-events-auto"}`}
+                        onClick={() => {
+                            if (curr !== timesToScroll) {
+                                next();
+                            }
+                        }}>
+                        <ChevronRight className="text-base-100" size={40}/>
+                    </button>
                 </div>
             }
         </section>

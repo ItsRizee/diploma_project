@@ -4,7 +4,6 @@ import {useEffect, useState} from "react";
 import {getUserById, User} from "../services/user";
 import {updateLikesOfProduct} from "../services/product";
 import {Timestamp} from "firebase/firestore";
-import {useRouter} from "next/router";
 import Link from "next/link";
 import {useUserStore} from "../store/userStorage";
 
@@ -13,11 +12,6 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
     const [isNew, setIsNew] = useState(false);
     const [owner, setOwner] = useState(new User());
     const [isLiked, setIsLiked] = useState(product.likes.includes(currentUser.uid));
-    const router = useRouter();
-
-    const onClick = () => {
-        void router.push(`/product/${productId}`);
-    };
 
     const onLike = () => {
         let interests;
@@ -52,15 +46,17 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
     };
 
     useEffect(() => {
-        getUserById(product.owner).then((user) => {
-            setOwner(user);
-        });
-
         const timeDifference = Timestamp.now().toMillis() - (typeof product.createdDate === 'number' ? product.createdDate : product.createdDate.toMillis());
         if (timeDifference < 24 * 60 * 60 * 1000) {
             setIsNew(true);
         }
-    }, []);
+    }, [product.createdDate]);
+
+    useEffect(() => {
+        getUserById(product.owner).then((user) => {
+            setOwner(user);
+        });
+    }, [product.owner]);
 
     return (
         <article className="card card-bordered border-b-gray-400 w-60 lg:w-80 h-full bg-base-100 shadow-md">
@@ -76,7 +72,7 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
                     <p className="text-start">
                         {product.title}
                     </p>
-                    { currentUser.uid &&
+                    { currentUser.uid && currentUser.uid !== product.owner &&
                         <button className="transition-transform transform hover:scale-110 absolute top-0.5 right-0" onClick={onLike}>
                             {isLiked ?
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
@@ -116,9 +112,11 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
                     </div>
                 }
                 <div className="card-actions justify-end">
-                    <button className="btn btn-sm btn-primary" onClick={onClick}>
-                        More
-                    </button>
+                    <Link href={`/product/${product.id}`}>
+                        <button className="btn btn-sm btn-primary">
+                            More
+                        </button>
+                    </Link>
                 </div>
             </div>
         </article>

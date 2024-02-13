@@ -20,7 +20,11 @@ const Drawer = ({toggleDrawerContent, page_content, craftsman}) => {
                 <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
                 <div className="bg-base-100 text-base-content h-full w-screen sm:w-96">
                     <button className="btn btn-sm btn-circle btn-ghost mt-2.5 ml-2.5" onClick={closeDrawer}>✕</button>
-                    {toggleDrawerContent === true ? <NewProduct/> : <NewRequest craftsman={craftsman}/>}
+                    {
+                        toggleDrawerContent === true ?
+                        <NewProduct/> :
+                        <NewRequest craftsman={craftsman}/>
+                    }
                 </div>
             </div>
         </div>

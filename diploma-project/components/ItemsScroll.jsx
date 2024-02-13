@@ -12,7 +12,7 @@ const ItemsScroll = ({categoryName = "", listOfItems, message = ""}) => {
                     <div className="overflow-x-auto no-scrollbar w-auto py-2">
                         <div className="flex space-x-5 pt-2">
                             {listOfItems.map((item) => (
-                                <div key={item.key}>
+                                <div key={`item-${item.key}}`}>
                                     {item}
                                 </div>
                             ))}

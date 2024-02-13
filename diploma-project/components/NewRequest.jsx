@@ -1,24 +1,26 @@
 import {InputField, Textarea} from "./index";
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {addRequest} from "../services/request";
 import {useUserStore} from "../store/userStorage";
-import {successToast} from "../public/constants";
+import {errorToast, successToast} from "../public/constants";
+import {toast} from "react-toastify";
 
 const NewRequest = ({craftsman}) => {
     const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
-    const [requestTitle, setRequestTitle] = useState("");
-    const [requestDescription, setRequestDescription] = useState("");
-    const [error, setError] = useState(null);
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const toastId = useRef(null);
 
     const onSubmit = (event) => {
         event.preventDefault();
+
         setSubmitting(true);
 
-        addRequest(requestTitle, requestDescription, currentUser, craftsman.uid, "waiting")
+        addRequest(title, description, currentUser, craftsman.uid, "waiting")
             .then(() => {
-                setRequestTitle("");
-                setRequestDescription("");
+                setTitle("");
+                setDescription("");
 
                 successToast("Successfully added new request!");
                 setSubmitting(false);
@@ -27,8 +29,8 @@ const NewRequest = ({craftsman}) => {
                 event.target.reset();
             })
             .catch((errorMessage) => {
-                setError(errorMessage);
-        });
+                errorToast(errorMessage);
+            });
     }
 
     return (
@@ -41,10 +43,17 @@ const NewRequest = ({craftsman}) => {
                         type="text"
                         labelText="Title"
                         placeholder=""
-                        value={requestTitle}
+                        value={title}
                         onChange={(e) => {
-                            setRequestTitle(e.target.value);
-                            setError(null); // Reset the error state on input change
+                            const requestTitle = e.target.value;
+
+                            if(requestTitle.length > 20) {
+                                if(!toast.isActive(toastId.current)) {
+                                    toastId.current = errorToast("Error: Title can't be more than 20 characters!");
+                                }
+                            } else {
+                                setTitle(requestTitle);
+                            }
                         }}
                     />
                     <Textarea
@@ -52,15 +61,22 @@ const NewRequest = ({craftsman}) => {
                         type="text"
                         labelText="Description"
                         placeholder=""
-                        value={requestDescription}
+                        value={description}
                         onChange={(e) => {
-                            setRequestDescription(e.target.value);
-                            setError(null); // Reset the error state on input change
+                            const requestDescription = e.target.value;
+
+                            if(requestDescription.length > 500) {
+                                if(!toast.isActive(toastId.current)) {
+                                    toastId.current = errorToast("Error: Description can't be more than 500 characters!");
+                                }
+                            } else {
+                                setDescription(requestDescription);
+
+                            }
                         }}
                     />
                     <div>
-                        {error && <span className="error-text text-error py-2">{error}</span>}
-                        <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
+                        <div className="form-control">
                             {submitting ?
                                 <button className="btn btn-primary btn-disabled" type="submit">
                                     <span className="loading loading-spinner loading-lg"></span>

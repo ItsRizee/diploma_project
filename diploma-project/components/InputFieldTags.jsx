@@ -1,4 +1,5 @@
 import {useState} from "react";
+import {errorToast} from "../public/constants";
 
 const InputFieldTags = ({tags, setTags}) => {
     const [newTag, setNewTag] = useState("");
@@ -10,8 +11,12 @@ const InputFieldTags = ({tags, setTags}) => {
     const handleAddTag = (event) => {
          if(newTag && newTag.trim() && (event.type === "click" || event.code === "Enter")) {
             event.preventDefault()
-            setTags([...tags, newTag.trim()]);
-            setNewTag('');
+            if(tags.length === 5){
+                errorToast("Product's tags can't be more than 5!");
+            } else {
+                setTags([...tags, newTag.trim()]);
+                setNewTag('');
+            }
         }
     };
 

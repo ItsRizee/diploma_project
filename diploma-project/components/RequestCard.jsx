@@ -1,17 +1,19 @@
 import {useUserStore} from "../store/userStorage";
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import {getUserById} from "../services/user";
 import Link from "next/link";
 import Image from "next/future/image";
 import {default_profile_picture, infoToast, errorToast} from "../public/constants";
 import {InfoModal} from "./index";
 import {deleteRequest} from "../services/request";
+import {toast} from "react-toastify";
 
-const RequestCard = ({request, index}) => {
+const RequestCard = ({request}) => {
     const { currentUser, setCurrentUser } = useUserStore((state) => ({currentUser: state.user, setCurrentUser: state.setUser}));
     const [craftsman, setCraftsman] = useState(null);
     const [user, setUser] = useState(null);
     const [stateRequest, setStateRequest] = useState(request);
+    const toastId = useRef(null);
 
     const handleDelete = (event) => {
         event.preventDefault();
@@ -33,7 +35,7 @@ const RequestCard = ({request, index}) => {
                 });
             }
         }
-    }, []);
+    }, [craftsman, user, request.craftsman, currentUser.uid]);
 
     if(!user && !craftsman) {
         return (
@@ -42,11 +44,11 @@ const RequestCard = ({request, index}) => {
     }
 
     return (
-        <article className="card bg-base-100 w-48 sm:w-72">
-            <div className="card-body items-center text-center space-y-3">
-                <h2 className="card-title">{stateRequest.title}</h2>
+        <article className="card card-bordered border-base-300 border-4 bg-base-100 w-48 sm:w-72 h-full">
+            <div className="card-body items-center text-center space-y-3 justify-between">
+                <h2 className="mx-8 absolute card-title">{stateRequest.title}</h2>
                 {!craftsman ?
-                    <div className="flex flex-col items-center space-y-1">
+                    <div className="flex flex-col items-center space-y-1 pt-16">
                         { user && user.craft ?
                             <Link tabIndex={0} href={`/catalog/${user.uid}`}>
                                 <figure className="relative btn btn-ghost btn-circle avatar rounded-full">
@@ -54,28 +56,30 @@ const RequestCard = ({request, index}) => {
                                            width={40} height={40}/>
                                 </figure>
                             </Link> :
-                            <figure className="relative btn btn-ghost btn-circle avatar rounded-full" onClick={() => infoToast("This user doesn't have a catalog.")}>
+                            <figure
+                                className="relative btn btn-ghost btn-circle avatar rounded-full"
+                                onClick={() => {
+                                    if(!toast.isActive(toastId.current)) {
+                                        toastId.current = infoToast("This user doesn't have a catalog.");
+                                    }
+                            }}>
                                 <Image src={user.photoURL ? user.photoURL : default_profile_picture} alt="avatar icon"
                                        width={40} height={40}/>
                             </figure>
                         }
                         <p className="font-normal normal-case">{user.name}</p>
                     </div> :
-                    <div className="flex flex-col items-center space-y-1">
+                    <div className="flex flex-col items-center space-y-1 pt-16">
                         <Link tabIndex={0} href={`/catalog/${craftsman.uid}`}>
                             <figure className="relative btn btn-ghost btn-circle avatar rounded-full">
-                                <Image src={craftsman.photoURL ? craftsman.photoURL : default_profile_picture}
-                                       alt="avatar icon"
+                                <Image src={craftsman.photoURL ? craftsman.photoURL : default_profile_picture} alt="avatar icon"
                                        width={40} height={40}/>
                             </figure>
                         </Link>
                         <p className="font-normal normal-case">{craftsman.name}</p>
                     </div>
                 }
-                <p>Status: <span
-                    className={`${stateRequest.status === "waiting" ? "text-warning" : (stateRequest.status === "accepted" ? "text-success" : "text-error")}`}>{stateRequest.status}</span>
-                </p>
-                <InfoModal request={stateRequest} setRequest={setStateRequest} user={user} craftsman={craftsman} index={index}/>
+                <InfoModal request={stateRequest} setRequest={setStateRequest} user={user} craftsman={craftsman}/>
             </div>
             {(stateRequest.status === "denied" || stateRequest.status === "canceled") &&
                 <button className="flex absolute top-1 right-1 transition-transform transform hover:scale-110" type="button" onClick={handleDelete}>
