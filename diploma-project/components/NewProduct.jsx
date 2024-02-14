@@ -109,18 +109,26 @@ const NewProduct = () => {
                         placeholder=""
                         value={productPrice}
                         onChange={(e) => {
-                            const productPrice = e.target.value;
+                            const productPriceInString = e.target.value;
+                            const productPrice = parseFloat(parseFloat(productPriceInString).toFixed(2));
 
-                            if(parseInt(productPrice)> 100000 || parseInt(productPrice) === 0) {
-                                if(!toast.isActive(toastId.current)) {
-                                    if(parseInt(productPrice) > 100000) {
-                                        toastId.current = errorToast("Error: Price can't be more than 100 000 euro!");
-                                    } else {
-                                        toastId.current = errorToast("Error: Price can't be 0 euro!");
-                                    }
+                            if(isNaN(productPrice) && productPriceInString.length !== 0) {
+                                if (!toast.isActive(toastId.current)) {
+                                    toastId.current = errorToast("Error: price should be a number!");
                                 }
                             } else {
-                                setProductPrice(productPrice);
+                                console.log(productPrice);
+                                if (productPrice > 100000 || productPrice === 0) {
+                                    if (!toast.isActive(toastId.current)) {
+                                        if (productPrice > 100000) {
+                                            toastId.current = errorToast("Error: Price can't be more than 100 000 euro!");
+                                        } else {
+                                            toastId.current = errorToast("Error: Price can't be 0 euro!");
+                                        }
+                                    }
+                                } else {
+                                    setProductPrice(productPrice.toString());
+                                }
                             }
                         }}
                     />
