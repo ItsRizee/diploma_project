@@ -29,7 +29,7 @@ const NewProduct = () => {
         if(!submitting) {
             setSubmitting(true);
 
-            addProduct(title, description, image, parseInt(productPrice), productTimeline, productTags)
+            addProduct(title, description, image, Math.floor(parseFloat(productPrice) * 100) / 100, productTimeline, productTags)
                 .then(() => {
                     setTitle("");
                     setDescription("");
@@ -104,20 +104,21 @@ const NewProduct = () => {
                     />
                     <InputField
                         id="price-input"
-                        type="text"
+                        type="number"
                         labelText="Price €"
                         placeholder=""
                         value={productPrice}
                         onChange={(e) => {
                             const productPriceInString = e.target.value;
-                            const productPrice = parseFloat(parseFloat(productPriceInString).toFixed(2));
+
+                            // makes price to have no more than 2 floating digits (10.9999 -> 10.99)
+                            const productPrice = Math.floor(parseFloat(productPriceInString) * 100) / 100;
 
                             if(isNaN(productPrice) && productPriceInString.length !== 0) {
                                 if (!toast.isActive(toastId.current)) {
                                     toastId.current = errorToast("Error: price should be a number!");
                                 }
                             } else {
-                                console.log(productPrice);
                                 if (productPrice > 100000 || productPrice === 0) {
                                     if (!toast.isActive(toastId.current)) {
                                         if (productPrice > 100000) {
@@ -127,7 +128,7 @@ const NewProduct = () => {
                                         }
                                     }
                                 } else {
-                                    setProductPrice(productPrice.toString());
+                                    setProductPrice(productPriceInString);
                                 }
                             }
                         }}
