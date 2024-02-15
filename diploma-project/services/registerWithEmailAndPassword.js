@@ -9,7 +9,7 @@ const registerWithEmailAndPassword = (fullName, email, password) => {
                 updateProfile(userCredential.user, { displayName: fullName, photoURL: default_profile_picture })
                     .then(() => {
                         // Sign-in succeeded, no error message
-                        resolve();
+                        resolve(userCredential.user);
                     })
                     .catch((updateProfileError) => {
                         // Update profile failed, return the error message

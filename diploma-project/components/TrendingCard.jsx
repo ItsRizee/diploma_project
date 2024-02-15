@@ -1,16 +1,19 @@
 import Image from "next/future/image";
+import Link from "next/link";
 
-const TrendingCard = () => {
+const TrendingCard = ({product}) => {
     return (
         <article className="card sm:card-side bg-base-100 border-b-2 sm:border-b-0 border-gray-400 w-full h-full flex">
-            <figure className="relative h-72 sm:h-96 sm:w-96">
-                <Image src="/recommended_ring.jpg" alt="Trending ring" className="object-cover object-center" fill />
+            <figure className="relative h-72 sm:w-full">
+                <Image src={product.displayImageURL} alt="Trending ring" className="object-cover object-center" fill />
             </figure>
             <div className="card-body">
-                <h2 className="card-title">Trending and popular!</h2>
-                <p>Click the button to see this masterpiece.</p>
+                <h2 className="card-title">{product.title}</h2>
+                <p className="sm:pr-10">{product.description}</p>
                 <div className="card-actions justify-end">
-                    <button className="btn btn-primary">More</button>
+                    <Link href={`/product/${product.id}`}>
+                        <button className="btn btn-primary">More</button>
+                    </Link>
                 </div>
             </div>
         </article>

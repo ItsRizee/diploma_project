@@ -1,50 +1,68 @@
-import { useState } from 'react';
+import {useEffect, useRef, useState} from 'react';
 import { useRouter } from 'next/router';
 import Head from "next/head";
 import Link from 'next/link'
 import registerWithEmailAndPassword from "../services/registerWithEmailAndPassword";
 import { InputField } from "../components";
 import { addUser } from "../services/user";
-import {auth} from "../firebase";
+import {errorToast} from "../public/constants";
+import {toast} from "react-toastify";
 
 const SignUp = () => {
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [passwordOne, setPasswordOne] = useState("");
     const [passwordTwo, setPasswordTwo] = useState("");
+    const [fetchingToken, setFetchingToken] = useState(true);
     const router = useRouter();
-    const [error, setError] = useState(null);
+    const toastId = useRef(null);
 
     const onSubmit = (event) => {
         event.preventDefault();
 
-        setError(null)
-
-        if(passwordOne === passwordTwo) {
+        if (passwordOne === passwordTwo) {
             registerWithEmailAndPassword(fullName, email, passwordOne)
-                .then(() => {
-                    addUser(fullName, email, auth.currentUser.uid)
+                .then((user) => {
+                    addUser(fullName, email, user.uid)
                         .then(() => {
-                            void router.push("/signin");
+                            void router.push("/");
                         })
                         .catch((error) => {
                             // Failed to add user, set the error message
-                            setError(error.message);
+                            errorToast(error.message);
                         });
                 })
                 .catch((error) => {
                     // Register failed, set the error message
-                    setError(error.message);
+                    errorToast(error.message);
                 });
         } else {
-            setError("Passwords do not match")
+            errorToast("Passwords do not match!");
         }
     };
+
+    useEffect(() => {
+        // redirect if user is authenticated
+        let accessToken = sessionStorage.getItem("accessToken");
+        if(accessToken){
+            void router.replace("/");
+        } else {
+            setFetchingToken(false);
+        }
+    }, []);
+
+    if(fetchingToken) {
+        return (
+            <div className="flex flex-1 justify-center items-center h-screen">
+                <span className="loading loading-spinner loading-lg"></span>
+            </div>
+        );
+    }
 
     return (
         <div className="overflow-x-hidden">
             <Head>
-                <meta charSet="UTF-8" />
+                <meta charSet="UTF-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
                 <title>Sign up</title>
                 {/*<link rel="icon" href="/images/favicon.ico"/>*/}
@@ -66,8 +84,14 @@ const SignUp = () => {
                                     placeholder="Melvin Simonds"
                                     value={fullName}
                                     onChange={(e) => {
-                                        setFullName(e.target.value);
-                                        setError(null); // Reset the error state on input change
+                                        const name = e.target.value;
+                                        if(name.length > 20) {
+                                            if(!toast.isActive(toastId.current)) {
+                                                toastId.current = errorToast("Name can't be longer than 20 characters!");
+                                            }
+                                        } else {
+                                            setFullName(name);
+                                        }
                                     }}
                                 />
                             </div>
@@ -80,7 +104,6 @@ const SignUp = () => {
                                     value={email}
                                     onChange={(e) => {
                                         setEmail(e.target.value);
-                                        setError(null); // Reset the error state on input change
                                     }}
                                 />
                             </div>
@@ -93,7 +116,6 @@ const SignUp = () => {
                                     value={passwordOne}
                                     onChange={(e) => {
                                         setPasswordOne(e.target.value);
-                                        setError(null); // Reset the error state on input change
                                     }}
                                 />
                             </div>
@@ -106,12 +128,10 @@ const SignUp = () => {
                                     value={passwordTwo}
                                     onChange={(e) => {
                                         setPasswordTwo(e.target.value);
-                                        setError(null); // Reset the error state on input change
                                     }}
                                 />
                             </div>
-                            {error && <span className="error-text py-2 text-error">{error}</span>}
-                            <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
+                            <div className="form-control">
                                 <button className="btn btn-primary" type="submit">Sign Up</button>
                             </div>
                         </form>
@@ -128,7 +148,7 @@ const SignUp = () => {
                 </div>
             </div>
         </div>
-    )
+    );
 }
 
 export default SignUp;

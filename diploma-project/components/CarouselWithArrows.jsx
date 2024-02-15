@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {ChevronLeft, ChevronRight} from "react-feather";
 
-const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, autoSlideInterval = 3000 }) => {
+const CarouselWithArrows = ({ categoryName, listOfItems }) => {
     const [curr, setCurr] = useState(0);
     const containerRef = useRef(null);
     const cardWidthRef = useRef(0);
@@ -10,12 +10,6 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
     const next = useCallback(() => setCurr((curr) => (curr === listOfItems.length - 1 ? 0 : curr + 1)), [listOfItems.length]);
 
     const resetToFirst = () => setCurr(0);
-
-    useEffect(() => {
-        if (!autoSlide) return;
-        const slideInterval = setInterval(next, autoSlideInterval);
-        return () => clearInterval(slideInterval);
-    }, [autoSlide, autoSlideInterval, next]);
 
     useEffect(() => {
         const updateCardWidth = () => {
@@ -38,7 +32,7 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
     }, []);
 
     const calculateTranslation = () => {
-        const spacingInPixels = 8; // Assuming a constant spacing of 8 pixels
+        const spacingInPixels = 16;
         return curr * (cardWidthRef.current + spacingInPixels);
     };
 
@@ -47,23 +41,23 @@ const CarouselWithArrows = ({ categoryName, listOfItems, autoSlide = false, auto
             <h2 className="font-bold text-xl sm:text-2xl my-5">{categoryName}</h2>
             <div className="overflow-hidden relative shadow-2xl rounded-box" ref={containerRef}>
                 <div
-                    className="flex w-full h-full transition-transform ease-out duration-500 space-x-2"
+                    className="flex w-full h-full transition-transform ease-out duration-500 space-x-4"
                     style={{ transform: `translateX(-${calculateTranslation()}px)` }}
                 >
                     {listOfItems.map((item, index) => (
                         <div
-                            key={index}
+                            key={`trending-${index}`}
                             className="flex-shrink-0 w-full h-full carousel-item"
                         >
                             {item}
                         </div>
                     ))}
                 </div>
-                <div className="absolute inset-0 flex items-center justify-between p-4">
-                    <button onClick={prev} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white">
+                <div className="absolute inset-0 flex items-center justify-between p-4 pointer-events-none">
+                    <button onClick={prev} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white pointer-events-auto opacity-100 transition-opacity duration-300 ease-in-out hover:opacity-80">
                         <ChevronLeft className="text-base-100" size={40} />
                     </button>
-                    <button onClick={next} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white">
+                    <button onClick={next} className="p-1 rounded-full shadow-xl bg-base-content text-gray-800 hover-bg-white pointer-events-auto opacity-100 transition-opacity duration-300 ease-in-out hover:opacity-80">
                         <ChevronRight className="text-base-100" size={40} />
                     </button>
                 </div>

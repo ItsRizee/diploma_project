@@ -1,17 +1,15 @@
 import React, {useEffect, useRef, useState} from "react";
-import {app_name, default_profile_picture} from "../public/constants";
+import {app_name, default_profile_picture, errorToast} from "../public/constants";
 import {useRouter} from "next/router";
-import {auth} from "../firebase";
 import Link from "next/link";
 import logOut from "../services/logOut";
 import Image from "next/future/image";
 import { useUserStore } from "../store/userStorage";
 import useTheme from "next-theme";
 
-const Navbar = () => {
+const Navbar = ({setToggleDrawerContent}) => {
     const [isLogged, setIsLogged] = useState(false);
-    const [error, setError] = useState(null);
-    const { user } = useUserStore((state) => ({user: state.user}));
+    const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
     const router = useRouter();
     const themeToggleRef = useRef(null);
     const { theme, setTheme } = useTheme();
@@ -23,8 +21,6 @@ const Navbar = () => {
     const handleLogout = (event) => {
         event.preventDefault();
 
-        setError(null);
-
         logOut()
             .then(() => {
                 // Logout was successful, navigate to the signIn page
@@ -32,7 +28,7 @@ const Navbar = () => {
             })
             .catch((error) => {
                 // Logout failed, set the error message
-                setError(error.message);
+                errorToast(error.message);
             });
     };
 
@@ -45,7 +41,7 @@ const Navbar = () => {
         if(accessToken !== ''){
             setIsLogged(true);
         }
-    }, [user, theme]);
+    }, [currentUser, theme]);
 
     return (
         <nav className="navbar flex-none bg-none space-x-4 sm:px-5">
@@ -63,25 +59,17 @@ const Navbar = () => {
                                 </button>
                             </Link>
                         </li>
-                        {isLogged && user.craft &&
+                        {isLogged && currentUser.craft &&
                             <li>
-                                <label htmlFor="my-drawer-4" className="drawer-button btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
+                                <label htmlFor="my-drawer" className="drawer-button btn btn-ghost btn-sm normal-case font-normal text-base justify-start" onClick={() => setToggleDrawerContent(true)}>
                                     New Product
                                 </label>
                             </li>
                         }
-                        {isLogged &&
-                            <li>
-                                <Link href="#">
-                                    <button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
-                                        New Request
-                                    </button>
-                                </Link>
-                            </li>
-                        }
                         <li>
                             <Link href="/about">
-                                <button className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
+                                <button
+                                    className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
                                     About Us
                                 </button>
                             </Link>
@@ -107,42 +95,33 @@ const Navbar = () => {
                             <button className="btn btn-ghost normal-case text-lg">Home</button>
                         </Link>
                     </li>
-                    {isLogged && user.craft &&
+                    {isLogged && currentUser.craft &&
                         <li>
-                            <label htmlFor="my-drawer-4" className="drawer-button btn btn-ghost normal-case text-lg">
+                            <label htmlFor="my-drawer" className="drawer-button btn btn-ghost normal-case text-lg" onClick={() => setToggleDrawerContent(true)}>
                                 New Product
                             </label>
-                        </li>
-                    }
-                    {isLogged &&
-                        <li>
-                            <Link href="#">
-                                <button className="btn btn-ghost normal-case text-lg">
-                                    New Request
-                                </button>
-                            </Link>
                         </li>
                     }
                     <li>
                         <Link href="/about">
                             <button className="btn btn-ghost normal-case text-lg">
-                                About Us
+                            About Us
                             </button>
                         </Link>
                     </li>
                 </ul>
             </div>
             <div className="navbar-end flex space-x-1 sm:space-x-3">
-                <div className="hidden xl:block form-control xl:mr-3">
-                    <input type="text" placeholder="Search" className="input input-bordered w-full"/>
-                </div>
-                <button className="xl:hidden btn btn-ghost btn-circle p-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-9 sm:w-9" fill="none"
-                         viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                    </svg>
-                </button>
+                {/*<div className="hidden xl:block form-control xl:mr-3">*/}
+                {/*    <input type="text" placeholder="Search" className="input input-bordered w-full"/>*/}
+                {/*</div>*/}
+                {/*<button className="xl:hidden btn btn-ghost btn-circle p-2">*/}
+                {/*    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 sm:h-9 sm:w-9" fill="none"*/}
+                {/*         viewBox="0 0 24 24" stroke="currentColor">*/}
+                {/*        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"*/}
+                {/*              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>*/}
+                {/*    </svg>*/}
+                {/*</button>*/}
                 <label className="swap swap-rotate">
                     <input type="checkbox" onClick={toggleTheme} ref={themeToggleRef}/>
                     <svg className="swap-on fill-current w-7 h-7 sm:w-9 sm:h-9" xmlns="http://www.w3.org/2000/svg"
@@ -157,21 +136,21 @@ const Navbar = () => {
                     </svg>
                 </label>
                 <div className="dropdown dropdown-end">
-                    <div tabIndex={0} className="btn btn-ghost btn-circle avatar p-1">
-                        <figure className="relative rounded-full h-7 w-7 sm:h-9 sm:w-9">
-                            <Image src={user.photoURL ? user.photoURL : default_profile_picture} alt="avatar icon"
-                                   width={40} height={40}/>
+                    <div tabIndex={0} className="relative btn btn-ghost btn-circle avatar rounded-full">
+                        <figure className="h-7 w-7 sm:h-9 sm:w-9">
+                            <Image src={currentUser.photoURL ? currentUser.photoURL : default_profile_picture} alt="avatar icon"
+                                   className="h-full w-full object-cover rounded-full" layout="responsive" width={40} height={40}/>
                         </figure>
                     </div>
                     <div
                         className="mt-3 z-[3] p-2 shadow-xl menu menu-sm dropdown-content bg-base-300 rounded-box w-52">
                         <div className="divide-y w-full divide-base-content">
                             <div className="px-4 py-3 text-base-content text-sm">
-                                <div className="text-lg">{user.uid ? user.name : 'Guest'}</div>
-                                <div className="font-medium truncate">{user.uid ? user.email : ''}</div>
+                                <div className="text-lg">{currentUser.uid ? currentUser.name : 'Guest'}</div>
+                                <div className="font-medium truncate">{currentUser.uid ? currentUser.email : ''}</div>
                             </div>
                             <ul tabIndex={0} className="py-2">
-                                {auth.currentUser ? (
+                                {currentUser.uid ? (
                                     <>
                                         <li>
                                             <Link href="/profile">
@@ -181,9 +160,9 @@ const Navbar = () => {
                                                 </button>
                                             </Link>
                                         </li>
-                                        {user.craft &&
+                                        {currentUser.craft &&
                                             <li>
-                                                <Link href={`/catalog/${user.uid}`}>
+                                                <Link href={`/catalog/${currentUser.uid}`}>
                                                     <button
                                                         className="btn btn-ghost btn-sm normal-case font-normal text-base justify-start">
                                                         Catalog
@@ -197,7 +176,6 @@ const Navbar = () => {
                                                 Logout
                                             </button>
                                         </li>
-                                        {error && <span className="error-text py-2 text-error">{error}</span>}
                                     </>
                                 ) : (
                                     <li>

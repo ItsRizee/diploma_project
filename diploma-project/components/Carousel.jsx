@@ -32,7 +32,7 @@ const Carousel = ({ categoryName, listOfItems }) => {
                 const touchEndX = e.touches[0].clientX;
                 const deltaX = touchEndX - touchStartX;
 
-                if (Math.abs(deltaX) > 75) { // Adjust this threshold as needed
+                if (Math.abs(deltaX) > 40) { // Adjust this threshold as needed
                     hideLottie();
                 }
             };
@@ -60,9 +60,9 @@ const Carousel = ({ categoryName, listOfItems }) => {
         <section className="ml-5 mr-5 space-y-5 w-auto relative">
             <h2 className="font-bold text-xl sm:text-2xl my-5">{categoryName}</h2>
             <div className="w-full h-full" ref={carouselRef}>
-                <div className="w-full carousel space-x-2 z-0 rounded-box">
+                <div className="w-full carousel space-x-4 z-0 rounded-box">
                     {listOfItems.map((item, index) => (
-                        <div key={index} className="carousel-item w-full relative">
+                        <div key={`trending-${index}`} className="carousel-item w-full relative">
                             {item}
                         </div>
                     ))}

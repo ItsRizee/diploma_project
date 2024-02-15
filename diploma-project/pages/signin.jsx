@@ -1,20 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Link from 'next/link';
 import loginWithEmailAndPassword from '../services/logInWithEmailAndPassword';
 import { InputField } from "../components";
+import { errorToast } from "../public/constants"
 
 const SignIn = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [fetchingToken, setFetchingToken] = useState(true);
     const router = useRouter();
-    const [error, setError] = useState(null);
 
     const onSubmit = (event) => {
         event.preventDefault();
-
-        setError(null);
 
         loginWithEmailAndPassword(email, password)
             .then(() => {
@@ -23,9 +22,27 @@ const SignIn = () => {
             })
             .catch((error) => {
                 // Login failed, set the error message
-                setError(error.message);
+                errorToast(error.message);
             });
     };
+
+    useEffect(() => {
+        // redirect if user is authenticated
+        let accessToken = sessionStorage.getItem("accessToken");
+        if(accessToken){
+            void router.replace("/");
+        } else {
+            setFetchingToken(false);
+        }
+    }, []);
+
+    if(fetchingToken) {
+        return (
+            <div className="flex flex-1 justify-center items-center h-screen">
+                <span className="loading loading-spinner loading-lg"></span>
+            </div>
+        );
+    }
 
     return (
         <div className="overflow-x-hidden">
@@ -53,7 +70,6 @@ const SignIn = () => {
                     <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
                         <form className="card-body" onSubmit={onSubmit}>
                             <h1 className="text-xl lg:text-3xl text-center font-bold">Login to Your Account</h1>
-                            {/* Use the InputField component */}
                             <InputField
                                 id="email-input"
                                 labelText="Email"
@@ -62,7 +78,6 @@ const SignIn = () => {
                                 value={email}
                                 onChange={(e) => {
                                     setEmail(e.target.value);
-                                    setError(null); // Reset the error state on input change
                                 }}
                             />
                             <InputField
@@ -73,11 +88,9 @@ const SignIn = () => {
                                 value={password}
                                 onChange={(e) => {
                                     setPassword(e.target.value);
-                                    setError(null); // Reset the error state on input change
                                 }}
                             />
-                            {error && <span className="error-text py-2 text-error">{error}</span>}
-                            <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
+                            <div className="form-control">
                                 <button className="btn btn-primary" type="submit">
                                     Sign in
                                 </button>

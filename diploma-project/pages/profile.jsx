@@ -1,22 +1,29 @@
 import {useEffect, useState} from "react";
 import Image from "next/future/image";
-import {auth} from "../firebase";
 import {UpdateProfileToCraftsman} from "../services/user";
-import {ItemsScroll, Collapse, UploadImageModal, StandardLayout} from '../components';
-import {default_profile_picture, discoverProducts} from "../public/constants";
+import {ItemsScroll, UploadImageModal, StandardLayout, ProductCard, RequestCard} from '../components';
+import {default_profile_picture} from "../public/constants";
 import {useRouter} from "next/router";
 import {useUserStore} from "../store/userStorage";
+import {getInterests} from "../services/product";
+import {getOrders, getRequests} from "../services/request";
+import {successToast, errorToast} from "../public/constants";
 
 const Profile = () => {
-    const { user } = useUserStore((state) => ({user: state.user}));
-    const [error, setError] = useState(null);
+    const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
+    const [toggleDrawerContent, setToggleDrawerContent] = useState(true);
+    const [interests, setInterests] = useState([]);
+    const [requests, setRequests] = useState([]);
+    const [orders, setOrders] = useState([]);
     const router = useRouter();
 
     const BecomeCraftsman = () => {
-        UpdateProfileToCraftsman("woodcarver")
-            .then()
-            .catch((error) => {
-                setError(error);
+        UpdateProfileToCraftsman("craftsman")
+            .then(() => {
+                successToast("Successfully became a craftsman!");
+            })
+            .catch(() => {
+                errorToast("Error: Couldn't become a craftsman! Refresh the page and try again!");
         });
     };
 
@@ -28,38 +35,108 @@ const Profile = () => {
         }
     }, []);
 
-    return (
-        <div className="flex flex-col min-h-screen overflow-x-hidden">
-            <StandardLayout title="Profile page" page_content={ auth.currentUser && user.uid ?
-                <main className="flex flex-col flex-1 my-10 space-y-5 mx-5 sm:mx-10 md:mx-20 lg:mx-36 xl:mx-52 2xl:mx-72 justify-center items-center">
+    useEffect(() => {
+        if(currentUser.uid !== null) {
+            getInterests(currentUser).then((products) => {
+                let interestsList = [];
+
+                products.map((product) => {
+                    interestsList.push(<ProductCard key={product.id} product={product}
+                                                    productId={product.id} inCatalog={false}/>);
+                });
+
+                setInterests(interestsList);
+            });
+        }
+    }, [currentUser.uid, currentUser.interests]);
+
+    useEffect(() => {
+        if(currentUser.uid !== null) {
+            getRequests(currentUser).then((products) => {
+                let requestsList = [];
+
+                products.map((product) => {
+                    requestsList.push(<RequestCard key={product.id} request={product}/>);
+                });
+
+                setRequests(requestsList);
+            });
+        }
+    }, [currentUser.uid, currentUser.requests]);
+
+    useEffect(() => {
+        if(currentUser.uid !== null && currentUser.craft !== null) {
+            getOrders(currentUser).then((products) => {
+                let ordersList = [];
+
+                products.map((product) => {
+                    ordersList.push(<RequestCard key={product.id} request={product}/>);
+                });
+
+                setOrders(ordersList);
+            });
+        }
+    }, [currentUser.uid, currentUser.orders]);
+
+    const PageContent = () => {
+        if (currentUser.uid !== null) {
+            return (
+                <div className="flex flex-col flex-1 my-10 space-y-10 lg:mx-36 xl:mx-72">
                     <div className="flex justify-center items-center mb-5 mt-10">
                         <div>
                             <figure className="static rounded-full flex justify-center mb-5">
                                 <div className="relative w-24">
-                                    <UploadImageModal />
-                                    <div className="absolute -right-1 -bottom-2 z-[1] h-10 w-10 bg-base-100 rounded-full"/>
-                                    <Image src={user.photoURL ? user.photoURL : default_profile_picture} alt="avatar icon" width={96} height={96}/>
+                                    <UploadImageModal/>
+                                    <div
+                                        className="absolute -right-1 -bottom-2 z-[1] h-10 w-10 bg-base-100 rounded-full"/>
+                                    <figure className="h-24 w-24">
+                                        <Image
+                                            src={currentUser.photoURL ? currentUser.photoURL : default_profile_picture}
+                                            alt="avatar icon"
+                                            className="h-full w-full object-cover rounded-full" layout="responsive"
+                                            width={96} height={96}/>
+                                    </figure>
                                 </div>
                             </figure>
                             <div className="pb-5">
-                                <div className="text-lg text-center mt-5">{user.name}</div>
-                                <div className="font-medium text-center">{user.email}</div>
+                                <div className="text-lg text-center mt-5">{currentUser.name}</div>
+                                <div className="font-medium text-center">{currentUser.email}</div>
                             </div>
-                            {!user.craft && <button className="btn btn-neutral flex justify-center normal-case text-lg" onClick={BecomeCraftsman}>Become Craftsman</button>}
-                            {error && <span className="error-text py-2 text-error">{error}</span>}
+                            {!currentUser.craft &&
+                                <div className="flex justify-center w-full">
+                                    <button className="btn bg-base-300 normal-case text-lg" onClick={BecomeCraftsman}>
+                                        Become Craftsman
+                                    </button>
+                                </div>
+                            }
                         </div>
                     </div>
-                    {/*<ItemsScroll listOfItems={user.interests} categoryName="My interests"/>*/}
-                    {/*<ItemsScroll listOfItems={user.requests} categoryName="My Requests"/>*/}
-                    {/*<ItemsScroll listOfItems={user.orders} categoryName="Received orders"/>*/}
-                    <Collapse id={1} categoryName="My interests" content={<ItemsScroll listOfItems={discoverProducts} categoryName=""/>}/>
-                    <Collapse id={2} categoryName="My Requests" content={<ItemsScroll listOfItems={discoverProducts} categoryName=""/>}/>
-                    <Collapse id={3} categoryName="Received orders" content={<ItemsScroll listOfItems={discoverProducts} categoryName=""/>}/>
-                </main> :
+                    <main>
+                        <ItemsScroll categoryName="My interests" listOfItems={interests} message="You haven&apos;t liked any products yet."/>
+                        <ItemsScroll categoryName="My Requests" listOfItems={requests} message="You haven&apos;t made any requests yet."/>
+                        {currentUser.craft &&
+                            <ItemsScroll categoryName="Received orders" listOfItems={orders} message="You haven&apos;t received any orders yet."/>
+                        }
+                    </main>
+                </div>
+            );
+        } else {
+            return (
                 <div className="flex flex-1 justify-center items-center">
                     <span className="loading loading-spinner loading-lg"></span>
                 </div>
-            }/>
+            );
+        }
+    }
+
+    return (
+        <div className="flex flex-col min-h-screen overflow-x-hidden">
+            <StandardLayout
+                title="Profile page"
+                toggleDrawerContent={toggleDrawerContent}
+                setToggleDrawerContent={setToggleDrawerContent}
+                page_content={PageContent()}
+            />
         </div>
     );
 }

@@ -1,43 +1,58 @@
 import {InputField, Textarea, InputFieldTags, InputFieldTimeline} from "../components";
-import {useState} from "react";
+import {useState, useRef} from "react";
 import {addProduct} from "../services/product";
-import { useUserStore } from "../store/userStorage";
+import {errorToast, successToast} from "../public/constants";
+import {toast} from "react-toastify";
 
 const NewProduct = () => {
-    const {user} = useUserStore((state) => ({user: state.user}));
-    const [productTitle, setProductTitle] = useState("");
-    const [productImage, setProductImage] = useState(null);
-    const [productDescription, setProductDescription] = useState("");
-    const [error, setError] = useState(null);
-    const [productPrice, setProductPrice] = useState(0);
+    const [title, setTitle] = useState("");
+    const [image, setImage] = useState(null);
+    const [description, setDescription] = useState("");
+    const [productPrice, setProductPrice] = useState("");
     const [productTags, setProductTags] = useState([]);
     const [productTimeline, setProductTimeline] = useState([]);
+    const [submitting, setSubmitting] = useState(false);
+    const toastId = useRef(null);
 
     const onImageChange = (event) => {
-        setProductImage(event.target.files[0]);
+        const image = event.target.files[0];
+
+        if (image && (image.type === "image/png" || image.type === "image/jpeg")) {
+            setImage(image);
+        } else {
+            errorToast("Product's image must be .png or .jpeg!");
+        }
     }
 
     const onSubmit = (event) => {
         event.preventDefault();
-        addProduct(productTitle, productDescription, productImage, user.catalog, productPrice, productTimeline, productTags)
-            .then(() => {
-                setProductTitle("");
-                setProductDescription("");
-                setProductImage(null);
-                setProductPrice(0);
-                setProductTimeline([]);
-                setProductTags([]);
+        if(!submitting) {
+            setSubmitting(true);
 
-                // reset the form
-                event.target.reset();
-            }).catch((errorMessage) => {
-            setError(errorMessage);
-        });
+            addProduct(title, description, image, Math.floor(parseFloat(productPrice) * 100) / 100, productTimeline, productTags)
+                .then(() => {
+                    setTitle("");
+                    setDescription("");
+                    setImage(null);
+                    setProductPrice("");
+                    setProductTimeline([]);
+                    setProductTags([]);
+
+                    successToast("Successfully added new product!");
+                    setSubmitting(false);
+
+                    // reset the form
+                    event.target.reset();
+                })
+                .catch((errorMessage) => {
+                    errorToast(errorMessage);
+            });
+        }
     }
 
     return (
         <div className="flex flex-col bg-base-100 text-base-content">
-            <main className="flex flex-col justify-center items-center p-5">
+            <div className="flex flex-col justify-center items-center p-5">
                 <h2 className="font-bold text-xl mb-5">New Product</h2>
                 <form className="space-y-5 w-full" onSubmit={onSubmit}>
                     <InputField
@@ -45,10 +60,17 @@ const NewProduct = () => {
                         type="text"
                         labelText="Title"
                         placeholder=""
-                        value={productTitle}
+                        value={title}
                         onChange={(e) => {
-                            setProductTitle(e.target.value);
-                            setError(null); // Reset the error state on input change
+                            const productTitle = e.target.value;
+
+                            if(productTitle.length > 25) {
+                                if(!toast.isActive(toastId.current)) {
+                                    toastId.current = errorToast("Error: Title can't be more than 25 characters!");
+                                }
+                            } else {
+                                setTitle(productTitle);
+                            }
                         }}
                     />
                     <div className="w-full space-y-2">
@@ -67,10 +89,17 @@ const NewProduct = () => {
                         type="text"
                         labelText="Description"
                         placeholder=""
-                        value={productDescription}
+                        value={description}
                         onChange={(e) => {
-                            setProductDescription(e.target.value);
-                            setError(null); // Reset the error state on input change
+                            const productDescription = e.target.value;
+
+                            if(productDescription.length > 500) {
+                                if(!toast.isActive(toastId.current)) {
+                                    toastId.current = errorToast("Error: Description can't be more than 500 characters!");
+                                }
+                            } else {
+                                setDescription(productDescription);
+                            }
                         }}
                     />
                     <InputField
@@ -80,22 +109,46 @@ const NewProduct = () => {
                         placeholder=""
                         value={productPrice}
                         onChange={(e) => {
-                            setProductPrice(e.target.value);
-                            setError(null); // Reset the error state on input change
+                            const productPriceInString = e.target.value;
+
+                            // makes price to have no more than 2 floating digits (10.9999 -> 10.99)
+                            const productPrice = Math.floor(parseFloat(productPriceInString) * 100) / 100;
+
+                            if(isNaN(productPrice) && productPriceInString.length !== 0) {
+                                if (!toast.isActive(toastId.current)) {
+                                    toastId.current = errorToast("Error: price should be a number!");
+                                }
+                            } else {
+                                if (productPrice > 100000 || productPrice === 0) {
+                                    if (!toast.isActive(toastId.current)) {
+                                        if (productPrice > 100000) {
+                                            toastId.current = errorToast("Error: Price can't be more than 100 000 euro!");
+                                        } else {
+                                            toastId.current = errorToast("Error: Price can't be 0 euro!");
+                                        }
+                                    }
+                                } else {
+                                    setProductPrice(productPriceInString);
+                                }
+                            }
                         }}
                     />
                     <InputFieldTimeline timeline={productTimeline} setTimeline={setProductTimeline} />
                     <InputFieldTags tags={productTags} setTags={setProductTags} />
                     <div>
-                        {error && <span className="error-text text-error py-2">{error}</span>}
-                        <div className={`form-control ${error ? 'mt-2' : 'mt-6'}`}>
-                            <button className="btn btn-primary" type="submit">
-                                Add Product
-                            </button>
+                        <div className="form-control">
+                            {submitting ?
+                                <button className="btn btn-primary btn-disabled" type="submit">
+                                    <span className="loading loading-spinner loading-lg"></span>
+                                </button> :
+                                <button className="btn btn-primary" type="submit">
+                                    Add Product
+                                </button>
+                            }
                         </div>
                     </div>
                 </form>
-            </main>
+            </div>
         </div>
     );
 }
