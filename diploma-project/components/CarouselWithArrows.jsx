@@ -47,7 +47,7 @@ const CarouselWithArrows = ({ categoryName, listOfItems }) => {
                     {listOfItems.map((item, index) => (
                         <div
                             key={`trending-${index}`}
-                            className="flex-shrink-0 w-full h-full carousel-item"
+                            className="w-full carousel-item"
                         >
                             {item}
                         </div>
