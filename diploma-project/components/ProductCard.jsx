@@ -65,7 +65,7 @@ const ProductCard = ({product, inCatalog = false, productId}) => {
                     {product.price} €
                 </p>
                 {isNew && <div className="badge badge-secondary badge-lg font-bold text-white absolute right-3 bottom-3">NEW</div>}
-                <Image src={product.displayImageURL} alt="Silver ring" className="h-full w-full object-cover" layout="responsive" width={350} height={233}/>
+                <Image src={product.displayImageURL} alt="Product card" className="h-full w-full object-cover" layout="responsive" width={360} height={240}/>
             </figure>
             <div className="card-body">
                 <h3 className="absolute card-title justify-between w-4/5 pr-10">

@@ -4,7 +4,7 @@ import DropFileZone from "./DropFileZone";
 import {useUserStore} from "../store/userStorage";
 
 const UploadImageModal = () => {
-    const { currentUser, isTouchEnabled } = useUserStore((state) => ({currentUser: state.user, isTouchEnabled: state.isTouchEnabled}));
+    const { currentUser } = useUserStore((state) => ({currentUser: state.user}));
     const [isUploading, setIsUploading] = useState(false);
     const modalRef = useRef(null);
 
@@ -25,12 +25,6 @@ const UploadImageModal = () => {
             </button>
             <dialog className="modal" ref={modalRef}>
                 <div className="modal-box flex items-center justify-center w-4/5 md:w-full p-0">
-                    {
-                        !isTouchEnabled &&
-                            <form method="dialog">
-                                <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                            </form>
-                    }
                     <DropFileZone isUploading={isUploading} onImageChange={onImageChange}/>
                 </div>
                 <form method="dialog" className="modal-backdrop">
