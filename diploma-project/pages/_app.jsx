@@ -6,17 +6,32 @@ import auth, { firestore } from '../firebase';
 import { useUserStore } from '../store/userStorage';
 import {getUserByEmail, User} from '../services/user';
 import {ThemeProvider} from "next-theme";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {errorToast} from "../public/constants";
 
 const MyApp = ({ Component, pageProps }) => {
-  const { setUser } = useUserStore((state) => ({setUser: state.setUser}));
+  const { user, setUser, setIsTouchEnabled } = useUserStore((state) => ({user: state.user, setUser: state.setUser, setIsTouchEnabled: state.setIsTouchEnabled}));
 
   useEffect(() => {
+    setIsTouchEnabled(window.matchMedia("(pointer: coarse)").matches);
     let unsubscribeSnapshot = null
     const unsubscribeAuth = getAuth(auth).onAuthStateChanged((currentUser) => {
       if (currentUser) {
         // Store the user data in the global state
-        getUserByEmail(currentUser.email).then((userData) => {
-          setUser(userData);
+        getUserByEmail(currentUser.email).then((data) => {
+          setUser({
+            name: data.name,
+            email: data.email,
+            photoURL: data.photoURL,
+            uid: data.uid,
+            interests: user.interests,
+            requests: user.requests,
+            craft: data.craft,
+            orders: user.orders,
+            catalog: user.catalog,
+            followers: data.followers,
+          });
           currentUser.getIdToken().then((token) => {
             sessionStorage.setItem('accessToken', token);
           });
@@ -34,17 +49,18 @@ const MyApp = ({ Component, pageProps }) => {
               email: data.email,
               photoURL: data.photoURL,
               uid: data.uid,
-              interests: data.interests,
-              requests: data.requests,
+              interests: user.interests,
+              requests: user.requests,
               craft: data.craft,
-              orders: data.orders,
-              catalog: data.catalog,
+              orders: user.orders,
+              catalog: user.catalog,
+              followers: data.followers,
             };
           });
 
           setUser(userData);
         }, (error) => {
-          console.log(error);
+          errorToast(error.message);
         });
       } else {
         setUser(new User());
@@ -54,7 +70,7 @@ const MyApp = ({ Component, pageProps }) => {
         }
       }
     }, (error) => {
-      console.log(error);
+      errorToast(error.message);
     });
 
     // Return a cleanup function to unsubscribe from the AuthStateChanged listener
@@ -69,6 +85,7 @@ const MyApp = ({ Component, pageProps }) => {
   return (
       <ThemeProvider defaultTheme="system" attribute="data-theme">
         <Component {...pageProps} />
+        <ToastContainer/>
       </ThemeProvider>
   );
 };
