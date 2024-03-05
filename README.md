@@ -1,1 +1,2 @@
-This is my diploma project.
+Deployed at:
+[https://diploma-project.vercel.app/](url)
