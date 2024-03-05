@@ -1,2 +1,2 @@
 Deployed at:
-[https://diploma-project.vercel.app/](url)
+[https://diploma-project.vercel.app/](https://diploma-project.vercel.app/)
